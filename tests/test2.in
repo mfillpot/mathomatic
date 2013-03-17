@@ -1,0 +1,15 @@
+clear all
+y=(a/2)^2/b/4
+l=f*(b-y)+z*(a-f)
+m=2*(b-y)-a+f
+n=2*(b-y)+a-f
+o=l*(1/m-1/n)/2
+eliminate l m n y
+simplify
+copy
+f
+simplify symbolic
+6
+derivative z
+f
+repeat simplify symbolic

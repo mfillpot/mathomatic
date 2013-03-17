@@ -1,0 +1,7 @@
+y = .6666 - (4*(((10*(pi^2)*(r^3)/((d^2)*g*m*epsilon)) - 1)^(1/2))/15)
+simplify
+simplify symbolic
+r
+repeat simplify
+y
+repeat simplify symbolic

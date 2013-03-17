@@ -1,0 +1,8 @@
+
+; The Collatz conjecture as a mathematical feedback equation:
+out = (in/2) - (((5*in) + 2)*(((-1)^in) - 1)/4)
+; Prove that feeding "out" into "in" will
+; always eventually count down to the number 1.
+; Run with the command "calc in".
+; Repeatedly prompt with the command "repeat calc in".
+; See all intermediate in/out values by typing "set debug 1" beforehand.

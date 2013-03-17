@@ -1,0 +1,221 @@
+.TH MATHOMATIC 1
+
+.SH NAME
+mathomatic \- a computer algebra system
+
+.SH SYNOPSIS
+.B mathomatic
+[
+.B \-abcdehqrtuvwx
+] [
+.B \-s
+level:time
+] [
+.B \-m
+number
+] [
+input_files or input
+]
+
+.SH DESCRIPTION
+Mathomatic is a general-purpose computer algebra system (CAS)
+that can symbolically solve, simplify, combine, and compare algebraic equations,
+perform standard, complex number, modular, and polynomial arithmetic, etc.
+It does some calculus and handles all elementary algebra, except logarithms.
+Trigonometry and function expansion are supported in a separate program called
+.BR rmath (1).
+Plotting expressions with
+.B gnuplot
+is also supported.
+
+.B mathomatic
+is the main Mathomatic application that does interactive symbolic-numeric mathematics
+through a simple command-line interface.
+Readline or editline support is usually compiled into this application,
+making it easy to edit input and recall previous input with the cursor keys.
+The numeric arithmetic is double precision floating point
+with about 14 decimal digits accuracy.
+Many results will be exact,
+because symbolic math is an exact math, and
+because multiple floating point numbers
+can be combined for a single mathematical value; for example:
+.B 2^(1/3),
+which is the cube root of 2 exactly.
+
+.SH OPTIONS
+.TP
+.B \-a
+Enable alternative colors.
+Ansi color mode will be enabled in MS-Windows, if this option is specified and color mode is on.
+
+.TP
+.B \-b
+Enable bold colors.
+Color mode will be turned on and colors will be brighter if this option is specified.
+Same as the "set bold color" command.
+
+.TP
+.B \-c
+Toggle color mode.
+This mode outputs ANSI terminal escape sequences to make each level of
+parentheses a different color, for easier reading.
+Requires a terminal emulator that supports ANSI color escape sequences.
+If the colors are too hard to see, use the
+.B \-b
+option to increase the color brightness.
+
+.TP
+.B \-d
+Set demo mode.
+Currently this mode only bypasses loading the startup (rc) file, and ignores the pause command.
+It also allows using the calculate command without prompting for the values of any of the variables.
+
+.TP
+.B \-e
+Process mathematical expressions and Mathomatic commands
+instead of input files on the shell command line, and then quit.
+Unquoted space characters are the line separators
+on the Mathomatic input that follows this option.
+Works similar to entering it into the Mathomatic main prompt,
+except the autoselect option is turned off.
+Useful for quick command-line calculations.
+The startup messages are not displayed with this option.
+Follow this option with "\-\-" so that
+expressions can start with a minus sign (\-).
+
+.TP
+.B \-h
+Display a brief help message listing all of these options and then exit.
+
+.TP
+.B \-m number
+Change the memory size of equation spaces.
+It is followed by a decimal, floating point number which is a multiplier
+of the default equation space size.
+This allows larger equation spaces so that manipulating extremely
+large expressions will succeed without getting the
+"Expression too large" error.
+Specifying a number higher than 100 may make Mathomatic unresponsive.
+
+.TP
+.B \-q
+Set quiet mode.
+The startup messages and prompts are not displayed.
+This is useful when piping or redirecting input into Mathomatic,
+because the input won't be displayed,
+so prompt output should be turned off.
+This option does the same thing as the "set no prompt" command.
+
+.TP
+.B \-r
+Disable readline or editline input processing.
+Readline, and the editline drop-in replacement library,
+allow line input editing using the cursor keys,
+and output terminal control codes,
+all of which can be turned off with this option.
+
+.TP
+.B \-s level:time
+Set the enforced security level for the user's Mathomatic session.
+Level 0 is the default with no security.
+Level 1 disallows shelling out (forking).
+Level 2 disallows shelling out and writing files.
+Level 3 disallows shelling out and reading/writing files.
+Level 4 is the highest security level and is the same as compiling with the \-DSECURE option.
+This run-time option was created for use on open public servers.
+Specifying a colon, then a time in seconds, will time limit the application for that session.
+
+.TP
+.B \-t
+Set test mode.
+Used when testing and comparing output.
+Bypasses loading startup (rc) file, turns off color mode and readline,
+sets wide output mode, ignores the pause command, etc.
+It also allows using the calculate command without prompting for the values of any of the variables.
+
+.TP
+.B \-u
+Guarantee that standard output and standard error output are unbuffered.
+Also echoes all line input if not in quiet mode (
+.B \-q
+option ).
+Useful when piping.
+
+.TP
+.B \-v
+Display program name and version number, then exit successfully.
+
+.TP
+.B \-w
+Set wide output mode for an unlimited width output device
+like the "set wide" command does.
+Sets infinite screen columns and rows so that 2D (two-dimensional)
+expression output will always succeed
+and not be downgraded to 1D output when it doesn't fit in the display area.
+Use when redirecting output or with a terminal emulator that doesn't wrap lines.
+This mode only affects 2D output.
+
+.TP
+.B \-x
+Enable HTML output mode (which is also valid XHTML).
+This makes Mathomatic output suitable for inclusion in a web page.
+Color and bold mode affect this mode, allowing HTML color output.
+Wide output mode is also set by this option, meaning expressions
+will always be displayed in 2D.
+
+.SH GENERAL
+After any options, text files may be specified on the shell command line
+that will be automatically read in with the read command, unless the
+.B \-e
+option is specified.
+
+Mathomatic is best run from within a terminal emulator.
+It uses console line input and output for the user interface.
+First you type in your mathematical equations in standard algebraic notation,
+then you can solve them by typing in the variable name at the prompt, or
+perform operations on them with simple English commands.
+Type "help" or "?" for the help command, "help examples" to get started.
+If the command name is longer than 4 letters, you only need
+to type in the first 4 letters.
+Most commands operate on the current equation by default.
+
+A command preceded by an exclamation point (such as "!ls") is taken to
+be a shell command and is passed unchanged to the shell (/bin/sh).
+"!" by itself invokes the default shell, which is specified in the SHELL environment variable.
+"!" is also the factorial operator.
+
+Complete documentation is available in HTML and PDF formats;
+see the local documentation directory or online at "http://mathomatic.org/math/doc/"
+for the latest Mathomatic documentation.
+
+.SH ENVIRONMENT
+.TP
+.B EDITOR
+The EDITOR environment variable specifies which text editor to use for the edit command.
+
+.SH FILES
+.TP
+.B ~/.mathomaticrc
+Optional startup file containing Mathomatic set command options.
+It should be a text file with one or more set options per line.
+For example, the line "no color" will make Mathomatic default to non-color mode,
+which is useful if you aren't using a supported color device.
+
+.SH AUTHOR
+Mathomatic has been written by George Gesslein II (gesslein@mathomatic.org),
+with help from the Internet community.
+
+.SH "REPORTING BUGS"
+The command to take the limit of an expression is partially functional and experimental.
+All else should work perfectly; if not,
+please report it as a bug to the author or
+on the Launchpad website: "https://launchpad.net/mathomatic".
+
+.SH "SEE ALSO"
+.BR rmath (1),
+.BR matho-primes (1),
+.BR primorial (1),
+.BR matho-mult (1),
+.BR matho-sum (1),
+.BR matho-pascal (1),
+.BR matho-sumsq (1)

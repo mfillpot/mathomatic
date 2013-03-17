@@ -1,0 +1,9 @@
+
+; Algebraic fractions tutorial.
+; This Mathomatic input shows how "simplify fraction" and "unfactor fraction" work.
+1/x+1/y+1/z
+fraction ; Convert expressions with algebraic fractions into a single fraction.
+simplify
+simplify fraction ; does the same as the above fraction command, but simplifies more.
+unfactor ; Expand the products of sums.
+unfactor fraction ; Fully expand algebraic fractions by also expanding division of sums.

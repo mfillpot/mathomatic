@@ -1,0 +1,22 @@
+
+; Trigonometric and hyperbolic trigonometric function listing that can be
+; expanded and simplified by reading this file into m4 Mathomatic
+; with the following shell command:
+
+; rmath trig
+
+; Trig functions:
+sine = sin(x) ; sine of x
+cosine = cos(x) ; cosine of x
+tangent = tan(x) ; tangent of x
+cotangent = cot(x) ; cotangent of x
+secant = sec(x) ; secant of x
+cosecant = csc(x) ; cosecant of x
+
+; Hyperbolic trig functions:
+hypersine = sinh(x) ; hyperbolic sine of x
+hypercosine = cosh(x) ; hyperbolic cosine of x
+hypertangent = tanh(x) ; hyperbolic tangent of x
+hypercotangent = coth(x) ; hyperbolic cotangent of x
+hypersecant = sech(x) ; hyperbolic secant of x
+hypercosecant = csch(x) ; hyperbolic cosecant of x

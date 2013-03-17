@@ -1,0 +1,25 @@
+
+; Combine 2 commonly used formulas to produce the mortgage payment formula.
+; Here are 3 related financial formulas that can be "read" into Mathomatic.
+
+set fixed ; Enable fixed-point money mode; rounds to the nearest cent.
+; First, the variable definitions:
+; pv = present value
+; fv = future value (maturity value)
+; interest_rate = interest rate per period (1 = 100%)
+; n = number of periods
+
+; Compound Interest Future Value Formula:
+fv1 = pv*(1+interest_rate)^n
+; Future Value Annuity Formula:
+fv2 = payment*(((1+interest_rate)^n-1)/interest_rate)
+; Next we will combine these to produce the standard annuity formula.
+; Set equal, then solve and simplify:
+fv1 = fv2
+pause
+eliminate all ; combine both formulas to produce the annuity formula:
+solve verifiable pv ; solve for present value:
+solve verifiable payment ; or solve for payment per period:
+pause End of finance tutorial
+; Remember we are still in fixed-point money mode,
+; unless you typed "set no fixed".

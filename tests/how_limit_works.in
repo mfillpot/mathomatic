@@ -1,0 +1,64 @@
+clear all
+; Read this file into Mathomatic to learn how the limit command does limits.
+; The formula for the derivative of a function of "x" (f(x)) is:
+
+;       f(x+h) - f(x)
+; limit -------------  As "h" goes to 0.
+;             h
+
+; Here we will compute the derivative of "x^.5" using limits:
+
+y=((x+h)^.5-x^.5)/h
+pause
+limit h 0 ; Take the limit of the current equation as h goes to 0.
+; The result should be the derivative of "x^.5": "y = 1/(2*x^0.5)".
+pause
+; To show how the limit command works, we will do what it does, step by step.
+
+1 ; Select the original equation (equation number 1).
+; We want "h" to go to 0 to give us the derivative.
+; Just entering 0 for "h" will give a divide by zero error.
+pause
+; So we will first have to solve for "h":
+
+h
+pause
+; Simplify and replace "h" with 0:
+
+simplify symbolic
+replace h with 0
+pause
+; Last step, solve the equation back for "y":
+
+y
+compare 1 with 2 ; Compare with the result of the limit command.
+
+; Obviously this method only works if the equation is solvable.
+pause
+; INFINITY LIMITS
+; ---------------
+; To take the limit as some variable "h" goes to infinity,
+; remember that 1/infinity is essentially 0, and the limit
+; of "1/h" as "h" goes to 0 is +/-infinity, so replace "h"
+; with "1/h" and take the limit as "h" now goes to 0.
+; Note that this method doesn't always work and sometimes gives wrong answers.
+
+; Let's try a simple example:
+y=(5x+100-a)/(x-b)
+limit x inf
+; The limit command should say the result is 5.
+pause
+; To show how the limit command works, we will do what it does, step by step.
+
+3 ; Select the original equation (equation number 3).
+; To take the limit as "x" approaches infinity,
+; first replace "x" with "1/x":
+
+replace x with 1/x
+pause
+
+; Simplify and replace "x" with 0:
+simplify
+replace x with 0
+; The result should be 5.
+pause End of limit command tutorial.

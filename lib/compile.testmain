@@ -1,0 +1,21 @@
+#!/bin/sh
+# Shell script for creating the Mathomatic library test and example programs "testmain" and "example".
+# testmain.c and example.c are compiled and linked with
+# /usr/local/lib/libmathomatic.a or /usr/lib/libmathomatic.a
+#
+# If this fails, you probably need to compile and install the Mathomatic symbolic math library,
+# by downloading the Mathomatic source code, then:
+#
+# cd lib
+# make flush
+# make lib
+# sudo make install
+
+CC=${CC-cc}
+
+echo Compiling and linking testmain.c with currently installed libmathomatic.a
+set -x
+$CC -g -O3 -Wall -Wshadow -fexceptions $CFLAGS $CPPFLAGS $LDFLAGS testmain.c -lmathomatic -lm -o testmain && echo ./testmain created.
+echo Compiling and linking example.c, too.
+$CC -g -O3 -Wall -Wshadow -fexceptions $CFLAGS $CPPFLAGS $LDFLAGS example.c -lmathomatic -lm -o example && echo ./example created.
+make clean # for any subsequent makes

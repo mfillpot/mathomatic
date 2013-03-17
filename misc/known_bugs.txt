@@ -1,0 +1,43 @@
+                           Known bugs in Mathomatic
+                           ------------------------
+
+Compiling with Clang or Xcode 4 and up, which uses LLVM:
+     This is actually an optimization bug in the LLVM backend used by Clang
+and the Apple Xcode IDE. When dealing with memmove(3), LLVM optimization
+introduces bugs and program hangs. So when you are compiling Mathomatic with
+Clang or the latest Xcode, please be sure and compile with no optimization
+options or the "-O0" option (which disables all optimization), otherwise the
+regression tests and entering things like y=32^.5 and then simplifying will
+cause Mathomatic to hang forever. memmove(3) is used throughout Mathomatic.
+So when compiling Mathomatic with Clang or Xcode, always disable
+optimization, it will run all the tests in 1 second and is not noticeably
+slower. Mathomatic will hang during "make test" if compiled with optimization
+enabled when using LLVM as a backend.
+
+17! bug: Fixed.
+     "factor number 17!" and higher don't work because the maximum safely
+representable integer for double precision floating point is 15 digits long.
+This is not a bug.
+
+Absolute values and complex number problems:
+     Absolute values and the imaginary unit (i) do not always remain intact
+after being manipulated with the standard rules of algebra. For example, 1/i
+correctly simplifies to -i, changing the sign of the result. So the fraction
+command and other possible operations may give wrong results due to differing
+sign after manipulations. The simplify command should always work, but it is
+not guaranteed for these.
+     The solve command may have a problem too, but using the verify option
+should check that the result of solving absolute value or complex number
+equations is 100% correct. Don't forget though that the absolute value |x|
+definition in Mathomatic is ((x^2)^.5), which is different from the standard
+absolute value function in the complex realm, which would always return a
+positive and real distance on a complex Cartesian graph. Mathomatic is taking
+shortcuts with its definition and will not always return a real value result
+if any of the absolute value arguments are imaginary. It works perfectly with
+real value arguments.
+
+Solving modulus equations:
+     May result in garbage, due to incomplete modulus operator solving code.
+I could just disable it, but I choose to research it at a later time, because
+it does sometimes work nicely. Again, the "solve verify" option tells if you
+should trust the results.

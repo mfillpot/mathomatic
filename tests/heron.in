@@ -1,0 +1,49 @@
+clear all
+; This Mathomatic script shows two reverse derivations of Heron's formula.
+; This is Heron's formula for the area of any triangle,
+; given side lengths "a", "b", and "c".
+
+2s = a+b+c
+triangle_area = (s*(s-a)*(s-b)*(s-c))^.5
+eliminate s ; Heron's formula:
+simplify ; Heron's formula simplified by Mathomatic:
+pause
+; This is how we arrive at Heron's formula for the area
+; of any triangle, given side lengths a, b, and c, using the formula
+; for the area of a trapezoid with side lengths a, b, c, and d,
+; where a and c are the parallel sides (a is the longer parallel side).
+
+; A trapezoid is a quadrilateral with
+; two sides that are parallel to each other.
+
+; Formula for the area of a trapezoid that is not a parallelogram:
+trapezoid_area=(a+c)/(4*(a-c))*((a+b-c+d)*(a-b-c+d)*(a+b-c-d)*(-a+b+c+d))^.5
+pause
+copy
+replace c with 0 ; make the shorter parallel side length = 0
+replace d with c ; Heron's formula in its simplest form:
+replace trapezoid_area with triangle_area
+pause Please press the Enter key to verify the result.
+copy
+display 2
+compare 5 with 2 ; simplify and compare the result with Heron's formula:
+clear 5
+pause
+
+; This is how we arrive at Heron's formula for the area
+; of any triangle, given side lengths a, b, and c, using
+; Brahmagupta's formula for the area of a cyclic quadrilateral,
+; making one side length equal zero, to make a cyclic triangle.
+; Since all triangles are cyclic (can be circumscribed by a circle),
+; this gives the area for any triangle.
+
+2s=a+b+c+d ; cyclic quadrilateral side lengths are a, b, c, and d
+cyclic_area = ((s-a)*(s-b)*(s-c)*(s-d))^.5
+eliminate s ; Brahmagupta's formula:
+pause
+copy
+replace d with 0 ; make one side length zero to get Heron's formula:
+pause Please press the Enter key to verify the result.
+compare 2 ; simplify and compare the result with Heron's formula:
+clear
+clear 1 5

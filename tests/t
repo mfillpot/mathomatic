@@ -1,0 +1,27 @@
+#!/bin/sh
+# Alternative shell script to test Mathomatic that doesn't require the make utility.
+# Just run this while in the tests directory with "./t"
+# to see if Mathomatic runs properly on your system.
+# After reading in and executing the Mathomatic scripts in "all.in",
+# it does a diff between the output of the test and the expected output.
+# If no differences are reported, "All tests passed 100% correctly" is displayed.
+
+# Usage: ./t [ mathomatic_executable_to_test ]
+
+if [ "$1" != "" ]
+then
+	MATHOMATICPATH="$1"
+else
+MATHOMATICPATH="../mathomatic"
+if [ ! -x "$MATHOMATICPATH" ]
+then
+	MATHOMATICPATH=mathomatic
+fi
+fi
+
+echo
+echo Testing $MATHOMATICPATH \(`$MATHOMATICPATH -v`\) || exit 1
+TESTOUT=`mktemp /tmp/test.XXXXXXXXXX` || exit 1
+time -p "$MATHOMATICPATH" -t all 0<&- >$TESTOUT && diff -u --strip-trailing-cr all.out $TESTOUT && echo "All tests passed 100% correctly." && rm $TESTOUT && exit 0
+echo "Test failed.  Errors are in $TESTOUT"
+exit 1

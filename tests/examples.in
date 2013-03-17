@@ -1,0 +1,46 @@
+
+; This is a line comment.  This script shows some simple examples of Mathomatic usage.
+; Mathomatic input files are scripts that may be read in with the "read" command.
+
+; Equations are entered by just typing or pasting them in:
+c^2=a^2+b^2 ; The Pythagorean theorem, "c" squared equals "a" squared plus "b" squared.
+; The entered equation becomes the current equation and is displayed.
+; The current equation can be solved by simply typing in a variable name:
+c ; which is shorthand for the solve command.  Solve for variable "c".
+; "sign" variables are special two-valued variables that may only be +1 or -1.
+solve for b ; Another way to solve for a variable, using English.
+; To output programming language code, use the code command:
+code ; C language code is the default.
+
+code java ; Mathomatic can also generate Java
+
+code python ; and Python code.
+
+repeat echo *
+a=b+1/b ; Enter another equation; this is actually a quadratic equation.
+0 ; Solve for zero.
+unfactor ; Expand, showing that this is a quadratic polynomial equation in "b".
+solve verifiable b ; Require solution verification with the "verifiable" option.
+a ; Solve back for "a" and we should get the original equation.
+simplify ; The simplify command makes expressions simpler and prettier.
+repeat echo *
+; Mathomatic is also handy as an advanced calculator.
+; Expressions without variables entered at the main prompt are instantly evaluated:
+2+3
+495/44 ; Fractions are always reduced to their simplest form:
+; Fractions greater than 1 can easily be displayed as mixed fractions.
+display mixed ; Display above fraction as a mixed fraction:
+display factor ; Integers and fractions are easily factored:
+2^.5 ; The square root of 2, rounded to the default 14 digits:
+
+repeat echo *
+; Symbolic logarithms like log(x) are not implemented, yet.
+27^y=9 ; An example that uses numeric logarithms.
+solve verifiable y ; Require solution verification with the "verifiable" option.
+
+repeat echo *
+0=2x^2-3x-20 ; A simple quadratic equation, to show how the calculate command works.
+solve verifiable x ; Solve for x, plugging the results into the original equation to verify.
+calculate ; Expand "sign" variables and approximate the RHS (Right-Hand Side).
+; The calculate command also lets you plug values into a formula with variables, if any.
+display; Display the current equation, showing that it was not modified by calculate.

@@ -1,0 +1,22 @@
+
+; Some complete simplifications Mathomatic has always been able to do.
+; The result is the smallest expression that gives exactly the same results.
+
+2*(x^2-y^2)^16-(x^2-y^2)^15*(2x^2-3)
+simplify ; Simplify the previously entered expression above.
+repeat echo *
+a^3/((a-b)*(a-c))+b^3/((b-c)*(b-a))+c^3/((c-a)*(c-b))
+simplify ; Simplify algebraic fractions.
+repeat echo *
+(x^6+a^6)*(x+1)/((x^6+a^6)*(x^2-a^2)+a^2*x^2*(x^4-a^4))+a^2*x^2*(x+1)/(x^6-a^6-a^2*x^2*(x^2-a^2))
+simplify
+repeat echo *
+(1-(1-(y+1)/(x+y+1))/(1-x/(x+y+1)))/((y+1)^2-x/(1+x/(y-x+1))*(x*(y+1)/(y-x+1)-x))
+simplify fraction ; Any complex fraction can be reduced to a simple fraction with this command.
+repeat echo *
+((2*((x*(x+(((x^2)-1)^(1/2))))-1))+1)/((2*x*((x^2)-1))+((((x^2)-1)^(1/2))*((2*(x^2))-1)))
+simplify ; Simplify an expression containing radicals (roots).
+; Rationalizing the denominator was required to simplify the above expression.
+repeat echo *
+((x - 2*y)^4/(x^2 - 4*y^2)^2 + 1)*(y + a)*(2*y + x) / (4*y^2 + x^2)
+repeat simplify

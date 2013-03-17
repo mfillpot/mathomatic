@@ -1,0 +1,24 @@
+#!/usr/bin/python
+
+# Python program to sum many large integers separated by spaces or newlines.
+# The integers to sum may be entered on the command-line or into standard input.
+
+import string
+import sys
+
+sum = 0 # initialize sum and make it an integer
+args = sys.argv[1:]
+if (args == []):
+	# read stdin if no command line args
+	while True:
+		try:
+			input_line = raw_input()
+		except:
+			break;
+		for s in string.split(input_line):
+			sum += int(s)
+else:
+	# sum together the command-line args
+	for arg in args:
+		sum += int(arg)
+print sum

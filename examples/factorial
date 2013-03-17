@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+# This is a Python program to display large factorials and test "fact.py".
+
+from fact import factorial
+import sys
+import os
+import string
+
+def usage():
+	print "This program calculates large factorials."
+	print "Requires and tests \"fact.py\"."
+	print
+	print "Usage: %s integer_expressions" % os.path.basename(sys.argv[0])
+	print
+	print "The integer expressions should be separated by spaces."
+	print "A factorial is the product of all positive integers <= a given integer."
+	sys.exit(2)
+
+args = sys.argv[1:]
+if (args == []):
+	usage()
+else:
+	try:
+		num = eval(string.join(args))
+		print "factorial(", num, ") =", factorial(num)
+	except:
+		for arg in args:
+			num = eval(arg)
+			print "factorial(", num, ") =", factorial(num)

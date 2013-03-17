@@ -1,0 +1,31 @@
+clear all
+; Some symbolic differentiation examples follow.
+
+; Take the derivative of the absolute value function:
+|x|
+derivative ; The result is the sign function sgn(x), which gives the sign of x.
+repeat echo *
+; Mathomatic can differentiate anything that doesn't require symbolic logarithms.
+y=e^(1+1/x)
+derivative ; The first order derivative is:
+derivative ; The second order derivative is:
+expand fraction ; Perhaps easier to read:
+repeat echo *
+; A Taylor series demonstration:
+y=x_new^n ; x_new is what we want, without using the root operator.
+x_new ; It is easily solved for in Mathomatic.
+y ; But we want an algorithm to compute it without using non-integer exponentiation.
+taylor x_new, 1, x_old ; build the (nth root of y) iterative approximation formula
+solve verifiable x_new ; solve for the output variable
+; That is the convergent nth root approximation formula.
+copy ; "calculate x_old 10000" tests this formula, if you would like to see for yourself.
+replace x_old x_new with x ; make x_old (input) and x_new (output) the same
+x ; make sure the formula was correct by solving for x
+repeat echo *
+; Another Taylor series demo:
+e^x ; enter the exponential function
+taylor x, 10, 0 ; generate a 10th order taylor series of the exponential function
+laplace x ; do a Laplace transform on it
+simplify ; show the structure of the result
+laplace inverse x ; undo the Laplace transform
+compare with 10 ; check the result

@@ -1,0 +1,12 @@
+/*
+ * icon.rc - Windows resource compiler input file used to link
+ *           the Mathomatic icon with the mathomatic.exe file.
+ *
+ * To compile, run:
+ *
+ *     windres icon.rc icon.o
+ *
+ * then link mathomatic.exe with icon.o,
+ * so that mathomatic.exe will have an nice icon in Windows Explorer!
+ */
+icon1	ICON "mathomatic.ico"

@@ -1,0 +1,37 @@
+.TH PRIMORIAL 1 "" "Mathomatic" "Mathomatic Utilities"
+
+.SH NAME
+primorial \- calculate large primorials
+
+.SH SYNOPSIS
+.B primorial
+integers
+
+.SH DESCRIPTION
+This command-line utility is optionally part of the
+.BR mathomatic (1)
+package.
+It uses Python and
+.BR matho-primes (1)
+and
+.BR matho-mult (1)
+to calculate and display large primorials.
+
+A primorial is the product of all primes up to the given integer.
+The integers to show the primorials of are given on the command line.
+
+The calculated primorials are output to standard output.
+The size is limited by the amount of computer memory available.
+
+.SH AUTHOR 
+George Gesslein II (gesslein@mathomatic.org)
+at "http://www.mathomatic.org".
+
+.SH "REPORTING BUGS"
+If you find a bug, please report it to the author
+or at "https://launchpad.net/mathomatic".
+
+.SH "SEE ALSO"
+.BR mathomatic (1),
+.BR matho-mult (1),
+.BR matho-primes (1)

@@ -1,0 +1,59 @@
+/* George Gesslein II's CSS for HTML documentation */
+
+/* Commonly used classes: */
+.clear { clear: both; }
+.right { float: right; }
+.left { float: left; }
+.center { text-align: center; }
+.middle { vertical-align: middle; }
+.indent { margin-left: 2em; margin-right: 2em; }
+.large { font-size: larger; }
+.small { font-size: x-small; }
+
+.sample {
+  border-style: solid; border-width: 1px; border-color: black;
+  border-radius: 7px;
+  color: black;
+  background-color: #FFFAF0;
+  padding: 10px;
+}
+
+a img { border: none; } /* don't draw borders around images that are links */
+
+body {
+  font-family: sans-serif;
+/* font-size: large; */
+  color: black;
+  background-color: white;
+}
+
+tt {
+  color: brown;
+}
+
+a:link {
+  color: blue;
+}
+
+a:visited {
+  color: purple;
+}
+
+a:hover {
+  color: green;
+}
+
+a:active {
+  color: red;
+}
+
+caption {
+  color: orange;
+  font-weight: bold;
+}
+
+@media print
+{
+  a { text-decoration: none; } /* no underlined links when printing */
+/*  h2 { page-break-before: always; } Uncomment this to page break at the beginning of every section. */
+}

@@ -1,0 +1,37 @@
+.TH MATHO-PASCAL 1 "" "Mathomatic" "Mathomatic Utilities"
+
+.SH NAME
+matho-pascal \- display Pascal's triangle
+
+.SH SYNOPSIS
+.B matho-pascal
+[number-of-lines]
+
+.SH DESCRIPTION
+This command-line utility is optionally part of the
+.BR mathomatic (1)
+package.
+It calculates up to 1000 lines of Pascal's triangle using floating point arithmetic,
+dumping the lines to standard output.
+The default is to center one screen full.
+
+Every number inside Pascal's triangle is the sum of the two numbers
+immediately above it.
+
+Each line of Pascal's triangle is the same as the binomial coefficients
+for a given power.
+
+The sum of all numbers in each line of Pascal's triangle is a power of 2.
+
+.SH AUTHOR 
+George Gesslein II (gesslein@mathomatic.org)
+at "http://www.mathomatic.org".
+
+.SH "REPORTING BUGS"
+If you find a bug, please report it to the author
+or at "https://launchpad.net/mathomatic".
+
+.SH "SEE ALSO"
+.BR mathomatic (1),
+.BR matho-primes (1),
+.BR matho-sumsq (1)

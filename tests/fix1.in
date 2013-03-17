@@ -1,0 +1,22 @@
+clear all
+y = (((((a+b)/(b-c))^0.25)+(((b-c)/(a+b))^0.25)+(((a-b)*i/(b-c))^0.5))*(i^0.5))^(1/n)
+y = (a^a)*(1+(((a^(a^2))*(b^a))^(1/(1-a))))
+y = (a^2)*(1+(((a^(2*((1.5*a)-1)))*(b^a))^(1/(1-a))))
+y = (15*(d^2)/((1+(d^2))^(7/2)))-(12/((1+(d^2))^(5/2)))-6
+y = ((9 + (32^.5))^.5) ; should simplify to (1 + 2*(2^.5)) someday
+simplify symbolic all
+simplify all
+x^2=|x|
+solve for x
+x^(1/99)=x
+solve verifiable x
+(2i)^.5+e^(pi*i)
+(1-2i)/(3+4i)
+divide (1-2i) (3+4i)
+
+y=x^3
+extrema x
+(x+1)^4
+extrema x
+roots 4 1 0 ; The 4 roots of unity.
+factor number -75 100000000000000 16! 7921%14 ; should be exactly 11

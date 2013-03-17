@@ -1,0 +1,32 @@
+; Combine 4 simultaneous linear equations with 4 unknowns (x1, x2, x3, x4).
+; Solve for all 4 unknowns using the eliminate, solve, and simplify commands.
+
+; Keep this to test simplification in Mathomatic when recursion is added to the GCD routines.
+; Currently Mathomatic is unable to completely simplify all of the resulting equations.
+; By using the simplify command immediately after some eliminate commands,
+; equation number 4 solved for x4 is completely simplified.
+;
+; The rest may be easily simplifiable when polynomial GCD works recursively,
+; so that it is multivariate.
+
+clear all ; restarts Mathomatic
+; The next four lines enter all of the equations into Mathomatic
+b1 = a11*x1+a12*x2+a13*x3+a14*x4
+b2 = a21*x1+a22*x2+a23*x3+a24*x4
+b3 = a31*x1+a32*x2+a33*x3+a34*x4
+b4 = a41*x1+a42*x2+a43*x3+a44*x4
+2 ; select equation #2
+eliminate x1 ; eliminate x1 variable from eq#2
+3 ; select equation #3
+eliminate x1 x2 ; eliminate x1 x2 from eq#3
+4 ; select equation #4
+eliminate x1 x2 x3 ; eliminate x1 x2 x3 from eq#4
+simplify all
+solve verifiable x4 ; solve for x4
+3 ; select equation #3
+eliminate x4 using 4; find x3
+2 ; select equation #2
+eliminate x4 using 4, x3 using 3; find x2
+1 ; select equation #1
+eliminate x4 using 4, x3 using 3, x2 using 2; find x1
+simplify all

@@ -1,0 +1,14 @@
+
+; This is an equation for an ellipse that was created using the rule
+; that the sum of the distances from any point on the perimeter (x, y)
+; to the two foci: (x1, y1) and (x2, y2), is a constant k.  This can
+; represent any ellipse of any orientation on the Cartesian plane.
+
+k = ((x1-x)^2+(y1-y)^2)^0.5 + ((x2-x)^2+(y2-y)^2)^0.5
+
+; A simplified equation for a right ellipse centered at the origin (0, 0)
+; of the Cartesian plane:
+
+1 = x^2/radius1^2 + y^2/radius2^2
+; The x-intercepts are radius1 and -radius1 because y=0 there.
+; The y-intercepts are radius2 and -radius2 because x=0 there.

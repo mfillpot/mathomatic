@@ -1,0 +1,2615 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>Mathomatic Command Reference</title>
+
+<meta name="description" content="The Command Reference Manual for the Mathomatic computer algebra system.">
+<meta name="author" content="George Gesslein II">
+<meta name="distribution" content="global">
+<meta name="rating" content="general">
+<meta name="copyright" content="&copy; 1987-2012 George Gesslein II">
+
+<link rel="author" href="http://www.google.com/profiles/georgegesslein">
+<link rel="license" href="http://www.gnu.org/licenses/fdl-1.3.html">
+<link rel="home" href="http://www.mathomatic.org">
+<link rel="contents" href="index.html">
+<link rel="index" href="index.html">
+<link rel="previous" href="manual.html">
+<link rel="next" href="mathomatic.1.html">
+<link rel="start" title="The first page of the Mathomatic User Guide" type="text/html" href="index.html">
+
+<link rel="shortcut icon" href="/favicon.ico">
+
+<link rel="stylesheet" type="text/css" href="doc.css">
+</head>
+
+<body>
+<center>
+<h1>Mathomatic Command Reference</h1>
+<img src="greenfade.png" alt="decoration line">
+</center>
+
+<h3>Topics</h3>
+
+<ol>
+<li>
+<a href="#introduction">Introduction</a>
+<li>
+<a href="#entering">Entering Commands</a>
+<li>
+<a href="#selecting">Selecting Expressions</a>
+<li>
+<a href="#solving">Solving Equations</a>
+<li>
+<a href="#license">Documentation License</a>
+</ol>
+
+<h3>Commands</h3>
+
+<blockquote>
+<table summary="list of all commands" cellpadding=10>
+<tr valign="top">
+<td>
+<a href="#approximate">Approximate</a>
+<br>
+<a href="#calculate">Calculate</a>
+<br>
+<a href="#clear">Clear</a>
+<br>
+<a href="#code">Code</a>
+<br>
+<a href="#compare">Compare</a>
+<br>
+<a href="#copy">Copy</a>
+<br>
+<a href="#derivative">Derivative</a>
+<br>
+<a href="#display">Display</a>
+</td>
+<td>
+<a href="#divide">Divide</a>
+<br>
+<a href="#echo">Echo</a>
+<br>
+<a href="#edit">Edit</a>
+<br>
+<a href="#eliminate">Eliminate</a>
+<br>
+<a href="#extrema">Extrema</a>
+<br>
+<a href="#factor">Factor</a>
+<br>
+<a href="#for">For</a>
+<br>
+<a href="#fraction">Fraction</a>
+</td>
+<td>
+<a href="#help">Help</a>
+<br>
+<a href="#imaginary">Imaginary</a>
+<br>
+<a href="#integrate">Integrate</a>
+<br>
+<a href="#laplace">Laplace</a>
+<br>
+<a href="#limit">Limit</a>
+<br>
+<a href="#list">List</a>
+<br>
+<a href="#nintegrate">NIntegrate</a>
+<br>
+<a href="#optimize">Optimize</a>
+</td>
+<td>
+<a href="#pause">Pause</a>
+<br>
+<a href="#plot">Plot</a>
+<br>
+<a href="#product">Product</a>
+<br>
+<a href="#push">Push</a>
+<br>
+<a href="#quit">Quit</a>
+<br>
+<a href="#read">Read</a>
+<br>
+<a href="#real">Real</a>
+<br>
+<a href="#repeat">Repeat</a>
+</td>
+<td>
+<a href="#replace">Replace</a>
+<br>
+<a href="#roots">Roots</a>
+<br>
+<a href="#save">Save</a>
+<br>
+<a href="#set">Set</a>
+<br>
+<a href="#simplify">Simplify</a>
+<br>
+<a href="#solve">Solve</a>
+<br>
+<a href="#sum">Sum</a>
+<br>
+<a href="#tally">Tally</a>
+</td>
+<td>
+<a href="#taylor">Taylor</a>
+<br>
+<a href="#unfactor">Unfactor</a>
+<br>
+<a href="#variables">Variables</a>
+<br>
+<a href="#version">Version</a>
+</td>
+</tr>
+</table>
+</blockquote>
+
+<p>
+<a href="manual.html">Mathomatic User Guide</a>
+
+<br>
+<br>
+<hr>
+<a name="introduction"></a>
+<h2>Introduction</h2>
+<p>
+<b>LHS</b> is shorthand for the Left-Hand Side of an equation.
+Similarly, <b>RHS</b> used here always means the Right-Hand Side.
+<p>
+In this document, text enclosed by straight brackets <b>[like this]</b> means
+it is optional and may be omitted.
+The word "expression" (without double quotes)
+always means a mathematical expression or formula.
+<p>
+At the Mathomatic main prompt, you may enter:
+
+<ul>
+<li>
+A numerical expression, which is stored, then instantly approximated, evaluated, and displayed with the
+<a href="#calculate">calculate command</a>; this is the <a href="#set">autocalc</a> option.
+To skip running the calculate command on the numerical input, just set it equal to any normal variable.
+<li>
+A new <a href="manual.html#equations">algebraic expression or equation</a>,
+which is stored and made the current equation.
+<li>
+A new expression followed by an equals sign, to set the current non-equation equal to,
+making it an equation,
+or to store the new expression as an equation set equal to zero.
+<li>
+A variable to automatically <a href="#solving">solve</a> the current equation for (<a href="#set">autosolve</a>).
+<li>
+An operator (not factorial) followed by an equals sign (<b>=</b>) and an expression,
+which is applied to both sides of the current equation or to the current non-equation.
+<li>
+An equation number to <a href="#selecting">select</a> as the current equation (<a href="#set">autoselect</a>).
+<li>
+A slash (<b>/</b>) or pound sign (<b>#</b>) followed by a variable name
+to search all equations spaces forward or backward for, respectively.
+<li>
+A Mathomatic command (listed in this document).
+<li>
+A question mark (<b>?</b>) followed by a topic, for quick, short help (same as the <a href="#help">help command</a>).
+<li>
+A semicolon (<b>;</b>) followed by a line comment;
+everything on a line after a semicolon is ignored.
+A semicolon that does not start a line comment
+may be entered by preceding it with a backslash (<b>\</b>).
+<li>
+An exclamation point (<b>!</b>) followed by a shell or system command.
+"<b>!</b>" by itself invokes the default shell.
+"<b>!</b>" is also the factorial operator.
+</ul>
+
+<p>
+If a colon (<b>:</b>) starts the line, preceding any of the above input to the main prompt,
+it will always return with successful status,
+preventing any current <a href="#read">read command</a> operations from aborting.
+
+<br>
+<br>
+<hr>
+<a name="entering"></a>
+<h2>Entering Commands</h2>
+<p>
+Mathomatic has about <a href="quickrefcard.html">43 commands</a> that may be typed at the main prompt.
+Most commands operate on the current expression or equation by default.
+Commands are simple English words and are described below, in alphabetical order.
+If the command name is longer than 4 letters, you only need
+to type in the first 4 letters for Mathomatic to recognize the command.
+Option words and arguments for commands follow the command name and are separated by spaces.
+Commands are not executed until you press the Enter key,
+and any missing command-line arguments that don't have a default are prompted for.
+For example, the Mathomatic command
+
+<pre class="indent">
+help calculate
+</pre>
+
+<p>
+gives short help and usage information for the calculate command.
+"help" is the command, "calculate" is the argument
+(which is also a command, in this case).
+<p>
+Many commands have an optional <b>equation number range</b> argument,
+which specifies the equation spaces that the command is to operate on.
+An <b>equation number range</b> may be a single equation number,
+or a range of equation numbers separated by a dash (like "2-7",
+which means every equation space between and including equations 2 and 7),
+or the word "all", which specifies all equation spaces.
+If omitted, or a dash ("-") by itself is entered, the current expression or equation is assumed.
+If pluralized as "<b>equation-number-ranges</b>" in the command syntax, that means
+multiple equation numbers and ranges may be specified for that command,
+separated by spaces.
+<p>
+A greater-than character (<b>&gt;</b>) may be appended to the end of any command-line,
+followed by a file name.  This will redirect the output of the command to that file.
+If the file already exists, it will be overwritten without asking.
+Note that any debugging output will be redirected, too.
+Two greater-than characters (<b>&gt;&gt;</b>) next to each other
+will <strong>append</strong> command output to a file, like the Unix shell does.
+For example, the Mathomatic command
+
+<pre class="indent">
+list export all &gt;filename
+</pre>
+
+<p>
+will output all stored expressions and equations to a file in exportable,
+single-line per equation format,
+so they can be read in by a different math program.
+"list" is the command,
+"export" is the option word, and "all" is the <b>equation number range</b>.
+<p>
+Command option words, such as "export" in the above list command-line,
+always come immediately after the command name and before anything else on the command-line.
+These words direct the command to do a different, but related, task.
+<p>
+If Mathomatic becomes unresponsive (a rare occurrence),
+pressing Control-C once will usually safely abort the current operation
+and return you to the main prompt.
+If not, pressing Control-C three times in a row will exit Mathomatic,
+with a warning displayed the second time.
+
+<br>
+<br>
+<hr>
+<a name="selecting"></a>
+<h2>Selecting Expressions</h2>
+<p>
+Syntax: <b>#["+" or "&minus;"]equation-number [new-expression]</b>
+<p>
+To change the current equation at the main prompt and display it or replace it,
+type a pound sign (<b>#</b>) followed by the equation space number
+you wish to select, possibly followed by a new expression to replace it with.
+The <b>equation number</b> may be preceded by plus (<b>+</b>) or minus (<b>&minus;</b>),
+to select an equation relative to the current equation,
+instead of an absolute equation number.
+This syntax also works when prompted for an expression,
+the RHS or the expression at that equation number is substituted
+every place <b>#equation-number</b> is entered.
+<p>
+Autoselect feature: Selecting an equation space to make it the
+current equation is now conveniently done by typing only
+the <b>equation number</b> at the main prompt.
+This is called the "<a href="#set">set</a> autoselect" option.
+
+<br>
+<br>
+<hr>
+<a name="solving"></a>
+<h2>Solving Equations</h2>
+<p>
+Syntax: <b>variable or "0"</b>
+<p>
+Mathomatic can solve symbolic equations for any <b>variable</b> or for <b>zero</b>.
+Solving is accomplished internally by applying identical
+mathematical operations to both sides of the equation and simplifying,
+or by plugging the general coefficients of the solve variable into the quadratic formula.
+The Mathomatic solve algorithm is the best possible for general algebra,
+however the result is not checked by plugging the solutions into the original equation
+unless the "<a href="#solve">solve</a> verify" command is used for solving.
+To require confirmed correctness of the solutions in this way, use the "solve verifiable"
+command.
+<p>
+To automatically solve the current equation for a variable,
+type the <b>variable</b> name at the main prompt.
+Mathomatic will proceed to manipulate the current equation
+until all of the solutions for the specified <b>variable</b> are determined.
+If successful, the current equation is replaced with the solutions and then displayed.
+<p>
+Automatic cubic (third degree),
+quintic (fifth degree), and higher degree polynomial equation solving is not supported.
+Some cubic and quartic polynomial equations can be manually solved with the general equations in files
+"<i>tests/cubic.in</i>" and "<i>tests/quartic.in</i>".
+Quartic (fourth degree) polynomial equations
+can be automatically solved if they are biquadratic; that is,
+containing only degree four, degree two, and degree zero terms of the solve variable.
+Biquadratic polynomial equations of any degree can be generally solved by Mathomatic
+because they can be plugged into the quadratic formula.
+<p>
+Note that running the <a href="#simplify">simplify command</a> is a good idea after solving.
+The solve routine only <a href="#unfactor">unfactors</a> the equation as needed to solve it
+and the result is not completely simplified.
+<p>
+To solve for zero, type in "0" at the main prompt.
+Zero solving is a special solve that will always be successful
+and will transform most divide operators into
+mathematically equivalent multiplications and subtractions,
+so that the result will more likely be a valid polynomial equation:
+
+<pre class="sample">
+1&mdash;&gt; a=b+1/b ; This is actually a quadratic equation.
+
+            1
+#1: a = b + -
+            b
+
+1&mdash;&gt; 0 ; Solve for the constant zero.
+
+#1: 0 = (b*(b - a)) + 1
+
+1&mdash;&gt; unfactor ; Expand, showing this is a quadratic polynomial equation in "b".
+
+#1: 0 = (b^2) - (b*a) + 1
+
+1&mdash;&gt; b ; Solve for variable "b".
+Equation was quadratic.
+
+                       1
+        (((((a^2) - 4)^-)*sign1) + a)
+                       2
+#1: b = -----------------------------
+                      2
+
+1&mdash;&gt; a ; Solve back for variable "a", to check the answer.
+Raising both sides to the power of 2 and unfactoring...
+
+        ((b^2) + 1)
+#1: a = -----------
+             b
+
+1&mdash;&gt; simplify
+
+            1
+#1: a = b + -
+            b
+
+1&mdash;&gt;
+</pre>
+
+<p>
+You can prefix the solve <b>variable</b> name with "=" to solve and swap equation sides,
+putting the solve variable on the Right-Hand Side.
+Typing "=" by itself will only swap sides of the current equation and display.
+<p>
+If the current expression is a non-equation, then prefixing or suffixing an expression with "="
+will add that expression as the other equation side, conveniently making it an equation you can solve:
+
+<pre class="sample">
+1&minus;&gt; x^2+x ; Entering a simple quadratic polynomial non-equation.
+
+#1: x^2 + x
+
+1&minus;&gt; 0= ; Setting it equal to zero as an afterthought.
+Combining to make an equation out of the current non-equation.
+
+#1: 0 = x^2 + x
+
+1&minus;&gt; =0 ; Current equation is an equation now, so zero solve, flipping sides.
+Solve successful:
+
+#1: x&middot;(x + 1) = 0
+
+1&minus;&gt; 0= ; Solve for 0 again, flipping equation sides.  Don't need "=" with autosolve.
+Solve successful:
+
+#1: 0 = x&middot;(x + 1)
+
+1&minus;&gt; unfactor ; Expand to show nothing has changed.
+
+#1: 0 = x^2 + x
+
+1&minus;&gt; = ; Demonstrating "=" by itself.
+Swapping both sides of the current equation...
+
+#1: x^2 + x = 0
+
+1&minus;&gt; x ; Solve for variable x.
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+        (sign &minus; 1)
+#1: x = &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;
+            2
+
+1&minus;&gt; calculate
+There are 2 solutions.
+
+Solution number 1 with sign = 1:
+ x = 0
+
+Solution number 2 with sign = -1:
+ x = -1
+1&minus;&gt;
+</pre>
+
+<p>
+A manual solve operation can be done too, for educational purposes.
+To apply an expression to both sides of an equation, just type the operator,
+followed by "=", then the expression to apply.  For example:
+
+<pre class="sample">
+1&minus;&gt; a=b/c ; We want to solve this simple equation manually for "c":
+
+        b
+#1: a = &ndash;
+        c
+
+1&minus;&gt; *=c ; Multiply both equation sides by "c".
+
+#1: a&middot;c = b
+
+1&minus;&gt; /=a ; Divide both sides by "a", now manually solved for "c":
+
+        b
+#1: c = &ndash;
+        a
+
+1&minus;&gt; 
+</pre>
+
+<p>
+The above syntax works for non-equations, too.
+
+<p>
+To see all of the steps performed during an automated solve operation,
+type "<a href="#set">set</a> debug 1"
+(or "set debug 2" for more details) before solving:
+
+<pre class="sample">
+1&minus;&gt; x=(a+1)*(b+2)
+
+#1: x = (a + 1)&middot;(b + 2)
+
+1&minus;&gt; set debug 1
+Success.
+1&minus;&gt; b ; Solve for variable "b".
+level 1: x = (a + 1)*(b + 2)
+Subtracting "(a + 1)*(b + 2)" from both sides of the equation:
+level 1: x - ((a + 1)*(b + 2)) = 0
+Subtracting "x" from both sides of the equation:
+level 1: -1*(a + 1)*(b + 2) = -1*x
+Dividing both sides of the equation by "-1":
+level 1: (a + 1)*(b + 2) = x
+Dividing both sides of the equation by "a + 1":
+level 1: b + 2 = x/(a + 1)
+Subtracting "2" from both sides of the equation:
+level 1: b = (x/(a + 1)) - 2
+Solve completed:
+level 1: b = (x/(a + 1)) - 2
+Solve successful:
+
+           x
+#1: b = &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash; &minus; 2
+        (a + 1)
+
+1&minus;&gt;
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="approximate"></a>
+<h2>Approximate command</h2>
+<p>
+Syntax: <b>approximate [equation-number-ranges]</b>
+<p>
+This command approximates all real and complex number constants in the current or specified equation spaces.
+It substitutes the special universal constants <b>pi</b> and <b>e</b>
+with their respective double precision floating point values,
+and approximates all real and imaginary constants, roots, and surds
+to be of double precision size.
+This allows them to combine with other double precision floating point constants
+through standard or complex number arithmetic
+and may help with simplification and comparisons.
+<p>
+The result may contain fractions,
+unless "<a href="#set">set</a> no fractions" was entered previously.
+<p>
+"repeat approximate" approximates and simplifies even more, as much as the calculate command does.
+
+<br>
+<br>
+<hr>
+<a name="calculate"></a>
+<h2>Calculate command</h2>
+<p>
+Syntax: <b>calculate ["factor"] [equation-number-range] [feedback-variable number-of-iterations]</b>
+<p>
+This is the formula calculator command that
+prompts for the value of each normal variable in the
+RHS of the current or specified equations or in the current or specified expressions,
+temporarily substituting any entered values,
+when not in test or demo mode.
+Test and demo modes allow for no user intervention.
+This calculate command approximates, simplifies, and substitutes all "sign" variables
+with all possible combinations of values (+1 and -1),
+approximating/simplifying again and displaying each solution as it does so.
+If all variables are supplied with constant values, then each solution will be a constant,
+otherwise the result will contain the variables you didn't enter values for.
+Nothing is modified by this command.
+<p>
+This command is used to temporarily plug in values
+and approximate/simplify expressions and expand "sign" variables.
+When an expression with only numbers is entered at the main prompt,
+this calculate command is automatically invoked on it (autocalc),
+displaying the calculated result.
+This occurs only when "<a href="#set">set</a> autocalc" is on,
+which it is by default.
+<p>
+If there are any simple numerical fractions in the result,
+those are displayed alongside any short result.
+<p>
+To only simplify and expand "sign" variables in stored expressions without approximating,
+use the "<a href="#simplify">simplify</a> sign" command instead.
+<p>
+If a <b>feedback variable</b> and <b>number of iterations</b> are specified on the
+calculate command-line,
+you will be prompted for the initial value of the feedback variable,
+and the calculation will be iterated, with the simplified result
+repeatedly plugged back into the feedback variable.
+This will be done until convergence (the output equals the input)
+or when the specified number of iterations have been performed (if non-zero),
+whichever comes first.
+To see all of the intermediate values,
+type "<a href="#set">set</a> debug 1" before this.
+<p>
+"calculate <b>factor</b>" factorizes all integers and variables before display.
+<p>
+Examples of using the calculate command:
+
+<pre class="sample">
+1&mdash;&gt; y=x^2+x
+
+#1: y = (x^2) + x
+
+1&mdash;&gt; x ; solve for x
+Equation is a degree 2 polynomial in x.
+Equation was quadratic.
+
+                              1
+        -1&middot;(1 + (((1 + (4&middot;y))^&mdash;)&middot;sign))
+                              2
+#1: x = &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+                       2
+
+1&mdash;&gt; calculate
+Enter y: 0
+There are 2 solutions.
+
+Solution number 1 with sign = 1:
+ x = -1
+
+Solution number 2 with sign = -1:
+ x = 0
+
+1&mdash;&gt;
+</pre>
+
+<p>
+An example of iteration:
+
+<pre class="sample">
+1&mdash;&gt; x_new=(x_old+(y/x_old))/2 ; iterative formula for calculating the square root of y
+
+                       y
+            (x_old + -----)
+                     x_old
+#2: x_new = ---------------
+                   2
+
+2&mdash;&gt; calculate x_old 1000 ; iterate up to 1000 times to calculate the square root of 100
+Enter y: 100
+Enter initial x_old: 1
+Convergence reached after 9 iterations.
+
+ x_new = 10
+
+2&mdash;&gt;
+</pre>
+
+<p>
+Note that the Mathomatic Symbolic Math Library does not support use of the calculate command at this time.
+
+<br>
+<br>
+<hr>
+<a name="clear"></a>
+<h2>Clear command</h2>
+<p>
+Syntax: <b>clear [equation-number-ranges]</b>
+<p>
+This command clears the specified equation spaces
+so that they are empty and can be reused.
+They are deleted from RAM only.
+<p>
+"clear all" quickly clears all equation spaces and restarts Mathomatic,
+resetting internal memory and deleting all expressions stored in RAM,
+without losing your settings.
+
+<br>
+<br>
+<hr>
+<a name="code"></a>
+<h2>Code command</h2>
+<p>
+Syntax: <b>code ["c" or "java" or "python" or "integer"] [equation-number-ranges]</b>
+<p>
+This command outputs the current or specified equations as floating point or integer
+assignment statements in C, Java, or Python programming language code.
+The default is C double precision floating point code.
+The output from this command should compile correctly
+and emulate the equation from Mathomatic, if no warnings are given.
+<p>
+With "code integer", integer arithmetic is assumed,
+otherwise double precision floating point arithmetic is assumed.
+"code integer" is more generic and should work with any language.
+<p>
+To represent factorials, the user supplied function <code>factorial()</code> is called,
+since there is no equivalent function or operator in these languages.
+<code>factorial()</code> functions for several languages are supplied in the
+directory <i>examples</i> in the Mathomatic source distribution.
+<p>
+For the most efficient code, use the <a href="#simplify">simplify</a>
+and <a href="#optimize">optimize</a> commands on your equations
+before running this code command.
+<p>
+The C and Java languages require that all variables be defined before use.
+The <a href="#variables">variables command</a> is provided for this.
+The output of the variables command should be put before the output of
+the code command when compiling.
+
+<br>
+<br>
+<hr>
+<a name="compare"></a>
+<h2>Compare command</h2>
+<p>
+Syntax: <b>compare ["symbolic"] ["approximate"] equation-number ["with" equation-number]</b>
+<p>
+This command compares two equation spaces to see if they are mathematically the same (equal).
+If only one <b>equation number</b> is supplied, the comparison is between
+the current equation and the specified equation.
+The comparison will be faster and more accurate if
+both equations are previously solved for the same variable.
+<p>
+The <a href="#simplify">simplify command</a> is automatically used on both expressions if needed.
+If this compare command says the equations or expressions are identical,
+then they are definitely identical.
+If this command says the equations or expressions differ,
+then they might be identical if
+they are too hard for Mathomatic to simplify completely.
+<p>
+The "symbolic" option uses the "<a href="#simplify">simplify</a> symbolic" option when simplifying.
+This option sometimes simplifies more, but is not 100% mathematically correct.
+<p>
+The "approximate" option runs the approximate command on both expressions or equations.
+This makes the compare command more likely to succeed.
+<p>
+"repeat compare" simplifies fully instead of just once,
+making the compare more likely to succeed too.
+<p>
+Another way of
+comparing expressions by simply setting them equal is a convenient way of checking validity too, with Mathomatic.
+Just solve for any variable to see if it is an identity,
+or typing "<a href="#solve">solve</a> verify 0" works too.
+If it is an identity, it will say so,
+meaning both equations sides are mathematically equivalent and identical.
+
+<br>
+<br>
+<hr>
+<a name="copy"></a>
+<h2>Copy command</h2>
+<p>
+Syntax: <b>copy ["select"] [equation-number-ranges]</b>
+<p>
+This command simply duplicates the current or specified equation spaces.
+The new, duplicated expressions are stored in the next available equation spaces
+and displayed, along with their new equation numbers.
+<p>
+If the "select" option is given,
+make the current equation the first expression created by this copy command,
+otherwise the current equation remains unchanged after this copy command.
+
+<br>
+<br>
+<hr>
+<a name="derivative"></a>
+<h2>Derivative command</h2>
+<p>
+Syntax: <b>derivative ["nosimplify"] variable or "all" [order]</b>
+<br>
+Alternate command name: <b>differentiate</b>
+<p>
+This command computes the exact symbolic derivative of a function
+with respect to the specified <b>variable</b>,
+using the current expression or RHS of the current equation as the function.
+It does this by recursively applying the proper rule of differentiation for each operator encountered.
+The result is "quick" simplified with the "<a href="#simplify">simplify</a> quick" command,
+unless the "nosimplify" option is specified.
+If successful, the derivative is placed in the next available equation space, displayed,
+and becomes the current equation.
+The original equation is not modified.
+<p>
+Specifying "all" computes the derivative of the current expression with respect to all normal
+variables.  It is equivalent to adding together the derivatives with
+respect to each normal variable.
+<p>
+Specifying the <b>order</b> allows you to repeatedly differentiate and simplify.
+The default is to differentiate once (<b>order</b>=1).
+<p>
+If differentiation fails, it is probably because symbolic logarithms are required.
+Symbolic logarithms are not implemented in Mathomatic, yet.
+Also, the factorial, modulus, and integral divide operators
+cannot be differentiated if they contain the specified <b>variable</b>.
+Because this command handles almost everything,
+a numerical differentiation command is not needed.
+<p>
+Some examples:
+
+<pre class="sample">
+1&mdash;&gt; x^3+x^2+x+1
+
+#1: (x^3) + (x^2) + x + 1
+
+1&mdash;&gt; derivative ; no need to specify the variable if there is only one
+Differentiating with respect to (x) and simplifying...
+
+#2: (3*(x^2)) + (2*x) + 1
+
+2&mdash;&gt; a*x^n
+
+#3: a*(x^n) ; show a general rule of differentiation
+
+3&mdash;&gt; derivative x
+Differentiating with respect to (x) and simplifying...
+
+#4: a*n*(x^(n - 1))
+
+4&mdash;&gt; integrate x ; undo the differentiation
+
+#5: a*(x^n)
+
+5&mdash;&gt;
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="display"></a>
+<h2>Display command</h2>
+<p>
+Syntax: <b>display ["factor"] ["simple" or "mixed"] [equation-number-ranges]</b>
+<p>
+This command displays stored expressions in nice looking
+multi-line 2D (two-dimensional) fraction format,
+where division is displayed as a numerator over a fractional line
+(made up of dashes) over a denominator.
+If the width (number of columns) required for this 2D display exceeds the screen width,
+the expression is displayed instead in single-line (one-dimensional) format
+by the <a href="#list">list command</a>.
+The screen width is set automatically on startup,
+or by the "<a href="#set">set</a> columns" option.
+<p>
+Non-integer constants are converted to reduced fractions,
+if they are exactly equal to a simple fraction and it would improve readability.
+<p>
+The "factor" option causes all integers, less than or equal to 15 decimal digits long,
+to be factorized into their prime factors before display,
+including the numerator and denominator of fractions.
+To always factorize integers like this before display,
+use the "<a href="#set">set</a> factor_integers" option.
+<p>
+The "mixed" option displays
+<a target="_blank" rel="nofollow" href="http://en.wikipedia.org/wiki/Mixed_fraction">mixed fractions</a> when possible.
+A mixed fraction is an expression like <b>(2+(1/4))</b>, rather than the simple fraction <b>9/4</b>.
+To always display mixed fractions,
+use the "<a href="#set">set</a> fractions mixed" option.
+Displaying "simple" fractions when not the default is possible now, too.
+
+<br>
+<br>
+<hr>
+<a name="divide"></a>
+<h2>Divide command</h2>
+<p>
+Syntax: <b>divide [base-variable] [dividend divisor]</b>
+<p>
+This command is for conveniently doing and experimenting with polynomial
+and numerical division and Greatest Common Divisors (GCDs).
+It simply prompts for two expressions: the <b>dividend</b> and the <b>divisor</b>
+(if not specified on the command-line),
+and divides them, displaying the result and the GCD.
+If the <b>base variable</b> name and/or two expressions are specified on the command-line,
+they must be separated by space or comma characters.
+<p>
+Mathomatic has a powerful, general, multivariate polynomial division routine,
+and univariate polynomial GCD routines,
+used by the <a href="#simplify">simplify command</a>,
+which this divide command calls without any other processing if two polynomials are entered.
+<p>
+This command prompts for
+the <b>dividend</b> (the main polynomial) and then the <b>divisor</b> (what you want to
+divide the main polynomial by).
+The polynomial quotient, remainder, and GCD are displayed.
+The power of the highest power term in the dividend must be greater than or equal to
+the power of the highest power term in the divisor, otherwise the polynomial division will fail
+(as it should).
+In other words, the degree of the divisor polynomial
+must be less than or equal to the degree of the dividend polynomial.
+<p>
+A <b>base variable</b> name may be specified first on the command-line as the base variable of the two polynomials,
+but is usually not necessary because a good base variable is automatically selected that works for the division.
+<p>
+If two numbers are entered instead of polynomials,
+the result of the numerical division, the GCD,
+and the Least Common Multiple (LCM) are displayed.
+The LCM of two numbers is the smallest positive number that can be evenly divided by both numbers
+separately, without remainder.
+The LCM is the same as the Lowest Common Denominator (LCD) of two fractions and
+is the two numbers multiplied together, divided by the GCD.
+<p>
+The Greatest Common Divisor of <b>a</b> and <b>b</b> is defined as the greatest
+positive number or polynomial that evenly divides both <b>a</b> and <b>b</b> without remainder.
+In Mathomatic, the GCD is not necessarily integer, unless both <b>a</b> and <b>b</b> are integers.
+The Euclidean GCD algorithm is used by Mathomatic to compute the GCD for numbers and polynomials.
+<p>
+The GCD is the best way to reduce any fraction to its simplest form.
+Just divide the numerator and denominator by their GCD,
+and replace each of them with their quotients (there will be no remainder);
+the result is a completely reduced,
+<a target="_blank" rel="nofollow" href="http://en.wikipedia.org/wiki/Equivalent_fraction">equivalent fraction</a>.
+The polynomial GCD is used when reducing algebraic fractions, factoring polynomials, and for simplifying.
+<p>
+The Euclidean GCD algorithm of successive divides is the best way to compute the
+GCD for numbers and polynomials.
+Multivariate polynomial GCD computation usually
+requires recursion of the GCD algorithm or other methods.
+Currently the polynomial GCD routine in Mathomatic
+is not recursive, making it univariate and simpler.
+Because it is univariate, Mathomatic might be unable
+to find the GCD of polynomials with many variables.
+Finding the GCD of large polynomials will probably
+not succeed anyways with floating point arithmetic,
+because of accumulated round-off error.
+<p>
+The polynomial division algorithm in Mathomatic
+is generalized and able to handle any number of variables (multivariate),
+and division is always done with one selected base variable to be proper polynomial division.
+Being generalized, the coefficients of the polynomials
+may be any mathematical expression not containing the base variable.
+<p>
+An example of polynomial division:
+
+<pre class="sample">
+1&mdash;&gt; divide
+Enter dividend: (x^4) - (7*(x^3)) + (18*(x^2)) - (22*x) + 12
+Enter divisor: (x^2) - (2*x) + 2
+
+Polynomial division successful using variable (x).
+The quotient is:
+6 + (x^2) - (5*x)
+
+The remainder is:
+0
+
+Polynomial Greatest Common Divisor (iterations = 1):
+(x^2) - (2*x) + 2
+1&mdash;&gt;
+</pre>
+
+<p>
+The number of iterations displayed is the number of polynomial divides
+done to compute the GCD with the Euclidean algorithm.
+<p>
+"repeat divide" repeatedly prompts for all input, performing its function again and again,
+until empty lines are given.
+
+<br>
+<br>
+<hr>
+<a name="echo"></a>
+<h2>Echo command</h2>
+<p>
+Syntax: <b>echo [text]</b>
+<p>
+By default, this command outputs a line of <b>text</b>, followed by a newline.
+
+<pre class="indent">
+repeat echo -
+</pre>
+
+<p>
+outputs a line of dashes.
+
+<pre class="indent">
+repeat echo
+</pre>
+
+<p>
+clears the screen.
+
+<br>
+<br>
+<hr>
+<a name="edit"></a>
+<h2>Edit command</h2>
+<p>
+Syntax: <b>edit [file-name]</b>
+<p>
+This command invokes the ASCII text editor specified by the EDITOR environment variable.
+By default, all equation spaces are edited.
+Access to shell (<i>/bin/sh</i>) is required for this command to work.
+<p>
+Type "edit" at the Mathomatic prompt to edit all expressions and equations
+you have entered for the current session.
+When you are done editing Mathomatic expressions and commands,
+save and exit the editor to have them automatically read in by Mathomatic.
+If Mathomatic gets an error reading in its new input,
+observe where the error is and continue, to
+automatically re-enter the editor.
+<p>
+To edit an existing file and have it read in, specify the <b>file name</b>
+on the edit command-line.
+
+<br>
+<br>
+<hr>
+<a name="eliminate"></a>
+<h2>Eliminate command</h2>
+<p>
+Syntax: <b>eliminate variables or "all" ["using" equation-number]</b>
+<p>
+This command is used to combine simultaneous equations,
+by automatically substituting variables in the current equation.
+It will scan the command-line from left to right,
+replacing all occurrences of the specified <b>variables</b>
+in the current equation with the RHS of solved equations.
+The equation to solve can be specified with the "using" argument.
+If "using" is not specified, Mathomatic will search backwards,
+starting at the current equation minus one,
+for the first equation that contains the specified variable.
+The equation to solve is solved for the specified variable,
+then the RHS is inserted at every occurrence of the
+specified variable in the current equation.
+That effectively eliminates the specified variable
+from the current equation, resulting in one less unknown.
+<p>
+There is an advantage to eliminating multiple variables in
+one command: each equation will be used only once.
+If the same equation is solved and substituted into the current
+equation more than once, it will cancel out.
+<p>
+"eliminate all" is shorthand for specifying all normal variables on the command-line.
+"repeat eliminate all" will eliminate all variables repeatedly until nothing more can be substituted,
+using each equation only once.
+<p>
+Here is a simple example of combining two equations:
+
+<pre class="sample">
+1&mdash;&gt; ; This arrives at the distance between two points in 3D space from the
+1&mdash;&gt; ; Pythagorean theorem (distance between two points on a 2D plane).
+1&mdash;&gt; ; The coordinate of point 1, 2D: (x1, y1), 3D: (x1, y1, z1).
+1&mdash;&gt; ; The coordinate of point 2, 2D: (x2, y2), 3D: (x2, y2, z2).
+1&mdash;&gt;
+1&mdash;&gt; L^2=(x1-x2)^2+(y1-y2)^2 ; Distance formula for a 2D Cartesian plane.
+
+#1: L^2 = ((x1 &minus; x2)^2) + ((y1 &minus; y2)^2)
+
+1&mdash;&gt; distance^2=L^2+(z1-z2)^2 ; Add another leg.
+
+#2: distance^2 = (L^2) + ((z1 &minus; z2)^2)
+
+2&mdash;&gt; eliminate L ; Combine the two equations.
+Solving equation #1 for (L) and substituting into the current equation...
+
+#2: distance^2 = ((x1 &minus; x2)^2) + ((y1 &minus; y2)^2) + ((z1 &minus; z2)^2)
+
+2&mdash;&gt; distance ; Solve to get the distance formula for 3D space.
+
+                                                                1
+#2: distance = ((((x1 &minus; x2)^2) + ((y1 &minus; y2)^2) + ((z1 &minus; z2)^2))^&mdash;)&middot;sign2
+                                                                2
+
+Finished reading file "pyth3d.in".
+2&mdash;&gt;
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="extrema"></a>
+<h2>Extrema command</h2>
+<p>
+Syntax: <b>extrema [variable] [order]</b>
+<p>
+This command computes possible extrema (the minimums and maximums)
+of the current expression by default,
+or possible inflection points when <b>order</b> is 2.
+The result is placed in the next available equation space, displayed,
+and becomes the current equation.
+The original expression is not modified.
+<p>
+By default (<b>order</b>=1) this command computes stationary points.
+The stationary points of function <b>f(x)</b> are the values of <b>x</b>
+when the slope (<a href="#derivative">derivative</a>) equals zero.
+Stationary points are likely the local minimums and maximums of the function,
+unless the point is determined to be an inflection point.
+<p>
+For <b>y=f(x)</b>, where <b>f(x)</b> is the RHS and <b>x</b> is the specified <b>variable</b>,
+this command gives the values of <b>x</b> that make the minimums and maximums of <b>y</b>.
+This is computed by taking the derivative of <b>f(x)</b>, setting it equal to zero,
+and then solving for <b>x</b>.
+<p>
+The number of derivatives to take before solving
+can be specified by the <b>order</b> argument (default is 1).
+When <b>order</b> is 2, possible points of inflection are determined.
+A point of inflection is a point on a curve at which the second derivative changes sign
+from positive to negative or negative to positive.
+
+<pre class="sample">
+1&mdash;&gt; y=x^2
+
+#1: y = x^2
+
+1&mdash;&gt; extrema x
+
+#2: x = 0
+
+2&mdash;&gt;
+</pre>
+
+<p>
+This function is a parabola, with the minimum at <b>x=0</b>.
+
+<br>
+<br>
+<hr>
+<a name="factor"></a>
+<h2>Factor command</h2>
+<p>
+Syntax: <b>factor ["number" [integers]] or ["power"] [equation-number-range] [variables]</b>
+<br>
+Alternate command name: <b>collect</b>
+<p>
+This command will factorize manually entered <b>integers</b>,
+displaying all prime factors,
+when "<b>numbers</b>" is specified on the factor command-line.
+Otherwise this command will factor <b>variables</b>
+in expressions in the specified equation spaces,
+and factor out the GCD of rational constant coefficients,
+resulting in smaller integer coefficients.
+This is a very handy command for your algebraic manipulation toolbox.
+<p>
+This command does not factor polynomials.
+To factor polynomials with repeated or symbolic factors,
+use the <a href="#simplify">simplify</a>
+or <a href="#fraction">fraction</a> commands.
+To factorize integers in equation spaces and display,
+use the "<a href="#display">display</a> factor" command
+or "<a href="#set">set</a> factor_integers" command
+to always do this.
+<p>
+"factor <b>number</b>" will prompt for integers to factorize,
+which may be up to 15 decimal digits.
+Preceding this command with "repeat" or using
+the plural "factor <b>numbers</b>" will repeatedly prompt for <b>integers</b> to factorize,
+until an empty line is given.
+Multiple <b>integers</b>, integer ranges (two integers separated with a dash "-"),
+or multiple expressions that evaluate to integers,
+can be specified on the same line
+and should be separated with spaces or commas.
+<p>
+Without the "number" option, this command will factor out
+repeated sub-expressions and repeated integer factors (the GCDs) in equation spaces.
+When factoring expressions, this command does some basic simplification and
+factors out any common (mathematically equal) sub-expressions it can,
+unless <b>variables</b> are specified on the command-line,
+in which case only common sub-expressions
+containing those variables are factored out.
+This collects together terms involving those variables.
+<p>
+For example, with the following expression:
+
+<pre class="indent">
+(b*c) + (b*d)
+</pre>
+
+<p>
+variable <b>b</b> factors out and the result of this command is:
+
+<pre class="indent">
+b*(c + d)
+</pre>
+
+<p>
+If no variables are specified on the command-line,
+this command factors even more:
+the bases of common (mathematically equal) bases raised to any power are factored out.
+This is called Horner factoring or Horner's rule.
+<p>
+For example:
+
+<pre class="sample">
+1&mdash;&gt; (2+3x)^2*(x+y)
+
+#1: ((2 + (3&middot;x))^2)&middot;(x + y)
+
+1&mdash;&gt; unfactor ; expand
+
+#1: (4&middot;x) + (12&middot;(x^2)) + (9&middot;(x^3)) + (4&middot;y) + (12&middot;x&middot;y) + (9&middot;(x^2)&middot;y)
+
+1&mdash;&gt; factor x ; collect terms containing x
+
+#1: (x&middot;(4 + (12&middot;y))) + ((x^2)&middot;(12 + (9&middot;y))) + (9&middot;(x^3)) + (4&middot;y)
+
+1&mdash;&gt; x^3+2x^2+3x+4 ; enter another expression
+
+#2: (x^3) + (2&middot;(x^2)) + (3&middot;x) + 4
+
+2&mdash;&gt; factor ; Horner factoring
+
+#2: (x&middot;((x&middot;(x + 2)) + 3)) + 4
+
+2&mdash;&gt; 
+</pre>
+
+<p>
+"factor <b>power</b>" does only power operator collecting;
+that is, <b>(a^n)*(a^m)*(b^n)*(b^m)</b>
+is transformed to <b>(a*b)^(n+m)</b>.
+With this option, <b>variables</b> cannot be specified.
+<p>
+To undo any kind of factoring in selected equation spaces,
+use the <a href="#unfactor">unfactor command</a>.
+
+<br>
+<br>
+<hr>
+<a name="for"></a>
+<h2>For command</h2>
+<p>
+Syntax: <b>for variable start end [step-size]</b>
+<br>
+Alternate syntax: <b>for variable "=" start "to" end ["step" step-size]</b>
+<p>
+This command is good for testing an expression with many sequential input values.
+It quickly evaluates (approximates/simplifies) and displays the current expression for each value of
+the index <b>variable</b>
+as the index <b>variable</b> goes from <b>start</b> to <b>end</b>
+in steps of <b>step-size</b> (default 1).
+Nothing is modified.
+<p>
+The syntax of this command is the same as the <a href="#sum">sum</a>
+and <a href="#product">product</a> commands.
+This command is not a programming construct, and only allows automatically plugging in
+sequential values of a <b>variable</b> into the current expression,
+approximating and simplifying, then displaying the results in single-line format.
+
+<br>
+<br>
+<hr>
+<a name="fraction"></a>
+<h2>Fraction command</h2>
+<p>
+Syntax: <b>fraction ["numerator"] ["denominator"] [equation-number-range]</b>
+<p>
+This command reduces and converts expressions with any algebraic fractions in them
+into a single simple algebraic fraction (usually the ratio of two polynomials),
+similar to what <a target="_blank" rel="nofollow" href="http://maxima.sourceforge.net">Maxima's</a>
+<code>rat()</code> and <code>ratsimp()</code> functions do.
+It does this by combining all terms
+added together with like and unlike denominators
+to a single simple fraction with a like denominator.
+Unlike denominators are combined by converting
+the terms to what they would be over like (common) denominators.
+Fractions are reduced by
+cancelling out the Greatest Common Divisor (GCD) of the numerator and denominator.
+<p>
+The result of this command is mathematically equivalent to the original expression,
+unless the "numerator" or "denominator" option is specified,
+in which case the result is the numerator or denominator of the original expression.
+If both the "numerator" and "denominator" options are specified at once,
+this command will return with failure if the result is not a fraction,
+otherwise the entire fraction is returned.
+<p>
+Note that algebraic fractions added together with like denominators are
+automatically combined by almost any Mathomatic command.
+Polynomial factoring is only done by the <a href="#simplify">simplify command</a>
+and this fraction command, to improve simplification.
+<p>
+Example:
+
+<pre class="sample">
+1&mdash;&gt; 1/x+1/y+1/z
+
+    1   1   1
+#1: &mdash; + &mdash; + &mdash;
+    x   y   z
+
+1&mdash;&gt; fraction
+
+    (((y + x)&middot;z) + (x&middot;y))
+#1: &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+           (x&middot;y&middot;z)
+
+1&mdash;&gt; unfactor
+
+    ((y&middot;z) + (x&middot;z) + (x&middot;y))
+#1: &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+            (x&middot;y&middot;z)
+
+1&mdash;&gt; unfactor fraction
+
+    1   1   1
+#1: &mdash; + &mdash; + &mdash;
+    x   y   z
+
+1&mdash;&gt;
+</pre>
+
+<p>
+"repeat fraction" repeatedly runs the fraction command until the result stabilizes
+to the smallest size simple algebraic fraction.
+<p>
+If more simplification is needed, try the "<a href="#simplify">simplify</a> fraction" command instead,
+though the result is not always a single simple fraction with the simplify command.
+
+<br>
+<br>
+<hr>
+<a name="help"></a>
+<h2>Help command</h2>
+<p>
+Syntax: <b>help [topics or command-names]</b>
+<br>
+Alternate command name: <b>?</b>
+<p>
+This command is provided as a quick reference while running Mathomatic.
+If the argument is a command name,
+a one line description and one line syntax (usage info) of that command are displayed,
+possibly followed by one more line of additional information about that command.
+Command names and topics may be abbreviated, for example "help r" will display all commands
+that start with the letter "r".
+<p>
+Entering this command by itself will display a list of available topics and commands.
+"help license" will display the copyright and license notice
+for the currently running version of Mathomatic.
+<p>
+To create a quick reference text file of all Mathomatic commands, type:
+
+<pre class="indent">
+help all &gt;quickref.txt
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="imaginary"></a>
+<h2>Imaginary command</h2>
+<p>
+Syntax: <b>imaginary [variable]</b>
+<p>
+This command copies the imaginary part of a <a href="manual.html#complex">complex number expression</a> to the
+next available equation space.
+First it fully expands the current equation space with imaginary number simplification.
+Then if the current expression or RHS of the current equation is not complex,
+the warning message "Expression is not a mix" will be displayed.
+A complex number expression contains both imaginary and real number parts.
+To copy only the real number part, see the <a href="#real">real command</a>.
+<p>
+The separation <b>variable</b> may be specified on the command-line,
+the default is the imaginary unit <b>i</b>.
+<b>i</b> is really a mathematical constant equal to the square root of -1,
+but it can often be specified where variables are required in Mathomatic.
+<p>
+If successful, the result may contain the imaginary unit <b>i</b>
+or the specified separation <b>variable</b>.
+
+<pre class="sample">
+1&mdash;&gt; (a+b*i)/(c+d*i)
+
+    (a + (b&middot;i))
+#1: &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;
+    (c + (d&middot;i))
+
+1&mdash;&gt; imaginary
+
+    i&middot;((b&middot;c) &minus; (a&middot;d))
+#2: &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;
+       (c^2 + d^2)
+
+2&mdash;&gt; 
+</pre>
+
+<p>
+To remove <b>i</b> from the result, type:
+<pre class="indent">
+replace i with 1
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="integrate"></a>
+<h2>Integrate command</h2>
+<p>
+Syntax: <b>integrate ["constant" or "definite"] variable [order [lower and upper-bounds]]</b>
+<br>
+Alternate command name: <b>integral</b>
+<p>
+This command computes the exact symbolic integral of a polynomial function
+with respect to the specified <b>variable</b>,
+using the current expression or RHS of the current equation as the function.
+If successful, the simplified integral is placed in the next available equation space,
+displayed, and becomes the current equation.
+<p>
+The default is to compute and display the <b>indefinite integral</b>,
+also known as the <b>antiderivative</b> or <b>primitive</b>.
+The antiderivative is the inverse transformation of the
+<a href="#derivative">derivative</a>.
+<p>
+"integrate constant" simply adds a sequentially named <b>constant of integration</b>
+("C_1", "C_2", etc.) to each integration result.
+The constants of integration here are actually variables that may be set to any constant.
+<p>
+"integrate definite" also integrates, but prompts you for the lower and upper
+bounds for <b>definite integration</b>.
+The bounds may also be specified on the end of the command-line.
+If <b>g(x)</b> is the indefinite integral (antiderivative) of <b>f(x)</b>,
+the definite integral is:
+
+<pre class="indent">
+g(upper_bound) &minus; g(lower_bound)
+</pre>
+
+<p>
+Specifying the <b>order</b> allows you to repeatedly integrate.
+The default is to integrate once (<b>order</b>=1).
+<p>
+This command is only capable of integrating polynomials.
+
+<pre class="sample">
+1&mdash;&gt; x^3+x^2+x+1
+
+#1: (x^3) + (x^2) + x + 1
+
+1&mdash;&gt; integrate x
+
+    (x^4)   (x^3)   (x^2)
+#2: ----- + ----- + ----- + x
+      4       3       2
+
+2&mdash;&gt; derivative x ; check the result
+Differentiating with respect to (x) and simplifying...
+
+#3: (x^3) + (x^2) + x + 1
+
+3&mdash;&gt; compare 1
+Comparing #1 with #3...
+Expressions are identical.
+3&mdash;&gt;
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="laplace"></a>
+<h2>Laplace command</h2>
+<p>
+Syntax: <b>laplace ["inverse"] variable</b>
+<p>
+This command computes the Laplace transform of a polynomial function of the specified <b>variable</b>,
+using the current expression or RHS of the current equation as the function.
+If successful, the transformed function is placed in the next available equation space,
+displayed, and becomes the current equation.
+<p>
+This command only works with polynomials.
+<p>
+A Laplace transform can be undone by applying the <b>inverse</b> Laplace transform.
+That is accomplished by specifying the "inverse" option to this command.
+
+<pre class="sample">
+1&mdash;&gt; y=1
+
+#1: y = 1
+
+1&mdash;&gt; laplace x ; compute the Laplace transform of 1
+
+        1
+#2: y = -
+        x
+
+2&mdash;&gt; a*x^n ; a general polynomial term
+
+#3: a*(x^n)
+
+3&mdash;&gt; laplace x
+
+      a*(n!)
+#4: -----------
+    (x^(n + 1))
+
+4&mdash;&gt; laplace inverse x
+
+#5: a*(x^n)
+
+5&mdash;&gt;
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="limit"></a>
+<h2>Limit command</h2>
+<p>
+Syntax: <b>limit variable expression</b>
+<p>
+This command takes the limit of the current expression as <b>variable</b>
+goes to the specified <b>expression</b>.
+The result is always an equation and
+placed in the next available equation space and displayed.
+<p>
+L'Hopital's rule for taking limits is not used by this command.
+Instead the limit is taken by simplifying, solving, and substituting.
+This command is experimental and does not know about negative infinity
+and occasionally gives a wrong answer when dealing with infinities.
+
+<pre class="sample">
+1&mdash;&gt; 2x/(x+1)
+
+      2&middot;x
+#1: &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+    (x + 1)
+
+1&mdash;&gt; limit x inf ; take the limit as x goes to infinity
+Solving...
+
+#2: limit = 2
+
+1&mdash;&gt;
+</pre>
+
+<p>
+This command is experimental in that it tests the effectiveness
+of solving the equation for the limit <b>variable</b> and simplifying,
+replacing the limit variable with the "goes to" value or <b>expression</b>,
+then solving back for the original solve variable and simplifying.
+
+<br>
+<br>
+<hr>
+<a name="list"></a>
+<h2>List command</h2>
+<p>
+Syntax: <b>list ["export" or "maxima" or "gnuplot" or "hex" or "primes"] [equation-number-ranges]</b>
+<p>
+This command displays stored expressions in single-line (one-dimensional) format.
+A single formatting option may be specified.
+With no option specified, expressions are displayed in decimal, Mathomatic format;
+The text result can then be entered or read back into Mathomatic.
+
+<h3>Formatting options:</h3>
+<blockquote>
+<p>
+"list <b>export</b>" outputs expressions in a generally exportable, single-line text format.
+You can cut-and-paste the expressions or redirect them to a file,
+so they can be read in with a different math program.
+<p>
+"list <b>maxima</b>" is for making expression output compatible 
+with the free computer algebra system <a target="_blank" rel="nofollow" href="http://maxima.sourceforge.net">Maxima</a>.
+<p>
+"list <b>gnuplot</b>" is for making expression output that is compatible
+with the free graphing utility <a target="_blank" rel="nofollow" href="http://gnuplot.sourceforge.net">gnuplot</a>.
+<p>
+"list <b>hex</b>" displays as normal (without these options), except constants are displayed as
+hexadecimal values in binary exponential notation, where no precision is lost by display rounding.
+Display rounding of constants happens only to the displayed value (not the stored value)
+and only if a floating point value is converted to decimal for display,
+so just displaying decimal constants does not ever change their value internally,
+unless they are read back in.
+Expressions that are displayed by this hex option have done no display rounding, and
+can be read back into Mathomatic exactly as they were.
+But the hex format used here is very ugly and not the hexadecimal you would expect, due to the binary exponent.
+The standard C math libraries provide no better hexadecimal or other base output.
+They were meant for decimal display only.
+<p>
+"list <b>primes</b>" runs the "matho-primes" utility, if available and security is off.
+The matho-primes command-line is specified,
+instead of equation-number-ranges.
+"list primes all" will continually output consecutive primes.
+The matho-primes output can be redirected.
+</blockquote>
+
+<p>
+This list command simply outputs expressions and equations as stored internally by Mathomatic,
+translating them to the requested output format.
+There is no simplification and nothing more is done.
+"list primes" performs a different function and is just short-hand for typing "matho-primes"
+at the shell prompt.
+<p>
+To pretty-print and display equation spaces in better looking multi-line fraction format,
+use the <a href="#display">display command</a>.
+
+<br>
+<br>
+<hr>
+<a name="nintegrate"></a>
+<h2>NIntegrate command</h2>
+<p>
+Syntax: <b>nintegrate ["trapezoid"] variable [partitions [lower and upper-bounds]]</b>
+<p>
+This is a numerical integrate command that will work with almost any expression and will
+not generally compute the exact symbolic integral except for the simplest of expressions.
+This command will prompt you for the <b>lower
+and upper bounds</b> to perform numerical definite integration
+on the current expression or the RHS of the current equation,
+with respect to the specified <b>variable</b>.
+These bounds may be any expression not containing infinity, and may
+be entered at the end of the command-line following <b>partitions</b>,
+separated by spaces or commas.
+<p>
+This command uses Simpson's rule to do the approximation.
+Accuracy varies widely, depending on the expression integrated,
+the interval between the <b>lower and upper bounds</b>,
+and the number of <b>partitions</b>.
+The default is to split the interval into <b>1000 partitions</b>.
+Setting the number of partitions greater than 10000 seldom is helpful,
+because of accumulated floating point round-off error.
+<p>
+If "trapezoid" is specified on the command-line,
+the trapezoid method is used instead, which is usually less
+accurate than Simpson's rule.
+The way the trapezoid method works is: the interval from the lower bound to the
+upper bound is divided into 1000 <b>partitions</b> to produce 1000 trapezoids,
+then the area of each trapezoid is added together to produce the result.
+This means that the accuracy usually decreases as the interval increases.
+Simpson's rule uses the same method,
+with quadratic curves bounding the top of each trapezoid,
+instead of straight lines, so that curves are approximated better.
+<p>
+If the integration fails, chances of success are greater if
+you reduce the number of variables involved in the integration.
+<p>
+If there are any singularities, such as division by zero, between the bounds of integration,
+the computed result will be wrong.
+<p>
+Here is an example of successful numerical integration:
+
+<pre class="sample">
+1&mdash;&gt; y=x^0.5/(1-x^3)
+
+             1
+          (x^&ndash;)
+             2
+#1: y = &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;
+        (1 &minus; x^3)
+
+1&mdash;&gt; nintegrate x
+Warning: Singularity detected, result of numerical integration might be wrong.
+Enter lower bound: 2
+Enter upper bound: 4
+Approximating the definite integral of the RHS
+using Simpson's rule (1000 partitions)...
+Numerical integration successful:
+
+#2: y = -0.16256117185712
+
+1&mdash;&gt; 
+</pre>
+
+<p>
+This example avoids the singularity at <b>x=1</b> and is accurate to 12 digits.
+
+<br>
+<br>
+<hr>
+<a name="optimize"></a>
+<h2>Optimize command</h2>
+<p>
+Syntax: <b>optimize [equation-number-range]</b>
+<p>
+This command splits the specified equations into smaller, more efficient equations
+with no repeated expressions.
+Each repeated sub-expression becomes
+a new equation solved for a temporary variable (named "temp").
+<p>
+Note that the resulting assignment statements may be in the wrong order for inclusion in
+a computer program with the <a href="#code">code command</a>;
+the order and generated code should be visually checked before using.
+The source code statements may need to be manually put in the right order to work properly.
+
+<pre class="sample">
+1&mdash;&gt; y = (a+b+c+d)^(a+b+c+d)
+
+#1: y = (a + b + c + d)^(a + b + c + d)
+
+1&mdash;&gt; optimize
+
+#2: temp = a + b + c + d
+
+
+#1: y = temp^temp
+
+1&mdash;&gt; eliminate temp ; undo the optimization
+Solving equation #2 for (temp)...
+
+#1: y = (a + b + c + d)^(a + b + c + d)
+
+1&mdash;&gt;
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="pause"></a>
+<h2>Pause command</h2>
+<p>
+Syntax: <b>pause [text]</b>
+<p>
+This command waits for the user to press the Enter key.
+It is useful in text files (scripts) that are read in to Mathomatic.
+Optionally, a one line text message may be displayed.
+<p>
+Typing "quit" or "exit" before pressing the Enter key will fail this command
+and abort the current script.
+<p>
+This command is ignored during test and demo modes.
+
+<br>
+<br>
+<hr>
+<a name="plot"></a>
+<h2>Plot command</h2>
+<p>
+Syntax: <b>plot [equation-number-ranges] [xyz-ranges] [gnuplot-expressions,]</b>
+<p>
+This command automatically plots multiple solved mathematical equations or expressions in 2D or 3D with
+the free graphing utility <a target="_blank" rel="nofollow" href="http://gnuplot.sourceforge.net">gnuplot</a>.
+The specified equation spaces are plotted at once,
+along with any comma separated <b>gnuplot expressions</b> on the command-line.
+Each expression should contain the variable <b>x</b> to be successfully plotted.
+If it also contains the variable <b>y</b>, a 3D surface plot is performed
+in Cartesian space, with the <b>x</b>, <b>y</b>, and <b>z</b> axes projected
+on your 2D display.  <b>z</b> (in a 3D plot) or <b>y</b> (in a 2D plot) are
+the variables the plot expressions are supposedly solved for, though they need not be included.
+<p>
+A gnuplot <b>X range</b>, <b>Y range</b>, and even a <b>Z range</b> may be specified on the plot command-line.
+For example, "plot [-128:128]" will make the <b>X</b> axis go from -128 to 128,
+and "plot [-128:128] [-1:1]" will also make the <b>Y</b> axis go from -1 to 1.
+A pair of straight brackets <b>[]</b> must surround each range.
+<p>
+Plotting of an equation space with the imaginary number <b>i</b> in it is allowed,
+however plots are always plotted on real Cartesian space, showing only real number points.
+If there are no real number points, the plot will fail.
+The imaginary unit, <b>i</b>, is not understood by gnuplot.
+<p>
+Gnuplot must be installed and accessible from shell by typing "gnuplot"
+for this command to work.
+All functions and operators of gnuplot can be used in the <b>gnuplot expressions</b>.
+If gnuplot fails, the gnuplot command-line is displayed to show what failed.
+To always show the gnuplot command-line, enter "<a href="#set">set</a> debug 1" beforehand,
+to set debug level 1 for the current session.
+<p>
+Plots may be customized.
+Typing "<a href="#set">set</a> <b>plot_prefix</b>" at the Mathomatic main prompt,
+followed by a string of 8-bit characters, will
+prepend the string to the gnuplot plot string, when using the Mathomatic
+plot command.  For example, if you type "set plot set polar\;"
+at the Mathomatic main prompt, 2D polar plots will be performed instead,
+with subsequent plot commands using variable "t" instead of "x".
+
+<br>
+<br>
+<hr>
+<a name="product"></a>
+<h2>Product command</h2>
+<p>
+Syntax: <b>product variable start end [step-size]</b>
+<br>
+Alternate syntax: <b>product variable "=" start "to" end ["step" step-size]</b>
+<p>
+This command performs a mathematical product
+(<abbr title="Math using this Greek symbol can be calculated using this product command.">&prod;</abbr>)
+of the current expression
+or the RHS of the current equation
+as the index <b>variable</b> goes from <b>start</b> to <b>end</b>
+in steps of <b>step-size</b> (default 1).
+The result is approximated/simplified, stored, and displayed.
+The current equation is not changed.
+
+<pre class="sample">
+1&mdash;&gt; y=a*x
+
+#1: y = a*x
+
+1&mdash;&gt; product
+Enter variable: x
+x = 1
+To: 10
+
+#2: y = 3628800*(a^10)
+
+1&mdash;&gt; 10!
+ Answer = 3628800
+1&mdash;&gt;
+</pre>
+
+<p>
+To see all of the intermediate results,
+type "<a href="#set">set</a> debug 1" before this.
+
+<br>
+<br>
+<hr>
+<a name="push"></a>
+<h2>Push command</h2>
+<p>
+Syntax: <b>push [equation-number-ranges or text-to-push]</b>
+<p>
+This command pushes the current or specified equation spaces into the readline
+history, for easy editing and re-entry by using the cursor keys.
+The equation spaces are not modified.
+After this command, the pushed expressions are
+accessed by pressing the cursor UP (up arrow) key.
+<p>
+If any one of the arguments is not a valid equation number range,
+the text string containing all arguments is pushed into the readline history.
+<p>
+This command only exists if Mathomatic was compiled with readline support.
+
+<br>
+<br>
+<hr>
+<a name="quit"></a>
+<h2>Quit command</h2>
+<p>
+Syntax: <b>quit [exit-value]</b>
+<br>
+Alternate command name: <b>exit</b>
+<p>
+Type in this command to exit Mathomatic.
+All expressions in memory are discarded.
+To save all your expressions stored in equation spaces,
+use the <a href="#save">save command</a> before quitting.
+<p>
+The optional decimal <b>exit value</b> argument is the exit status returned to the operating system.
+The default is 0, meaning OK.
+<p>
+Another way to quickly exit Mathomatic is to enter your operating system's End-Of-File (EOF) character
+at the beginning of an input line.
+The EOF character for Unix-like operating systems is Control-D.
+
+<br>
+<br>
+<hr>
+<a name="read"></a>
+<h2>Read command</h2>
+<p>
+Syntax: <b>read [file-name or directory]</b>
+<p>
+This command reads in a text file as if you
+typed the text of the file in at the main prompt.
+The text file (also known as a script)
+should contain Mathomatic expressions and commands.
+Read commands may be nested; that is, the file read in
+may contain further read commands.
+If any command or operation returns with an error,
+all current read operations are aborted;
+this can be prevented by starting the line that returns with error
+with a colon (<b>:</b>) character.
+<p>
+If any command in the text file prompts for input,
+it will not read the input from the text file,
+instead it will prompt the user for the input.
+<p>
+Expressions saved with the <a href="#save">save command</a>
+are restored using this read command.
+<p>
+This command is automatically executed when you start up Mathomatic with
+file names on the shell command-line.  The file name may be a directory name, in which case,
+the current directory is changed to that directory.
+<p>
+The default file name extension (suffix) for Mathomatic input files is ".in".
+A file name extension is not required.
+<p>
+This command may be preceded with "repeat",
+which repeatedly reads a script until it fails or is aborted.
+<p>
+Without any arguments, this command does an "ls -C" command in Unix/Linux, or "dir /W/P" under MS-Windows,
+listing the current directory contents.
+
+<br>
+<br>
+<hr>
+<a name="real"></a>
+<h2>Real command</h2>
+<p>
+Syntax: <b>real [variable]</b>
+<p>
+This command copies the real part of a <a href="manual.html#complex">complex number expression</a> to the
+next available equation space.
+First it fully expands the current equation space with imaginary number simplification.
+Then if the current expression or RHS of the current equation is not complex,
+the warning message "Expression is not a mix" will be displayed.
+A complex number expression contains both imaginary and real number parts.
+To copy only the imaginary number part, see the
+<a href="#imaginary">imaginary command</a>.
+<p>
+The separation <b>variable</b> may be specified on the command-line,
+the default is the imaginary unit <b>i</b>.
+<p>
+There will be no imaginary numbers in the result.
+
+<pre class="sample">
+1&mdash;&gt; (a+b*i)/(c+d*i)
+
+    (a + (b&middot;i))
+#1: &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;
+    (c + (d&middot;i))
+
+1&mdash;&gt; real
+
+    ((a&middot;c) + (b&middot;d))
+#2: &ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;&ndash;
+      (c^2 + d^2)
+
+2&mdash;&gt; 
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="repeat"></a>
+<h2>Repeat command</h2>
+<p>
+Syntax: <b>repeat command arguments</b>
+<p>
+Any command may be preceded by "repeat", which sets the repeat flag for that command.
+Many commands ignore the repeat flag, if repeating them doesn't make sense.
+Sometimes repeating means do a full simplify when simplifying,
+for example in the simplify, compare, derivative, extrema, and taylor commands, etc.
+<p>
+Currently the approximate, calculate, compare, derivative, divide, echo, eliminate, extrema, fraction, read, replace, roots, simplify, and taylor commands
+all use the repeat flag.
+
+<br>
+<br>
+<hr>
+<a name="replace"></a>
+<h2>Replace command</h2>
+<p>
+Syntax: <b>replace [variables ["with" expression]]</b>
+<p>
+By default, this command prompts you for a replacement expression
+for each variable in the current expression or equation.
+If an empty line is entered for a variable, that variable remains unchanged.
+The result is placed in the current expression or equation and displayed.
+<p>
+This command is very useful for renaming or substituting variables.
+It is smart enough to do variable interchange.
+With the handy <a href="#repeat">"repeat"</a> option,
+you are repeatedly prompted for values of the variables,
+the result is simplified, checked for being an identity, and displayed.
+Nothing is changed with the repeat option.
+<p>
+If <b>variables</b> are specified on the command-line,
+you will be prompted for those variables only and
+all other variables will be left unchanged.
+<p>
+If "with" is specified, the repeat option is ignored,
+you won't be prompted, and all <b>variables</b> specified will be
+replaced with the <b>expression</b> that follows.
+
+<br>
+<br>
+<hr>
+<a name="roots"></a>
+<h2>Roots command</h2>
+<p>
+Syntax: <b>roots root real-part imaginary-part</b>
+<p>
+This command displays all complex number roots
+of a given positive integer <b>root</b> of a complex number.
+The number of the <b>root</b> equals the number of correct solutions.
+For example, "3" would give the 3 roots of the cube root.
+This command will also convert rectangular coordinates to polar coordinates.
+<p>
+The floating point <b>real part</b> (X coordinate)
+and <b>imaginary part</b> (Y coordinate)
+of the complex number are prompted for.
+Just enter an empty line if the value is zero.
+The polar coordinates of the given complex number are displayed first,
+which consist of an amplitude (distance from the origin)
+and an angle (direction).
+Then each root is calculated and displayed, along with an "Inverse check" value if debugging is enabled,
+which should equal the original complex number.
+The "Inverse check" is calculated by repeated complex number multiplication of the root times itself.
+<p>
+Since double precision floating point is used, the results are only accurate from 10 to 12 decimal digits.
+
+<pre class="sample">
+1&mdash;&gt; roots
+Enter root (positive integer): 3
+Enter real part (X): 8
+Enter imaginary part (Y):
+
+The polar coordinates before root taking are:
+8 amplitude and 0 radians (0 degrees).
+
+The 3 roots of (8)^(1/3) are:
+
+2
+Inverse check: 8
+
+-1 +1.73205080757*i
+Inverse check: 8
+
+-1 -1.73205080757*i
+Inverse check: 8
+
+1&mdash;&gt;
+</pre>
+<p>
+"repeat roots" repeatedly prompts for all input,
+performing its function again and again, until empty lines are given.
+
+<br>
+<br>
+<hr>
+<a name="save"></a>
+<h2>Save command</h2>
+<p>
+Syntax: <b>save file-name</b>
+<p>
+This command saves all expressions in all equation spaces into the specified text file.
+If the file exists, Mathomatic will ask you if you want to overwrite it.
+The saved expressions and equations can be reloaded (restored) at a later time
+by using the <a href="#read">read command</a>.
+You can edit the saved expressions with your favorite ASCII text editor.
+<p>
+Another way to save all equation spaces exactly as they are is to enter:
+
+<pre class="indent">
+list hex all &gt;filename
+</pre>
+
+<p>
+into the main Mathomatic prompt,
+however this saves all constants in hexadecimal
+and it always overwrites "filename".
+Because internally constants are binary,
+hexadecimal can represent them exactly.
+Reading in the result of this "list hex" command should result in exactly
+the same expressions in the same numbered equation spaces.
+<p>
+The save command does not save the associated equation number,
+it only saves all of your equations and expressions.
+It is much easier to read and edit than "list hex".
+If you have done anything you want to keep, be sure and "save" it before quitting.
+
+<br>
+<br>
+<hr>
+<a name="set"></a>
+<h2>Set command</h2>
+<p>
+Syntax: <b>set [["no"] option [value]] &hellip;</b>
+<p>
+This command sets various options listed below, for the current session.
+They remain in effect until you exit Mathomatic.
+Typing "set" without arguments shows all current option settings.
+<p>
+The specified <b>option</b> is turned on, unless it is preceded by "no", which turns it off.
+Some options can be followed by a number and some options can be followed by text,
+setting that option to the following <b>value</b>.
+<p>
+To permanently change the default settings of Mathomatic,
+set options can be put in the file <i>~/.mathomaticrc</i>
+(for Microsoft Windows: <i>mathomatic.rc</i>
+in the same directory as the Mathomatic executable or in the $HOME directory).
+It should be a text file with one or more set options per line.
+That file is loaded every time Mathomatic starts up, when not in test, demo, or high security mode.
+The command "set <b>save</b>" conveniently saves all current session options in that file,
+making them permanent.
+"set no <b>save</b>" removes that file, so then Mathomatic will start up with all options
+set to the program defaults.
+"set <b>save</b> string" saves only the specified literal ASCII string in that file,
+for only permanently setting a few options, without using your text editor.
+Each "set <b>save</b>" command overwrites the previously saved settings.
+"set <b>load</b>" loads the startup set options file once again, displaying each line before it is processed.
+If the startup file doesn't exist, or something is wrong, then an error message is
+displayed and this set command returns with failure.
+
+<h3>Options:</h3>
+<blockquote>
+<p>
+"set <b>precision</b>" followed by an integer
+less than or equal to 15 sets the display precision
+in number of decimal digits for most numerical output.
+All arithmetic in Mathomatic is double precision floating point,
+so it is not useful to set this higher than 15 digits.
+Display output is rounded to the precision set by this option,
+though internally all constants are rounded to fit in a double precision float data type
+of about 15 decimal digits precision.
+The default for this display "precision" set variable is 14 digits.
+<p>
+"set no <b>autosolve</b>" will turn off solving by typing the solve variable at the main prompt,
+unless an equals sign (=) is included.
+This allows entry of single variable expressions into equation spaces.
+Solving is always allowed using the <a href="#solve">solve command</a>.
+<p>
+"set no <b>autocalc</b>" will turn off automatic approximation and display
+with the <a href="#calculate">calculate command</a> of
+purely numerical input entered at the main prompt.
+Numerical expressions are simply entered as is when this
+option is turned off.
+When <b>autocalc</b> is on, the current calculation is deleted when the next calculation is entered,
+if "set <b>autodelete</b>" is specified, otherwise it remains in memory for later use.
+The default is no <b>autodelete</b>, so to be helpful,
+all old numeric calculations are automatically
+deleted from memory if memory ever becomes exhausted.
+Note that the Mathomatic Symbolic Math Library does not support use of the calculate command at this time.
+<p>
+"set no <b>autoselect</b>" will turn off selecting of equation spaces by just typing in
+the equation number.
+Selecting is still possible using the <a href="#selecting"><b>#</b> operator</a>.
+<p>
+"set <b>auto</b>" and "set no <b>auto</b>" turn on and off all three of the above auto options
+at once.
+If turned off, all expressions entered at the main prompt will be entered into equation spaces,
+so they can be operated on by Mathomatic commands.
+<p>
+"set <b>debug</b>" followed by an integer sets the debug level number.
+The initial debug level is 0, for no debugging.
+If the level number is 2 ("set debug=2"),
+Mathomatic will show you how it solves equations.
+Level 4 debugs the <a href="#simplify">simplify</a>
+command and its polynomial routines.
+Levels 5 and 6 show all intermediate expressions.
+Set the debug level to &minus;1 for suppression of helpful messages,
+or set the debug level to &minus;2 to even suppress warnings.
+<p>
+"set <b>case_sensitive</b>" will set alphabetic case sensitive mode, while
+"set no case" will set case insensitive mode (all alphabetic characters
+will be converted to lower case).
+"set case" is the default.
+<p>
+"set <b>color</b>" enables color mode, which is the default.
+When color mode is on,
+ANSI color escape sequences are output to make expressions easier to read.
+Requires a terminal emulator that supports ANSI color escape sequences.
+Enter "set save no color"
+to always startup Mathomatic with color mode disabled,
+unless the <b>-c</b> or <b>-b</b> option is given.
+Use "set color 0" to display normal text as all green,
+as it was for many years.  The default for normal text is no color,
+but if "color" is followed by a number, the normal text color is set to that number.
+<p>
+"set <b>bold</b>" enables highlighting in color mode.
+It makes all output brighter.
+Use this if any colors are difficult to see.
+The <b>-b</b> option also sets this and color mode on.
+<p>
+"set <b>html</b>" (same as the <b>-x</b> option)
+enables HTML mode for all standard output.
+"set <b>html</b> all" enables HTML mode for all output, even redirected output.
+HTML mode is very useful by itself, or with color mode.
+With color mode, ANSI color will be turned off and HTML color will be turned on.
+Even "bold colors" makes a difference here, allowing easier viewing on a dim background.
+<p>
+"set <b>alternative</b>" (same as the <b>-a</b> option)
+switches color mode to its alternative color mode, if any.
+So far, only the MinGW version uses this option
+for switching to ANSI color mode when using Cygwin.
+<p>
+"set <b>columns</b>" followed by a positive integer sets the expected number of
+character columns (width) on a terminal screen with line wrap.
+When an expression is to be displayed in multi-line fraction format (two-dimensional)
+and it is wider than this number of screen columns,
+single-line format is used instead,
+because otherwise the expression would not display properly due to wrap-around.
+"set no columns" or "set columns=0" does no checking for screen size and always
+displays in fraction format, which is useful for a terminal that doesn't wrap lines.
+In most cases, this value is set automatically to be the correct width on startup,
+or by typing "set columns".
+This value only affects 2D expression output.
+<p>
+"set <b>wide</b>" sets the number of screen columns
+(like "set columns=0" above does) and screen rows to 0,
+so that no checking for screen size is done,
+forcing 2D display of expressions that are too wide to display properly
+on a terminal with line wrap.
+Setting this option is useful if output is going to a file.
+<p>
+"set no <b>display2d</b>" will set the expression
+display mode to single-line format (one-dimensional)
+using the <a href="#list">list command</a>,
+instead of the default fraction format (two-dimensional)
+using the <a href="#display">display command</a>.
+Single-line format is useful when feeding Mathomatic output into another program.
+<p>
+<b>fractions_display_mode</b> is a new set option that allows controlling
+whether or not to display numerical fractions.
+It also can set the preference of
+<a target="_blank" rel="nofollow" href="http://en.wikipedia.org/wiki/Simple_fractions">"simple"</a> or
+<a target="_blank" rel="nofollow" href="http://en.wikipedia.org/wiki/Mixed_fraction">"mixed" fractions</a>.
+The Mathomatic default is to display simple fractions.
+"set no <b>fractions_display</b>" sets the mode to 0,
+disabling the automatic conversion of
+non-integer constants like .5 to <b>1/2</b> for display.
+"set <b>fractions</b>=simple" means display some constants
+like .5 and 2.25 as their simple fraction equivalents: <b>1/2</b> and <b>9/4</b>.
+"set <b>fractions</b>=mixed" means display some constants as mixed or simple fractions,
+for example, <b>9/4</b> is displayed as <b>(2+(1/4))</b>, which is a mixed fraction
+(also called a mixed number).
+<p>
+"set no <b>prompt</b>" turns off Mathomatic prompt output,
+exactly like the <b>-q</b> (quiet mode) option does.
+<p>
+"set <b>rationalize</b>" will set the "rationalize_denominators" option,
+which attempts to move radicals from the denominator of fractions
+to the numerator during simplification.  This is the default.
+<p>
+"set <b>modulus_mode</b>" should be followed by an integer from 0 to 2, or a language name: C, Java, Python, or positive.
+When a modulus operation (<b>%</b>) is done on two constants: <b>dividend % divisor</b>,
+mode 0 is a type of remainder modulus, that returns a result that is the same sign as the dividend
+(same as C and Java's % operator give);
+mode 1 returns a result that is the same sign as the divisor (same as Python's % operator gives);
+and mode 2 returns an always positive or zero result.
+Mode 2 is the default and is 100% mathematically correct and the
+type of modulus operation that can be generally simplified always and be correct.
+Other types (modes) of modulus operations will be simplified the same way,
+and the result will be correct as long as they remain positive or zero.
+Setting the modulus mode only affects modulus operator (<b>%</b>) numeric calculations.
+All modulus simplification rules are enabled, regardless of the modulus mode.
+Modulus simplification for integer modulus expressions is always
+accomplished by using integer variables
+(variable names that start with "integer") and constants, and no non-integer division.
+Modulus simplification with integer variables and expressions
+will almost always simplify more than with normal variables and non-integer expressions.
+Most modulus simplification is done by the <a href="#simplify">simplify command</a> only.
+<p>
+"set <b>fixed_point</b>" sets finance, fixed point, or integer display.
+Finance mode (set with no arguments or an argument of "2")
+displays all constants with 2 digits after the decimal point (for example: "2.00")
+and negative numbers are always parenthesized (for example: "(&minus;2.00)").
+Displayed constants are rounded to the nearest cent,
+though internally there is no loss of accuracy until more than 15 digits have been used.
+The number of digits to display after the decimal point may be specified with "set <b>fixed_point</b>=number".
+This is not truly fixed point arithmetic, it is floating point displayed as fixed point.
+With double precision floating point,
+only the most significant 15 decimal digits will ever be correct.
+"set <b>fixed_point</b>=0" sets rounded, integer-only output, with no decimal points;
+this might be useful for something.
+The default is floating point display and no fixed point display ("set no <b>fixed_point</b>").
+<p>
+"set <b>factor_integers</b>" sets automatic factoring of integers for all displayed expressions.
+When set, all integers of up to 15 decimal digits are factorized into their prime factors before
+the result of any command is displayed.
+This command can be shortened to "set factor".
+<p>
+"set <b>right_associative_power</b>" associates power operators from right to left
+in the absence of parentheses, so that <b>x^a^b</b> is interpreted as <b>x^(a^b)</b>.
+Other math programs typically associate power operators from right to left.
+The default is "set no right", which associates power operators the same
+as all other operators in Mathomatic,
+from left to right, resulting in <b>(x^a)^b</b>.
+<p>
+"set <b>plot_prefix</b>" followed by a string of 8-bit characters will
+prepend the string to the gnuplot plot string, when using the Mathomatic
+plot command.  For example, "set plot set polar\;" typed at the
+Mathomatic main prompt will allow 2D polar plots
+with subsequent plot commands, using variable "t" instead of "x".
+<p>
+"set <b>special_variable_characters</b>" followed by a string of 8-bit characters will allow Mathomatic
+to use those characters in variable names, in addition to the normal variable name characters,
+which are the alphanumeric characters and underline (_).
+For example, "set special $" will allow variable names like "$a" and "a$",
+and "set special []" will allow entry of array elements like "a[3]" for simulated array arithmetic.
+Most non-alphanumeric characters in variable names are converted to underline characters (_)
+when exporting to a programming language or to a different program.
+<p>
+"set <b>directory</b>" followed by a directory name will change the current working directory
+to that directory.
+Not specifying a directory name defaults to your home directory.
+This command can be shortened to "set dir".
+</blockquote>
+
+<br>
+<br>
+<hr>
+<a name="simplify"></a>
+<h2>Simplify command</h2>
+<p>
+Syntax: <b>simplify ["sign"] ["symbolic"] ["quick[est]"] ["fraction"] [equation-number-ranges]</b>
+<p>
+This command fully simplifies (reduces) expressions in selected equation spaces.
+The result is usually the smallest possible, easily readable expression,
+that is mathematically equivalent to the original expression.
+<p>
+Use this command whenever you think an expression is not completely
+simplified or if you don't like the way an expression is factored.
+Sometimes simplifying more than once or using the "symbolic" option
+simplifies even more.
+This command always tries to factor polynomials,
+if it will make the expression smaller,
+unless the "<b>quickest</b>" option is given.
+<p>
+More than one option may be specified at a time.
+
+<h3>Options:</h3>
+<blockquote>
+<p>
+"simplify <b>sign</b>" conveniently expands all "sign" variables
+by substituting them with all possible combinations of values (+1 and -1),
+storing the unique results into new equation spaces and simplifying.
+This will effectively create one simplified equation for each solution.
+<p>
+The "<b>symbolic</b>" option indicates <b>(a^n)^m</b> should always be reduced to <b>a^(n*m)</b>.
+This often simplifies more and removes any absolute value operations:
+(<b>(a^2)^.5 = a^(2*.5) = a^1 = a</b>).
+Try this "symbolic" option if the simplify command doesn't simplify well,
+it often helps with powers raised to powers,
+though it is sometimes not 100% mathematically correct.
+<p>
+The "<b>quick</b>" option skips expanding sums raised to the power of 2 or higher, like <b>(x+1)^5</b>.
+Also, algebraic fractions might be simpler with this option, and unlike denominators are not combined at all.
+This option often simplifies the best, unless expanding sums raised to an integer power is needed.
+<p>
+The "<b>quickest</b>" option very basically simplifies without any unfactoring nor factoring.
+Running the simplify command with this option makes it complete almost instantaneously.
+<p>
+"simplify <b>fraction</b>" usually simplifies any expression with
+division in it down to the ratio of two polynomials
+or expressions,
+like <a target="_blank" rel="nofollow" href="http://maxima.sourceforge.net">Maxima's</a>
+<code>ratsimp()</code> function does,
+though sometimes the <a href="#fraction">fraction command</a> works better because it always reduces to a simple fraction,
+the difference here being the simplify command result will be completely simplified.
+This is accomplished by simplification without doing
+"<a href="#unfactor">unfactor</a> fraction" and without doing
+polynomial or smart (algebraic) division on the divide operators.
+</blockquote>
+
+<p>
+This simplify command applies many algebraic transformations
+and their inverses (for example, <a href="#unfactor">unfactor</a> and then <a href="#factor">factor</a>)
+and then tries to combine and reduce algebraic fractions and rationalize their denominators.
+Complex fractions are converted to simple fractions by
+making the denominators of fractions added together the same, combining and simplifying.
+Polynomials with repeated or symbolic factors are factored next.
+Then smart (heuristic) division and polynomial division are tried on any algebraic divides,
+possibly making complex fractions if it reduces the expression size.
+Lastly, the expressions are nicely factored and displayed.
+<p>
+Smart division is a symbolic division like polynomial division,
+but it tries every term in the dividend,
+instead of only the term with the base variable raised to the highest power,
+to make the expression smaller.
+<p>
+"repeat simplify" repeatedly runs the simplify command until the result stabilizes
+to the smallest size expression.
+In other computer algebra systems, this is called full simplification.
+
+<br>
+<br>
+<hr>
+<a name="solve"></a>
+<h2>Solve command</h2>
+<p>
+Syntax: <b>solve ["verify" or "verifiable"] [equation-number-range] ["for"] expression</b>
+<p>
+This command automatically solves the specified equations
+for the specified <b>expression</b>, which may be a variable or zero.
+For each successful solve operation, the equation solved is replaced with the solution,
+becomes the current equation and is displayed.
+See the section on <a href="#solving">Solving Equations</a>
+for more information on solving with Mathomatic.
+<p>
+Solving for <b>variable^2</b> or <b>0^2</b> will isolate the square root
+of the largest expression containing the specified variable,
+and then square both sides of the equation.
+This is a new feature for properly squaring, cubing, etc. both sides of an equation,
+and it works for any power and variable with any equation with roots.
+<p>
+The "<b>verify</b>" and "<b>verifiable</b>" options check the result of solving for a variable
+by plugging all solutions into the original equation and then simplifying and comparing.
+If the resulting equation sides are identical (an identity),
+a "Solutions verified" message is displayed,
+meaning that all of the solutions are correct.
+Otherwise "Solution may be incorrect" is displayed, meaning at least one of the solutions
+is incorrect or unverifiable, causing the "verifiable" option to return with failure,
+and the "verify" option to return with 2.
+Use the "verifiable" option if verification is required, otherwise use the "verify" option.
+<p>
+The verify options work when solving for a single variable,
+and indicate if the solve result can be trusted.
+If the verify options are used when solving for zero, they only check if the result
+of the zero solve is an identity.
+The "<a href="#simplify">simplify</a> quick" command is automatically
+used after every successful solve operation when using the verify options.
+<p>
+The "<b>for</b>" option has no additional effect
+and is to make entering this solve command more natural.
+
+<br>
+<br>
+<hr>
+<a name="sum"></a>
+<h2>Sum command</h2>
+<p>
+Syntax: <b>sum variable start end [step-size]</b>
+<br>
+Alternate syntax: <b>sum variable "=" start "to" end ["step" step-size]</b>
+<p>
+This command performs a mathematical summation
+(<abbr title="Math using this Greek Sigma symbol can be calculated using this sum command.">&sum;</abbr>)
+of the current expression
+or the RHS of the current equation
+as the index <b>variable</b> goes from <b>start</b> to <b>end</b>
+in steps of <b>step-size</b> (default 1).
+The result is approximated/simplified, stored, and displayed.
+The current equation is not changed.
+
+<pre class="sample">
+1&mdash;&gt; y=a*x
+
+#1: y = a*x
+
+1&mdash;&gt; sum
+Enter variable: x
+x = 1
+To: 10
+
+#2: y = 55*a
+
+1&mdash;&gt;
+</pre>
+
+<p>
+To see all of the intermediate results,
+type "<a href="#set">set</a> debug 1" before this.
+
+<br>
+<br>
+<hr>
+<a name="tally"></a>
+<h2>Tally command</h2>
+<p>
+Syntax: <b>tally ["average"] [equation-number-ranges]</b>
+<p>
+This command prompts for a value, adds it to a running (grand)
+total, approximates/simplifies and displays the running total and optional average, and repeats.
+The average is the arithmetic mean, that is the running total divided by the number of entries ("count").
+When finished, the ending total is returned in the next available equation space,
+displayed, and made the current equation.
+<p>
+It is a convenient way of adding, subtracting, and averaging many numbers and/or variables.
+Enter a minus sign (&minus;) before each value you wish to subtract.
+Enter an empty line to end.
+<p>
+The grand total may be set at the start by specifying equation spaces on the command-line to add the expressions
+or Right-Hand Sides contained therein together.
+Type "tally -" to resume where you left off last time, if the current equation hasn't changed.
+This works because the final result of the last tally session is saved in the next available equation space
+and made the current equation.
+
+<br>
+<br>
+<hr>
+<a name="taylor"></a>
+<h2>Taylor command</h2>
+<p>
+Syntax: <b>taylor ["nosimplify"] variable order point</b>
+<p>
+This command computes the Taylor series expansion of the current
+expression or RHS of the current equation, with respect to the specified <b>variable</b>.
+The Taylor series uses <a href="#derivative">differentiation</a>
+and is often used to approximate expressions near the specified <b>point</b>.
+<p>
+The Taylor series of <b>f(x)</b> at <b>point a</b> is the power series:
+
+<!--
+Enter this into aamath to get the Taylor series looking nice:
+f(a) + f'(a)*(x-a)/1! + f''(a)*(x-a)^2/2! + f'''(a)*(x-a)^3/3! + &hellip;
+-->
+<pre class="indent">
+                                     2                  3
+       f'(a) (x - a)   f''(a) (x - a)    f'''(a) (x - a)
+f(a) + ------------- + --------------- + ---------------- + &hellip;
+            1!               2!                 3!
+</pre>
+
+<p>
+where <b>f'(x)</b> is the first derivative of <b>f(x)</b> with respect to <b>x</b>,
+<b>f''(x)</b> is the second derivative, etc.
+<p>
+This command prompts you for the <b>point</b> of expansion,
+which is usually a variable or 0, but may be any expression.
+Typically 0 is used to generate Maclaurin polynomials.
+<p>
+Then it prompts you for the <b>order</b>
+of the series, which is an integer indicating how many derivatives to
+take in the expansion.
+The default is a large number,
+stopping when the derivative reaches 0.
+<p>
+The result is simplified unless the "nosimplify" option is specified,
+and placed in the next available
+equation space, displayed, and becomes the current equation.
+The original expression is not modified.
+
+<pre class="sample">
+1&mdash;&gt; e^x
+
+#1: e^x
+
+1&mdash;&gt; taylor x
+Taylor series expansion around x = point.
+Enter point: 0
+Enter order (number of derivatives to take): 8
+Computing the Taylor series and simplifying...
+8 derivatives applied.
+
+            x^2   x^3   x^4   x^5   x^6   x^7     x^8
+#2: 1 + x + &ndash;&ndash;&ndash; + &ndash;&ndash;&ndash; + &ndash;&ndash;&ndash; + &ndash;&ndash;&ndash; + &ndash;&ndash;&ndash; + &ndash;&ndash;&ndash;&ndash; + &ndash;&ndash;&ndash;&ndash;&ndash;
+             2     6    24    120   720   5040   40320
+
+2&mdash;&gt; 
+</pre>
+
+<br>
+<br>
+<hr>
+<a name="unfactor"></a>
+<h2>Unfactor command</h2>
+<p>
+Syntax: <b>unfactor ["count"] ["fraction"] ["quick"] ["power"] [equation-number-range]</b>
+<br>
+Alternate command name: <b>expand</b>
+<p>
+This command algebraically expands expressions in selected equation spaces by
+multiplying out products of sums and exponentiated sums and then simplifying a little,
+displaying the results.
+One or more options may be specified, like "count", which also displays the number of additive terms.
+<p>
+To illustrate what unfactoring does (more often known as "expanding"),
+suppose you have the following equations:
+
+<pre class="sample">
+1&mdash;&gt; a=b*(c+d)
+
+#1: a = b*(c + d)
+
+1&mdash;&gt; z=(x+y)^2
+
+#2: z = (x + y)^2
+
+2&mdash;&gt; unfactor all
+
+#1: a = (b*c) + (b*d)
+
+
+#2: z = (x^2) + (2*x*y) + (y^2)
+
+2&mdash;&gt;
+</pre>
+
+<p>
+<b>(x+y)^2</b> is called an exponentiated sum and
+is converted to <b>(x+y)*(x+y)</b> and then multiplied out,
+unless the "<b>quick</b>" option is given.
+Because this is a general but inefficient expansion method,
+exponentiated sums usually fail expansion when the power is greater than 10,
+growing larger than will fit in an equation space.
+It is also CPU time-consuming, so
+"unfactor <b>quick</b>" and
+"<a href="#simplify">simplify</a> <b>quick</b>" were created to only expand products of sums,
+and not exponentiated sums.
+<p>
+The opposite of unfactoring is <a href="#factor">factoring</a>.
+Careful and neat factoring is always done by the <a href="#simplify">simplify command</a>.
+<p>
+"unfactor <b>fraction</b>" by itself expands algebraic fractions by also
+expanding division of sums,
+multiplying out each fraction with a sum in the numerator into the sum of
+smaller fractions with the same denominator for each term in numerator.
+See the example under the <a href="#fraction">fraction command</a>.
+<p>
+"unfactor <b>power</b>" does only power operator expansion;
+that is, <b>(a*b)^(n+m)</b>
+is transformed to <b>(a^n)*(a^m)*(b^n)*(b^m)</b>.
+
+<br>
+<br>
+<hr>
+<a name="variables"></a>
+<h2>Variables command</h2>
+<p>
+Syntax: <b>variables ["c" "java" "integer" "count"] [equation-number-ranges]</b>
+<p>
+Show or define all variable names used within the specified expressions,
+from most frequent to least frequently occurring.
+The programming language options output the variable definitions
+required to make <a href="#code">code</a> from the specified equations.
+This does not initialize any variables, it only defines them as needed for a C or Java compiler.
+This command is not necessary for generating Python code.
+<p>
+The "count" option displays the total counts of each variable in a comment, for the specified expressions.
+The count means the number of times the variable occurs.
+<p>
+This command returns false, with failure and an error message,
+if no variables were found.
+This may be useful for determining whether an expression is numeric or symbolic.
+
+<br>
+<br>
+<hr>
+<a name="version"></a>
+<h2>Version command</h2>
+<p>
+Syntax: <b>version ["status"]</b>
+<p>
+Shows the version number of Mathomatic.
+<p>
+If the "status" option is given, also displays the
+last main prompt return value,
+the C compile-time definitions used
+and other useful C compiler information,
+the expression array size,
+the maximum possible memory usage,
+the invoked security level,
+and readline status
+for the currently running version of Mathomatic.
+<p>
+The maximum memory usage displayed is the amount of
+RAM used when all equation spaces have been filled.
+It does not include stack size (which varies) or executable (code) size.
+The Unix/Linux "size" command gives all the other sizes when run as "size mathomatic", like "text"
+size, which is really code size.  Adding together all size values will probably give
+a close approximation of the total amount of free RAM required by Mathomatic.
+Define "HANDHELD=1" when compiling to reduce this.
+
+<br>
+<br>
+<hr>
+
+<a name="license"></a>
+<h2>Documentation License</h2>
+<p>
+<a target="_blank" rel="nofollow" href="http://www.gnu.org/copyleft/fdl.html"><img src="gnu-fdl.png" alt="GFDL logo"></a>
+<font color="red">Mathomatic documentation copyright &copy; 1987-2012 George Gesslein II</font>
+<p>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included <a href="fdl-1.3-standalone.html">here</a>
+in the Mathomatic documentation directory.
+
+<br>
+<br>
+<hr>
+<a class="left" href="index.html">Up to the documentation index</a>
+<a class="right" href="http://www.mathomatic.org" title="Go to the Mathomatic home page"><img src="mathomatic16x16.png" alt="Mathomatic icon"> www.mathomatic.org</a>
+
+</body>
+</html>

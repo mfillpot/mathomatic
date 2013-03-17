@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="192"
+   height="195.14284"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="mathomatic.svg"
+   inkscape:export-filename="/home/george/mathomatic.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <title
+     id="title2985">Mathomatic Logo</title>
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="153.85714"
+     inkscape:cy="136.28578"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="816"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Mathomatic Logo</dc:title>
+        <dc:date>1/24/2012</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>George Gesslein II</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>Trademark for the Mathomatic computer algebra system</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>George Gesslein II</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>en</dc:language>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>algebra logo Mathomatic</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:description>Made with Inkscape.</dc:description>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>George Gesslein II</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <dc:coverage>Rights are granted to use this image for anything related to Mathomatic, the computer algebra system.</dc:coverage>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/3.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-266.85715,-427.79077)">
+    <image
+       y="427.79077"
+       x="266.85715"
+       id="image3066"
+       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAARBJREFU WIXFl0sWgzAIRcHTjblyl4aD1hNIQMin5A1R5IKIAYkIEJEgWUSEAAAIAOnBOcRHGuQNiNfPfjY2 6Xc2NttX3ntYwbkz4qUG1oLWgVtf+RxRAYtcyzAqz7cBsBSpwIhvA2AR85ISnW4v8Ovc1wXQFM2e v74H0vMN9cAjrS9mXo0K8CYONxt4CMCTNy80sUm4JqOYvqDNJPynZHWKfTmANZat5t5SgRQArQmL rcB0A1iZRLq+zI5i6wYY/f6l36YKaEqrwDKAqKJT8TCvJKk6lGaMY/5HJdx+Kj6e8/mO4AAASNpx OCC+zMwksb0JhwDqVW5mtdtega4eiGTa2w+vACu2Zg9IAGSs6TXQDQPJnMmPfQ/wAAAAAElFTkSu QmCC "
+       width="192"
+       height="192"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none"
+       d="m 437.14286,620.93361 -42.85715,-17.14286 -17.14285,-5.71428 -8.57143,-14.28572 -11.42857,-5.71428 0,0 c 0,0 -11.42857,20 -28.57143,28.57143 -17.14286,8.57143 0,0 -60,8.57143 l 91.42857,-20"
+       id="path3841"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.85714293;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none"
+       d="m 285.85714,618.6479 c 0,-1.57143 5.78572,-2.85715 12.85715,-2.85715 12.28612,0 16.88357,-3.40045 9.28571,-6.86807 -1.96429,-0.89649 3.17857,-0.88298 11.42857,0.03 9.96484,1.10277 15,0.61092 15,-1.46526 0,-1.71887 2.57143,-3.12524 5.71429,-3.12524 3.6853,0 5.71428,-1.90476 5.71428,-5.36444 0,-2.95045 1.92857,-6.96502 4.28572,-8.92127 2.35714,-1.95626 4.28571,-5.32797 4.28571,-7.4927 0,-3.14973 -7.74496,-3.93587 -38.77551,-3.93587 -29.79592,0 -39.72073,-0.94522 -42.85714,-4.08163 -6.01121,-6.01122 -6.01121,-134.39696 0,-140.40817 6.04667,-6.04667 171.50434,-6.04667 177.55102,0 6.01121,6.01121 6.01121,134.39695 0,140.40817 -3.13641,3.13641 -13.06123,4.08163 -42.85714,4.08163 -36.47775,0 -38.77551,0.32862 -38.77551,5.54566 0,3.05012 1.28571,6.34028 2.85714,7.31148 1.57143,0.9712 2.85714,4.26136 2.85714,7.31148 0,4.01061 1.97716,5.54566 7.14286,5.54566 3.92857,0 7.14286,1.28572 7.14286,2.85715 0,1.57142 5.14285,2.85714 11.42857,2.85714 6.28571,0 11.42857,1.28571 11.42857,2.85714 0,1.57143 5.14286,2.85714 11.42857,2.85714 6.28571,0 11.42857,1.28572 11.42857,2.85715 0,1.8315 -26.66666,2.85714 -74.28571,2.85714 -47.61905,0 -74.28572,-1.02564 -74.28572,-2.85714 z m 153.06123,-55.51021 c 5.97736,-5.97736 5.97736,-111.57366 0,-117.55102 -6.02699,-6.02699 -148.66689,-6.02699 -154.69388,0 -5.55079,5.5508 -6.00971,111.11248 -0.5102,117.35885 5.29856,6.01814 149.19994,6.19631 155.20408,0.19217 l 0,0 z"
+       id="path3892"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

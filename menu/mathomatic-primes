@@ -1,0 +1,7 @@
+?package(mathomatic-primes):\
+	needs="text"\
+	hints="Mathomatic"\
+	section="Applications/Science/Mathematics"\
+	title="Prime Numbers (Mathomatic)"\
+	command="/usr/bin/matho-primes"\
+	icon="/usr/share/pixmaps/mathomatic.xpm"

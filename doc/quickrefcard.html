@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html>
+<head>
+<title>Mathomatic Quick Reference Card</title>
+</head>
+<body>
+<table cellpadding="4" border="3" summary="Mathomatic Quick Reference Card">
+<tr bgcolor="#2648fe"><th colspan="3"><font color="white">Mathomatic version 16.0.5 Quick Reference Card</font></th></tr>
+<tr>
+<th>Command</th>
+<th>Usage</th>
+<th>Notes</th>
+</tr>
+<tr>
+<td nowrap="nowrap">approximate</td>
+<td nowrap="nowrap">approximate [equation-number-ranges]</td>
+<td nowrap="nowrap">"repeat approximate" approximates more, like calculate.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">calculate</td>
+<td nowrap="nowrap">calculate ["factor"] [equation-number-range] [variable iterations]</td>
+<td nowrap="nowrap">"repeat calculate" repeatedly prompts for any input.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">clear</td>
+<td nowrap="nowrap">clear [equation-number-ranges]</td>
+<td nowrap="nowrap">Tip: Use "clear all" to quickly restart Mathomatic.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">code</td>
+<td nowrap="nowrap">code ["c" or "java" or "python" or "integer"] [equation-number-ranges]</td>
+<td nowrap="nowrap">Related commands: simplify, optimize, and variables</td>
+</tr>
+<tr>
+<td nowrap="nowrap">compare</td>
+<td nowrap="nowrap">compare ["symbolic" "approx"] equation-number ["with" equation-number]</td>
+<td nowrap="nowrap">This command may be preceded with "repeat" for full simplify.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">copy</td>
+<td nowrap="nowrap">copy ["select"] [equation-number-ranges]</td>
+<td nowrap="nowrap">With select, the first copy is made the current equation.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">derivative</td>
+<td nowrap="nowrap">derivative ["nosimplify"] variable or "all" [order]</td>
+<td nowrap="nowrap">Alternate name for this command: differentiate</td>
+</tr>
+<tr>
+<td nowrap="nowrap">display</td>
+<td nowrap="nowrap">display ["factor"] ["simple" or "mixed"] [equation-number-ranges]</td>
+<td nowrap="nowrap">Display expressions in pretty, 2D multi-line fraction format.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">divide</td>
+<td nowrap="nowrap">divide [base-variable] [dividend divisor]</td>
+<td nowrap="nowrap">"repeat divide" repeatedly prompts for any input.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">echo</td>
+<td nowrap="nowrap">echo [text]</td>
+<td nowrap="nowrap">This command may be preceded with "repeat".</td>
+</tr>
+<tr>
+<td nowrap="nowrap">edit</td>
+<td nowrap="nowrap">edit [file-name]</td>
+<td nowrap="nowrap">Editor name in EDITOR environment variable.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">eliminate</td>
+<td nowrap="nowrap">eliminate variables or "all" ["using" equation-number]</td>
+<td nowrap="nowrap">This command may be preceded with "repeat".</td>
+</tr>
+<tr>
+<td nowrap="nowrap">extrema</td>
+<td nowrap="nowrap">extrema [variable] [order]</td>
+<td nowrap="nowrap">Helps with finding the minimums and maximums.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">factor</td>
+<td nowrap="nowrap">factor ["number" [integers]] or ["power"] [equation-number-range] [variables]</td>
+<td nowrap="nowrap">Alternate name for this command: collect</td>
+</tr>
+<tr>
+<td nowrap="nowrap">for</td>
+<td nowrap="nowrap">for variable start end [step-size]</td>
+<td nowrap="nowrap">Same syntax as the sum and product commands.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">fraction</td>
+<td nowrap="nowrap">fraction ["numerator" "denominator"] [equation-number-range]</td>
+<td nowrap="nowrap">This command may be preceded with "repeat".</td>
+</tr>
+<tr>
+<td nowrap="nowrap">help</td>
+<td nowrap="nowrap">help [topics or command-names]</td>
+<td nowrap="nowrap">Alternate name for this command: ?</td>
+</tr>
+<tr>
+<td nowrap="nowrap">imaginary</td>
+<td nowrap="nowrap">imaginary [variable]</td>
+<td nowrap="nowrap">Related command: real</td>
+</tr>
+<tr>
+<td nowrap="nowrap">integrate</td>
+<td nowrap="nowrap">integrate ["constant" or "definite"] variable [order [lower and upper-bounds]]</td>
+<td nowrap="nowrap">Alternate name for this command: integral</td>
+</tr>
+<tr>
+<td nowrap="nowrap">laplace</td>
+<td nowrap="nowrap">laplace ["inverse"] variable</td>
+<td nowrap="nowrap">This command only works with polynomials.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">limit</td>
+<td nowrap="nowrap">limit variable expression</td>
+<td nowrap="nowrap">This limit command is experimental.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">list</td>
+<td nowrap="nowrap">list ["export" or "maxima" or "gnuplot" or "hex"] [equation-number-ranges]</td>
+<td nowrap="nowrap">Options to export expressions to other math programs.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">nintegrate</td>
+<td nowrap="nowrap">nintegrate ["trapezoid"] variable [partitions [lower and upper-bounds]]</td>
+<td nowrap="nowrap">This command cannot integrate over singularities.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">optimize</td>
+<td nowrap="nowrap">optimize [equation-number-range]</td>
+<td nowrap="nowrap">Split up equations into smaller, more efficient equations.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">pause</td>
+<td nowrap="nowrap">pause [text]</td>
+<td nowrap="nowrap">Display a line of text and wait for user to press the Enter key.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">plot</td>
+<td nowrap="nowrap">plot [equation-number-ranges] [xyz-ranges] [gnuplot-expressions,]</td>
+<td nowrap="nowrap">Plots variable x; if expression contains y, do a 3D surface plot.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">product</td>
+<td nowrap="nowrap">product variable start end [step-size]</td>
+<td nowrap="nowrap">Related command: sum</td>
+</tr>
+<tr>
+<td nowrap="nowrap">push</td>
+<td nowrap="nowrap">push [equation-number-ranges or text-to-push]</td>
+<td nowrap="nowrap">Available only if readline is enabled.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">quit</td>
+<td nowrap="nowrap">quit [exit-value]</td>
+<td nowrap="nowrap">Alternate name for this command: exit</td>
+</tr>
+<tr>
+<td nowrap="nowrap">read</td>
+<td nowrap="nowrap">read [file-name or directory]</td>
+<td nowrap="nowrap">"repeat read" will read in a file repeatedly until failure.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">real</td>
+<td nowrap="nowrap">real [variable]</td>
+<td nowrap="nowrap">Related command: imaginary</td>
+</tr>
+<tr>
+<td nowrap="nowrap">replace</td>
+<td nowrap="nowrap">replace [variables ["with" expression]]</td>
+<td nowrap="nowrap">This command may be preceded with "repeat".</td>
+</tr>
+<tr>
+<td nowrap="nowrap">roots</td>
+<td nowrap="nowrap">roots root real-part imaginary-part</td>
+<td nowrap="nowrap">"repeat roots" repeatedly prompts for any input.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">save</td>
+<td nowrap="nowrap">save file-name</td>
+<td nowrap="nowrap">Related command: read</td>
+</tr>
+<tr>
+<td nowrap="nowrap">set</td>
+<td nowrap="nowrap">set [["no"] option [value]] ...</td>
+<td nowrap="nowrap">"set" by itself will show all current option settings.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">simplify</td>
+<td nowrap="nowrap">simplify ["sign" "symbolic" "quick[est]" "fraction"] [equation-number-ranges]</td>
+<td nowrap="nowrap">This command may be preceded with "repeat" for full simplify.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">solve</td>
+<td nowrap="nowrap">solve ["verify" or "verifiable"] [equation-number-range] ["for"] expression</td>
+<td nowrap="nowrap">The verify options check all returned solutions for correctness.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">sum</td>
+<td nowrap="nowrap">sum variable start end [step-size]</td>
+<td nowrap="nowrap">Related command: product</td>
+</tr>
+<tr>
+<td nowrap="nowrap">tally</td>
+<td nowrap="nowrap">tally ["average"] [equation-number-ranges]</td>
+<td nowrap="nowrap">Add entries, specified and prompted for, showing total.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">taylor</td>
+<td nowrap="nowrap">taylor ["nosimplify"] variable order point</td>
+<td nowrap="nowrap">Compute the Taylor series expansion of the current expression.</td>
+</tr>
+<tr>
+<td nowrap="nowrap">unfactor</td>
+<td nowrap="nowrap">unfactor ["count" "fraction" "quick" "power"] [equation-number-range]</td>
+<td nowrap="nowrap">Alternate name for this command: expand</td>
+</tr>
+<tr>
+<td nowrap="nowrap">variables</td>
+<td nowrap="nowrap">variables ["c" "java" "integer" "count"] [equation-number-ranges]</td>
+<td nowrap="nowrap">Related command: code</td>
+</tr>
+<tr>
+<td nowrap="nowrap">version</td>
+<td nowrap="nowrap">version ["status"]</td>
+<td nowrap="nowrap">Display Mathomatic version, status, and compiler information.</td>
+</tr>
+</table>
+<br clear=all>
+<font size="+1">
+Anything enclosed by straight brackets <b>[like this]</b> means it is optional and may be omitted.
+</font>
+<p>
+<font size="+1">
+<strong>For more information, visit <a href="http://www.mathomatic.org">www.mathomatic.org</a></strong>
+</font>
+</body>
+</html>

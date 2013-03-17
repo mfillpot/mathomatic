@@ -1,0 +1,152 @@
+.TH RMATH 1
+
+.SH NAME
+rmath \- a computer algebra system with functions and readline
+.br
+matho \- a computer algebra system with functions
+
+.SH SYNOPSIS
+.B rmath
+[
+input_files
+]
+.br
+.B matho
+[
+input_files
+]
+
+.SH DESCRIPTION
+Mathomatic is a general-purpose computer algebra system (CAS)
+that can symbolically solve, simplify, combine, and compare algebraic equations,
+perform standard, complex number, modular, and polynomial arithmetic, etc.
+It does some calculus and handles all elementary algebra, except logarithms.
+Plotting expressions with
+.B gnuplot
+is also supported.
+
+.B rmath
+and
+.B matho
+are shell scripts that allow you
+to use Mathomatic with input of functions like
+.BI sin (x)
+and
+.BI sqrt (x)
+automatically expanded to equivalent algebraic expressions
+by the
+.B m4
+macro preprocessor.
+A matching pair of parentheses is required around the parameters for all functions in m4 Mathomatic; m4 requires this.
+.B rmath
+also runs the
+.B rlwrap
+readline wrapper utility if available, to provide readline input editing support similar to
+that provided by
+.BR mathomatic (1).
+
+.B rmath
+and
+.B matho
+define and enable named math functions in Mathomatic.
+Most functions enabled here should be real number, complex number, and symbolically capable.
+One exception is the
+.BI abs (x)
+function, which doesn't work with complex numbers, because it is defined
+in Mathomatic as (((x)^2)^.5).
+
+The following general functions are defined when using
+.B rmath
+or
+.B matho:
+.BI sqrt (x),
+.BI cbrt (x),
+.BI exp (x),
+.BI pow (x,y),
+.BI abs (x),
+.BI sgn (x),
+.BI factorial (x),
+.BI gamma (x),
+.BI floor (x),
+.BI ceil (x),
+.BI int (x),
+and
+.BI round (x).
+
+The following standard trigonometric functions are defined:
+.BI sin (x),
+.BI cos (x),
+.BI tan (x),
+.BI cot (x),
+.BI sec (x),
+and
+.BI csc (x).
+.BI sinc (x)
+is the normalized sinc function, defined as
+.BI sin (pi*x) /(pi*x) .
+
+The following standard hyperbolic trigonometric functions are defined:
+.BI sinh (x),
+.BI cosh (x),
+.BI tanh (x),
+.BI coth (x),
+.BI sech (x),
+and
+.BI csch (x).
+
+The following universal constants are defined:
+.I pi,
+.I e,
+.I i
+(the imaginary unit),
+.I euler
+(the Euler-Mascheroni constant),
+.I omega,
+and
+.I phi
+(the golden ratio).
+
+.SH GENERAL
+Text files may be specified on the shell command line
+that will be automatically read in through the m4 preprocessor into Mathomatic.
+After any files are read in, Mathomatic prompts for input from the console.
+
+Mathomatic is best run from within a terminal emulator.
+It uses console line input and output for the user interface.
+First you type in your mathematical equations in standard algebraic notation,
+then you can solve them by typing in the variable name at the prompt, or
+perform operations on them with simple English commands.
+Type "help" or "?" for the help command,
+"help examples" to get started.
+If the command name is longer than 4 letters, you only need
+to type in the first 4 letters.
+Most commands operate on the current equation by default.
+
+Complete documentation is available in HTML and PDF formats;
+see the local documentation directory or online at "http://mathomatic.org/math/doc/"
+for the latest Mathomatic documentation.
+
+.SH FILES
+.TP
+.B ~/.mathomaticrc
+Optional startup file containing Mathomatic set command options.
+It should be a text file with one or more set options per line.
+For example, the line "no color" will make Mathomatic default to non-color mode,
+which is useful if you aren't using a supported color device.
+
+.SH AUTHOR
+Mathomatic has been written by George Gesslein II (gesslein@mathomatic.org),
+with help from the Internet community.
+
+.SH "REPORTING BUGS"
+Please report any bugs to the author or
+on the Launchpad website: "https://launchpad.net/mathomatic".
+
+.SH "SEE ALSO"
+.BR mathomatic (1),
+.BR matho-primes (1),
+.BR primorial (1),
+.BR matho-mult (1),
+.BR matho-sum (1),
+.BR matho-pascal (1),
+.BR matho-sumsq (1)

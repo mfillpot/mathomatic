@@ -1,0 +1,13 @@
+
+; These are the Batman equations.
+; They plot the Batman logo using many absolute value functions.
+; This is a good test of absolute value simplification.
+; To read in, install m4 Mathomatic and type "rmath batman_plot".
+
+y=1.5*sqrt((-abs(abs(x)-1))*abs(3-abs(x))/((abs(x)-1)*(3-abs(x))))*(1+abs(abs(x)-3)/(abs(x)-3))*sqrt(1-(x/7)^2)+(4.5+0.75*(abs(x-0.5)+abs(x+0.5))-2.75*(abs(x-0.75)+abs(x+0.75)))*(1+abs(1-abs(x))/(1-abs(x)))
+y=(-3)*sqrt(1-(x/7)^2)*sqrt(abs(abs(x)-4)/(abs(x)-4))
+y=abs(x/2)-0.0913722*x^2-3+sqrt(1-(abs(abs(x)-2)-1)^2)
+y=(2.71052+1.5-0.5*abs(x)-1.35526*sqrt(4-(abs(x)-1)^2))*sqrt(abs(abs(x)-1)/(abs(x)-1))
+; Type "plot all" to see the batman logo.
+; Test the simplify command by typing "repeat simplify all"
+; then "plot all" again, making sure it is exactly the same plot.

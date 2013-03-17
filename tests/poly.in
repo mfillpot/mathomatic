@@ -1,0 +1,22 @@
+
+; Combine 3 quadratic polynomial equations with 3 unknown coefficients (a, b, c).
+; Solve for variables (a), (b), and (c).
+
+clear all ; restart Mathomatic
+; enter all 3 equations:
+y1=a+b*x1+c*x1^2
+y2=a+b*x2+c*x2^2
+y3=a+b*x3+c*x3^2
+2 ; select equation number 2 as the current equation
+eliminate a ; eliminate variable (a) from the current equation
+3 ; select equation number 3
+eliminate a b ; eliminate variables (a) and then (b) from the current equation
+solve verifiable c
+simplify
+2 ; select equation number 2 again
+eliminate c using 3 ; find (b) by combining equation numbers 2 and 3
+simplify
+1 ; select equation number 1
+eliminate c using 3, b using 2 ; find (a)
+
+simplify fraction all ; display all solutions, converting to simple fractions first

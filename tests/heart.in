@@ -1,0 +1,7 @@
+
+; Plot a heart with gnuplot:
+plot [-2:2] acos(1-abs(x))-pi,sqrt(1-(abs(x)-1)^2)
+
+; If readline is enabled,
+; hitting the up arrow, then the Enter key, should allow a replot.
+:push plot [-2:2] acos(1-abs(x))-pi,sqrt(1-(abs(x)-1)^2)

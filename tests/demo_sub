@@ -1,0 +1,33 @@
+#!/bin/sh
+# Called and used only by the demo shell script.
+
+set -e
+set -u
+
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">'
+echo '<html>'
+echo
+echo '<head>'
+echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+echo "<title>Actual timed Mathomatic output from the $@ script</title>"
+echo '<meta name="description" content="Actual output from running Mathomatic in color HTML mode with the' $@ 'script as input.  Includes total execution time at the end.">'
+echo '<meta name="keywords" content="Mathomatic example scripts">'
+echo '<meta name="distribution" content="global">'
+echo '<meta name="rating" content="general">'
+
+echo '<link rel="home" href="http://www.mathomatic.org">'
+echo '</head>'
+echo
+echo '<body bgcolor="white" text="black" link="blue" alink="red" vlink="purple">'
+
+echo "<h2>Actual timed Mathomatic output from the $@ script</h2>"
+
+/usr/bin/time -p mathomatic -dxr "$@" </dev/null 2>&1
+
+echo 'seconds total execution time of this script.'
+echo '<hr>'
+echo '<a style="float: left;" href="http://www.mathomatic.org/math/adv.html" title="Visit the examples page">More examples</a>'
+echo '<a style="float: right;" href="http://www.mathomatic.org" title="Visit the main page">www.mathomatic.org</a>'
+
+echo '</body>'
+echo '</html>'

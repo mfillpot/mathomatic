@@ -1,0 +1,31 @@
+#!/bin/sh
+# This shell script installs m4 Mathomatic so that any user can use it.
+# If this is a source distribution, you should change directory to its root,
+# and compile Mathomatic and "sudo make m4install" to install everything.
+# If this is a binary distribution, you should type "sudo ./matho-install"
+# from this directory to install the program files and man pages.
+
+PREFIX=/usr/local
+BINDIR=$PREFIX/bin
+MANDIR=$PREFIX/share/man/man1
+MAN1="mathomatic.1 rmath.1"
+MATHOMATIC=mathomatic
+if [ ! -x "$MATHOMATIC" ]
+then
+	MATHOMATIC="../$MATHOMATIC"
+fi
+if [ ! -x "$MATHOMATIC" ]
+then
+	echo mathomatic executable not found.
+	exit
+fi
+
+echo Installing "$MATHOMATIC" to "$BINDIR"
+set -x
+mkdir -p $BINDIR
+mkdir -p $MANDIR
+cp $MAN1 $MANDIR
+ln -sf $MANDIR/rmath.1 $MANDIR/matho.1
+cp "$MATHOMATIC" functions.m4 matho rmath "$BINDIR" && echo Done! && exit
+echo
+echo Usage: sudo $0

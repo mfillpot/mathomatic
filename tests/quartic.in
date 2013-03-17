@@ -1,0 +1,15 @@
+
+; This general quartic (4th degree polynomial) formula as
+; four equations combined into one is from:
+; http://planetmath.org/encyclopedia/QuarticFormula.html
+; Not perfect, gives division by zero warnings and only NaN for results
+; if all four roots are the same.
+
+; The four roots of the general 4th degree polynomial equation
+x^4 + a x^3 + b x^2 + c x + d = 0
+; are given by
+
+x = ((-a)/4 + sign * 1/2(((a^2)/4 - (2b)/3 + (2^(1/3)(b^2 - 3a*c + 12d))/(3((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d + ((-4((b^2 - 3a*c + 12d))^3 + ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d))^2)^.5)))^(1/3)) + (((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d + ((-4 ((b^2 - 3a*c + 12d))^3 + ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d))^2)^.5)))/54)^(1/3))^.5) + sign1 * 1/2(((a^2)/2 - (4b)/3 - (2^(1/3)(b^2 - 3a*c + 12d))/(3((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d + ((-4((b^2 - 3a*c + 12d))^3 + ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d))^2)^.5)))^(1/3)) - (((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d + ((-4 ((b^2 - 3a*c + 12d))^3 + ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d))^2)^.5)))/54)^(1/3) + sign (-a^3 + 4a*b - 8c)/(4(((a^2)/4 - (2b)/3 + (2^(1/3) (b^2 - 3a*c + 12d))/(3 ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d + ((-4 ((b^2 - 3a*c + 12d))^3 + ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d))^2)^.5)))^(1/3)) + (((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d + ((-4 ((b^2 - 3a*c + 12d))^3 + ((2b^3 - 9a*b*c + 27c^2 + 27a^2d - 72b*d))^2)^.5)))/54)^(1/3))^.5)))^.5))
+
+; Type "calculate all" to temporarily plug in coefficients.
+; Use "repeat simplify quick" to simplify this, plain old simplify does a terrible job.

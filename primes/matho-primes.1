@@ -1,0 +1,122 @@
+.TH MATHO-PRIMES 1 "" "Mathomatic" "Mathomatic Utilities"
+
+.SH NAME
+matho-primes \- generate consecutive prime numbers
+
+.SH SYNOPSIS
+.B matho-primes
+[start [stop] or "all"] ["twin"] ["pal" [base]]
+.br
+.B matho-primes
+[\-htuv] [\-c count] [\-m number] [\-p base] [start [stop]]
+
+.SH DESCRIPTION
+This command-line utility is optionally part of the
+.BR mathomatic (1)
+package.
+It quickly computes any number of consecutive prime numbers
+using a windowing, memory efficient
+sieve of Eratosthenes algorithm, dumping them to standard output.
+They are displayed one prime per line in ascending order,
+unless the "twin" option is specified,
+which displays only twin primes, two primes per line.
+
+Generates up to 18 decimal digit primes,
+or whatever is the number of digits of precision for a floating point
+.B long double
+in the C compiler used to compile this utility.
+Note that this utility might be compiled to use only double precision floating point,
+if long double precision is not fully supported by the C compiler or hardware,
+allowing at most 15 decimal digit primes in that case.
+
+Ways to verify that this utility is working are to pipe the output into the Unix "factor" utility,
+or compare the output with the BSD Games "primes" utility, using the supplied shell script:
+.B examples/testprimes.
+
+All numbers displayed by this utility
+are decimal (base 10) prime numbers.
+A prime number is an integer that cannot be factored.
+
+A range may be
+specified on the command line, otherwise the starting number and
+the number of primes to output is prompted for.
+The range is
+.B start
+to
+.B stop
+inclusive, and
+.B stop
+must
+be greater than or equal to
+.B start.
+
+If the
+.B \-c
+option is specified, the number of lines of primes displayed is limited to the
+decimal count that follows this option.
+
+If the
+.B \-t
+or "twin" option is specified on the command line,
+only
+.B twin primes
+will be displayed.
+Twin primes are two primes that differ in value by 2.
+Each twin pair is displayed together on the same line separated by a space character.
+
+If the
+.B \-p
+or "pal" option is specified on the command line,
+only
+.B palindromic primes
+are displayed.
+Palindromes are symmetrical, they read exactly the same forward and backward.
+The palindromic number
+.B base
+may be specified, the default is base 10.
+The
+.B base
+can be any integer greater than 1.
+Primes are always displayed in decimal (base 10).
+
+The version number and
+short help on the allowed command-line parameters and usage information
+are displayed when given the
+.B \-h
+option.
+
+With the
+.B \-u
+option, all output (standard output and standard error output)
+is set to be unbuffered, making all output happen immediately,
+instead of when the output buffer is full or when the program terminates
+or waits for input.
+
+The
+.B \-m
+option changes the memory size of the prime number sieve window.
+It is followed by a decimal, floating point number which is a multiplier
+of the default window size (2 megabytes).
+It is possible that changing the memory size may speed up the total run time a bit;
+otherwise there is no reason to use this option, and its use is not recommended.
+
+The
+.B \-v
+option simply displays the program name and version number, and then exits successfully.
+
+.SH AUTHOR 
+George Gesslein II (gesslein@mathomatic.org)
+at "http://www.mathomatic.org".
+
+.SH "REPORTING BUGS"
+If you find a bug, please report it to the author
+or at "https://launchpad.net/mathomatic".
+
+.SH "SEE ALSO"
+.BR rmath (1),
+.BR mathomatic (1),
+.BR primorial (1),
+.BR matho-mult (1),
+.BR matho-sum (1),
+.BR matho-pascal (1),
+.BR matho-sumsq (1)

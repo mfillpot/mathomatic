@@ -1,0 +1,43 @@
+
+; Tests for the experimental limit command.
+
+clear all
+; find the derivative of:
+y = 1/(x^.5)
+; using the difference quotient:
+y' = (1/(x+delta_x)^.5-1/x^.5)/delta_x
+limit delta_x 0 ; take the limit as delta_x (change in x) goes to 0
+3
+integrate x ; take the antiderivative to see if it's right
+compare 1
+
+; test infinity limits:
+2x/(x+1)
+limit x inf ; answer should be 2
+
+(3x+100-a)/(x-b)
+limit x inf ; answer should be 3
+
+(((x^2) - (5*x) + 6)^(1/2)) - x
+limit x inf ; answer should be -5/2
+
+x*((x^2+1)^.5-x)
+limit x inf ; answer should be 1/2
+
+1/x^2+1/x
+limit y inf ; result should be original expression with a warning.
+limit x inf ; result should be 0
+
+((2*(x^2)) - x - 6)/((x^2) + (2*x) - 8)
+limit x inf ; result should be 2
+
+x^2+x
+limit x 0 ; result should be 0
+limit x 2 ; result should be 6
+display
+; The following currently gives the wrong answer:
+limit x inf ; result should be inf
+; The following currently gives errors:
+y=x+1/x
+:limit x 0 ; result should be inf
+:limit x inf; result should be inf

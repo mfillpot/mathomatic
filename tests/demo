@@ -1,0 +1,17 @@
+#!/bin/sh
+# Create complete color html files out of Mathomatic input (*.in) files.
+# The result is suitable for display on a website.
+# Usage: ./demo script_base_filenames
+
+RUN_SUB="${0}_sub"
+
+for file in "$@"
+do
+	if [ ! -f "$file.in" ]
+	then
+		echo $file.in not found.
+		exit 1
+	fi
+	echo Doing "$file.in" with "$RUN_SUB" and tidy...
+	"$RUN_SUB" "$file" | tidy -q -i -wrap 1000 >$file.html
+done

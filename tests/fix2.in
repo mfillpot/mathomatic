@@ -1,0 +1,16 @@
+clear all
+b = ((-1)^(1/((-1*n)+1)*(2+n)))*(a^(1/((-1*n)+1)))
+x = 1/(y^(1/(n-1)*(-2+n)))/((n^(n/(n-1)))-(n^(1/(n-1))))
+y = (x+(((1/x)+1)*((x^m)+((a+b)/(x^n)/(c+d)))))/(x+1)
+y = 3 / (x^3+3x^2-x-3) - 2 / (x^3-x^2-3x+3) + 4 / (x^3+x^2-3x-3)
+(x^2 - 1)^4/(x + 1)^2
+simplify all
+1
+solve verifiable a
+2
+solve verifiable y
+1/(x+y)
+taylor x, 5, 0
+fraction
+simplify fraction
+simplify

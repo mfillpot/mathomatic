@@ -1,0 +1,24 @@
+; Trigonometric functions as complex exponentials.
+; Use m4 Mathomatic instead for easy entry of these trig functions.
+; Based on Euler's identity: e^(i*x) = cos(x) + i*sin(x)
+; Variable x is an angle in radians.
+
+; Unity relationship: sin(x)^2 + cos(x)^2 = 1
+
+; sin(x) (sine of x) = cos(pi/2 - x)
+sin=(e^(i*x)-e^(-i*x))/(2i)
+
+; cos(x) (cosine of x) = sin(pi/2 - x)
+cos=(e^(i*x)+e^(-i*x))/2
+
+; tan(x) (tangent of x) = sin(x)/cos(x) = cot(pi/2 - x)
+tan=(e^(i*x)-e^(-i*x))/(i*(e^(i*x)+e^(-i*x)))
+
+; cot(x) (cotangent of x) = cos(x)/sin(x) = tan(pi/2 - x)
+cot=i*(e^(i*x)+e^(-i*x))/(e^(i*x)-e^(-i*x))
+
+; sec(x) (secant of x) = 1/cos(x) = csc(pi/2 - x)
+sec=2/(e^(i*x)+e^(-i*x))
+
+; csc(x) (cosecant of x) = 1/sin(x) = sec(pi/2 - x)
+csc=2i/(e^(i*x)-e^(-i*x))

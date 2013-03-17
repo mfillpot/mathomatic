@@ -1,0 +1,13 @@
+; Algebraic fractions test
+clear all
+(c+a-b)/(b-a)
+((d*(b+c))+(a*(e1+f)))/(e1+f)/(b+c)
+((((e1^2)+d)*b*((b^2)+2))-e1-f)/b/((b^2)+2)/(e1+f)
+((b*((((e1^2)+d)*((b^2)+2))+(b*(e1+f))))+e1+f)/(e1+f)/b/((b^2)+2)
+((1/(x^(1+n)))+(1/(x^n))+(x^(m-1))+(x^m)+x)/(x+1)
+(1/(a + b)) + (1/(b + c))
+((x - 1)^2)*(2 + x)/((1 + x)*((x - 3)^2))
+simplify all
+fraction all
+simplify fraction all
+simplify all

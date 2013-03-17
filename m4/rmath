@@ -1,0 +1,21 @@
+#!/bin/sh
+# This shell script runs m4 Mathomatic (matho) with readline capability.
+# Uses rlwrap program, if available, which is a readline front end.
+# The rlwrap program may be obtained at
+# http://utopia.knoware.nl/~hlub/uck/rlwrap/
+#
+# Usage: rmath [ input_files ]
+
+MATHOPATH="${0%/rmath}/matho"
+if [ ! -x "$MATHOPATH" ]
+then
+	MATHOPATH=matho
+fi
+
+if rlwrap true
+then
+	rlwrap -H ~/.matho_history "$MATHOPATH" "$@"
+else
+	echo readline support not loaded because \"rlwrap\" utility was not found.
+	"$MATHOPATH" "$@"
+fi

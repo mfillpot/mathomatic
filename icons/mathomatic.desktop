@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Mathomatic
+GenericName=Computer Algebra System
+Comment=Do symbolic mathematics and quick calculations
+Exec=mathomatic
+Icon=mathomatic
+Terminal=true
+Type=Application
+Categories=Education;Science;Math;
+StartupNotify=false

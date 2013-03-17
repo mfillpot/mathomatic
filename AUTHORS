@@ -1,0 +1,29 @@
+ George Gesslein II <gesslein@mathomatic.org>
+ Chief Mathomatic creator, author, maintainer, and copyright holder.
+ http://www.mathomatic.org
+
+There are many individuals maintaining Mathomatic ports. Thank you very much
+for creating, supporting, and sponsoring the Mathomatic ports for all these
+years.
+
+Thanks to all people who have contributed code and time to the Mathomatic
+project:
+  2010 Simon Geard for better and more readable code command code.  :-)
+  2010 Michael Pogue of Sun Microsystems for help on compiling under Solaris.
+  2010 Jonathan Stark for the original cmake file "CMakeLists.txt".
+  2011 Doug Snead for the MinGW color mode code for cmd.exe and command.com.
+  2012 Doug Snead creates and sells a fancy Android version with a GUI.
+
+Thanks to all the wonderful people that have been testing, contributing, and
+donating to the Mathomatic project and encouraging me on; many are not listed
+here. If you think you belong in this list, please let George Gesslein II
+know. I will mention anyone that has contributed to or guided the Mathomatic
+project, that wishes to be mentioned here. Please indicate how you would like
+your entry to appear (website?, email address?).
+
+And late thanks to Dennis M. Ritchie, whose work to design and create the
+original C language and compiler made Mathomatic and our life possible. I
+even learned C from his book.
+
+				Sincerely,
+				George Gesslein II

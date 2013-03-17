@@ -1,0 +1,104 @@
+
+                      Mathomatic Installation Instructions
+                      ------------------------------------
+
+The requirements for easy installation from this source code are: the GNU
+make utility and the GNU C compiler (gcc). Other C compilers may be used, but
+may require small changes to the makefile, source files, or compilation
+command-line. You will need to open a shell window to compile, install, and
+run Mathomatic.
+
+On a Debian or Ubuntu Linux computer, the "build-essential" and readline or
+editline development packages "libreadline-dev" or "libeditline-dev" are
+required to compile Mathomatic with readline functionality. To open a shell
+window in desktop Linux, launch Applications/Accessories/Terminal.
+
+To skip these compilation instructions and install an older version of
+Mathomatic, already compiled and ready to run under Debian or Ubuntu, type:
+
+	sudo apt-get install mathomatic mathomatic-primes
+
+at the shell prompt, then type your password if prompted for it. You can then
+run Mathomatic by typing "mathomatic". This is possible because Mathomatic is
+an official Debian package. It is also an official Fedora package. To install
+Mathomatic in Fedora Linux, type:
+
+	sudo yum install mathomatic
+
+To install Mathomatic in Gentoo Linux, type:
+
+	sudo emerge mathomatic
+
+The Mathomatic code is portable, self-testing, and easily compiles and
+installs using the GNU utilities under Linux, Unix, SunOS, Mac OS X,
+Microsoft Windows, and many modern mobile devices. Both the source code and
+compiled, ready to run, binary packages may be available from your operating
+system's package manager or from the Mathomatic website:
+http://www.mathomatic.org/math/download.html
+
+
+                     Typical compilation and installation
+                     ------------------------------------
+
+Root (super-user) authority is needed to install Mathomatic, because write
+permission is needed to copy files into the directories in "/usr/local".
+Mathomatic need not be installed to run the compiled executable. Reading the
+makefile comments is recommended.
+
+A typical compile/install is done by typing the following at the shell
+prompt, while in the Mathomatic source code directory:
+
+	make clean
+	make READLINE=1    or    make EDITLINE=1
+	make test
+	sudo make install
+
+and enter your password. That will compile the source code with readline
+enabled, test the functionality of the generated executable (named
+"mathomatic"), and install the executable, docs, and tests in "/usr/local" in
+less than a minute. After that, typing "man mathomatic" should bring up the
+man page, and typing "mathomatic" should run Mathomatic. If Mathomatic
+doesn't run, check that the PATH environment variable includes
+"/usr/local/bin" with the shell command "echo $PATH".
+
+To install in "/usr" instead of "/usr/local", type:
+
+	sudo make prefix=/usr install
+
+sudo asks you for your password; if it doesn't work, login as root or type:
+
+	su -c "make install"
+
+and enter the root password to install as the super-user.
+
+
+                                m4 Mathomatic
+                                -------------
+
+To install everything, including m4 Mathomatic (rmath), which allows easy
+entry of math functions like sqrt(x) and sin(x) as macros, use "make
+m4install" or "make m4install-degrees" instead of "make install". "make
+m4install-degrees" sets degree mode instead of radian mode for trig
+functions.
+
+
+                              Prime Number Tools
+                              ------------------
+
+To clean, compile, test, and install the Mathomatic Prime Number Tools:
+
+	cd primes
+	make flush
+	make
+	./t
+	sudo make install
+
+
+                                  Uninstall
+                                  ---------
+
+To undo the installation, removing Mathomatic from the local computer, type:
+
+	sudo make uninstall
+
+These instructions were written by George Gesslein II of www.mathomatic.org

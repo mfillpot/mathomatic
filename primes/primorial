@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+# This is a Python program to display large primorials.
+# A primorial is the product of all primes up to the given number.
+# Uses the programs "matho-primes" and "matho-mult" as follows:
+#	primorial 1000
+# runs:
+#	matho-primes 0 1000 | matho-mult
+#
+# For fun, try:
+#	primorial `matho-primes 2 97`
+#
+# to display all unique primorials from 2 to 97.
+
+import os
+import sys
+
+def usage(ev):
+	print "This program calculates large primorials."
+	print
+	print "Usage: %s integers" % os.path.basename(sys.argv[0])
+	print
+	print "A primorial is the product of all primes up to the given number."
+	sys.exit(ev)
+
+def output_primorial(arg):
+	sys.stdout.write(arg + "# = ")
+	sys.stdout.flush()
+	if (os.system("matho-primes 0 " + arg + " | matho-mult") != 0):
+		sys.exit(1)
+
+args = sys.argv[1:]
+if (args == []):
+	usage(2)
+else:
+	for arg in args:
+		try:
+			if (int(arg) < 1):
+				print >>sys.stderr, "Number too small."
+				sys.exit(1)
+		except:
+			print >>sys.stderr, "Positive integer required."
+			usage(1)
+		output_primorial(arg)

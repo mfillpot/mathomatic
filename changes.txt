@@ -1,0 +1,434 @@
+
+          Version history of the Mathomatic computer algebra system
+          ---------------------------------------------------------
+             This change log is entirely in chronological order;
+               the latest changes are at the end of this file.
+                Written and maintained by George Gesslein II.
+              This file is at "www.mathomatic.org/changes.txt".
+              -------------------------------------------------
+
+Mathomatic version 15.8.5 released Friday 05/25/12.
+
+CHANGES MADE TO MATHOMATIC 15.8.5 TO BRING IT UP TO THE NEXT VERSION:
+
+Code, documentation, and user interface improvements, corrections,
+and cleanup.  Fixed many possible bugs, some where the wrong level global
+expression buffers were being used.
+
+05/26/12 - Push command improved with better responses.  Same functionality.
+
+           In the source code, tune-up variable integer_coefficients was
+           renamed to "factor_out_all_numeric_gcds", because Mathomatic always
+           tries to have integer coefficients this year, but it doesn't always
+           factor out all numeric GCDs unless factor_out_all_numeric_gcds
+           is true, or the factor command is used.  The default is false,
+           for more orderly and revealing coefficients.
+           Of course, much of what Mathomatic does is
+           try to improve readability and simplicity.
+           There is no need to set this variable, just use the factor command.
+
+05/27/12 - Removed C declarations for memmove(3), the defaults in
+           /usr/include/string.h are probably better and what's wanted in
+           every case.  It would be very odd if this didn't work 100%.
+
+05/28/12 - readline history file renamed to "~/.matho_history" from
+           "~/.mathomatic_history".  File name was too long for CygWin.
+           Tested thoroughly compiling, installing, and running under
+           the latest CygWin.  Works fine, except for rlwrap.  "rlwrap -v"
+           returns with error, a successful return is how I test for its
+           existence.
+
+           Made output redirection work with the "list primes" command.
+
+06/02/12 - Cleanup of Linux, Mac OS X, and Windows binary distributions.
+           The Windows binary distribution now includes m4 scripts, in case
+           CygWin is installed, allowing use of m4 Mathomatic in Windows.
+
+           Fixed MinGW version to not output two carriage returns at the
+           end of every line of list command output.
+
+06/03/12 - If compiled with -DSHOW_RESOURCES, will give total CPU usage and
+           RSS size in the "version status" command.  Requires OS support.
+           Some OSes will show even more information.  Uses getrusage(2).
+
+06/04/12 - Allow breaking out of user line-input requests with Control-C.
+           Still have to hit the Enter key, but the command will be aborted.
+
+06/05/12 - Added "lib/example.c", the simplest example yet of Symbolic Math
+           Library usage.  Compile with "compile.testmain" or practice
+           compiling it by hand.
+
+           The simplify command now returns the number of expressions
+           simplified, so you can tell if "simplify sign" worked.
+
+           The solve command can now require verification, by using the
+           "verifiable" option, instead of the "verify" option.  This causes
+           unverifiable solves to return with failure, aborting any reads.
+
+           Fixed missing code in internal C function free_mem().
+           I don't think it was used by anyone.  A call to free_mem() is
+           now made on exit, if Mathomatic is compiled with -DVALGRIND, to
+           check for memory leaks.
+
+06/08/12 - Added polynomial factoring to GCD result of divide command.
+           It is always handy to know what the factors are of the GCD.
+
+           Allow comma (,) at the end of most input lines.  A comma now
+           terminates an expression instead of giving an error.  Allow
+           commas all over the place, where-ever logical, in any
+           Mathomatic command-line.  They are used as separators,
+           more so than spaces.
+
+06/09/12 - Cleaned up variables command to always allow the count parameter,
+           and to line up everything with 8 character wide tabs.
+
+           Added ability to place the definite integration bounds on the
+           integrate command-line, just like the nintegrate command.
+
+           Added titles to most help command pages.
+
+06/10/12 - The "factor number" command works much nicer now, and allows comma
+           separators and zero.
+
+           Developers should note that to remain the same as past versions,
+           HTML mode needs to be "set html all" to output HTML at all times
+           in both the application and the symbolic math library, even when
+           redirecting output.  Now setting all HTML mode with
+           "make pdfsheet".  "set html" only outputs HTML code to standard
+           output.
+
+06/13/12 - Added warning in "misc/known_bugs.txt" about LLVM/Clang optimizer
+           failure when compiling Mathomatic with LLVM/Clang instead of gcc.
+           If you enable any optimization at all, entering (32^.5) and the
+           like will hang Mathomatic, putting it in an endless loop.
+           So when compiling Mathomatic with LLVM/Clang, always disable
+           optimization with "-O0", so that it will then run and pass
+           all of the tests in 1 second and not be infinitely slower.
+           Mathomatic will hang during "make test"
+           if compiled with optimization enabled using LLVM.  Mathomatic is
+           not noticeably slower when compiled without any optimization,
+           because everything is memmove(3)s and floating point arithmetic.
+
+06/15/12 - Added repeat option to replace command.  A handy feature that
+           lets you try plugging different values into an equation.  It
+           checks if the result is an identity, too.
+
+06/18/12 - The version command now has a "status" option, which behaves
+           as before, displaying all version and status information.
+           The version command by itself now only displays the Mathomatic
+           version number.  Running "mathomatic -v" is now a good way of
+           testing for the existence of Mathomatic on your system, only
+           outputting the version number to standard output and exiting
+           successfully.
+
+06/19/12 - Removed the parenthesizing of variable names in all messages.
+
+           If the current expression is a non-equation, then prefixing or
+           suffixing an expression with "=" will add that expression as
+           the other equation side now, conveniently making it an equation
+           you can solve.
+
+06/22/12 - Added equation number ranges option to tally command.  Type
+           "tally -" to resume if the current equation hasn't changed.  Type
+           "tally all" to add together all stored expressions as the starting
+           value.  Specifying equation numbers or ranges will silently add
+           them, then prompt for the next things to add.  The average option
+           now displays the number of entries (count) each time the average
+           is displayed.  When you exit by typing an empty line, the current
+           total is saved in the next available equation space and made
+           current, so it can easily resume with "tally -".  "-" by itself
+           always means the current equation.
+
+           gnuplot now works with MS-Windows better.  Tried running a Windows
+           gnuplot test from scratch, without Cygwin, and it didn't work.
+           It should be mostly fixed now.  So go ahead and try plotting
+           in Windows, after downloading and installing gnuplot.  Please
+           complain if any problems.
+
+           Fixed a long-running problem with the plot command, by asking the
+           user questions, only if needed, so that gnuplot will not give an
+           error if you are multi-expression plotting.
+
+06/23/12 - Moved load_rc() out of main.c so that the Mathomatic startup set
+           options file can be loaded by the library, if the developer wishes.
+           Changed a few things so that "set save" and "set no save" will work
+           if load_rc() is called beforehand.
+
+06/25/12 - The simplify command has been fixed for optimal integer coefficient
+           factoring results and so "180*(sides-2)" simplification works
+           nicely, by keeping the result the same as the start by
+           factoring out rational constants greater than 1 (this is new),
+           along with less than 1,
+           if the coefficients remain or become integers.
+
+           Many things cleaned up and finished, like the official
+           documentation, the "code integer" command, and "examples/fact.c".
+
+06/27/12 - Allow an ASCII string after the "set save" command, to save only
+           that string in ~/.mathomaticrc, so that string, which should be set
+           options, is for every Mathomatic session to start with.
+           For example, "set save bold color" will start out Mathomatic in
+           bold color mode every time.  Enter "set no save" to remove.
+           "set save" by itself saves all of the current set options for every
+           future session.
+
+Mathomatic version 16.0.0 released Friday 06/29/12.
+
+CHANGES MADE TO MATHOMATIC 16.0.0 TO BRING IT UP TO THE NEXT VERSION:
+
+07/06/12 - Confirmed successful compilation and testing with the
+           Tiny C compiler (tcc).  Only needed to set the tcc linker
+           library directories to the current gcc library directories
+           to make it work (using the -L option).
+
+           Searched globally for the word "simply" and fixed many outdated
+           texts in the Mathomatic documentation and READMEs, deleting some
+           wrongly used "simply"s, too.
+
+07/07/12 - Allow "set modulus_mode language", where language is C, Java,
+           Python, or positive.
+
+07/08/12 - Now leaving the "UNIX" C preprocessor define alone,
+           when "HANDHELD" is defined.  "UNIX" was previously
+           forced undefined.
+
+07/11/12 - "make test", "make check", and ./t now display the actual
+           Mathomatic version number being tested.
+
+           matho-primes now has a -v (display version number) option,
+           like Mathomatic does.
+
+           Mathomatic now automatically clears out all old
+           numeric calculations if it runs out of equation spaces,
+           requiring no action from the user.
+
+07/12/12 - The solve command never needs the "repeat solve" prefix anymore.
+           The repeat flag is always set for the solve command, so that
+           it will always do full simplifies when verifying.
+
+           Added quadratic formula derivation and proof to
+           "tests/quadratic.in".
+
+07/17/12 - I came up with a swinging new and easy way to add, subtract,
+           multiply, divide, modular and integer divide,
+           and raise to the power of both sides of an equation by any
+           expression.  To add x+1 to both sides of the current
+           equation, just type "+=x+1" at the main prompt.  To divide both
+           sides by c^2, type "/=c^2".  You can add stuff to non-equations
+           too, this way.  Be sure and use the simplify command after this
+           if needed, because only a small amount of simplification is done
+           by default, just enough so you can see what is happening.
+
+07/20/12 - Changed floating point to rational floating point conversion
+           routine (f_to_fraction()) to ignore converting anything with
+           over 15 digits, for greater accuracy.
+           This fixes some small accuracy bugs: "factor number 17!" now gives
+           an error instead of the wrong value.
+
+07/21/12 - Integrate, Laplace, and Numerical Integrate commands now warn
+           when the current equation is not a properly solved equation.
+
+Mathomatic version 16.0.1 released Sunday 07/22/12.
+
+CHANGES MADE TO MATHOMATIC 16.0.1 TO BRING IT UP TO THE NEXT VERSION:
+
+A nice cleanup and documenting of everything, while my mind still works.
+
+07/23/12 - Enabled links in "manual.pdf" (the Mathomatic User Guide
+           and Command Reference), they were not working well before,
+           so I had disabled all links, but they work great now.
+
+07/24/12 - Allow -a option ("set alternative") with sets alternative
+           color mode, useful in MS-Windows when using Cygwin with the
+           MinGW compiled version.
+
+07/27/12 - Two bug fixes today:
+
+           Fixed using rlwrap under Cygwin and possibly other places,
+           when running rmath.
+
+           get_yes_no() question asker wasn't working in Cygwin or rmath.
+           Fixed to always ask the question, even if the input is not a TTY.
+
+07/28/12 - Reading directories and empty files gives an error now.
+
+07/30/12 - Split off changes.txt to changes.txt and changes_series_15.txt.
+           changes.txt and NEWS now contain only series 16 changes.
+
+           Added tests/batman_gnuplot_bug.in to prove there is a plotting bug
+           in gnuplot itself.
+
+08/01/12 - Removed directive to use large font in the CSS for all Mathomatic
+           documentation.  This is so it can be browsed easily with a mobile
+           device.  The font size should be set by the user.
+
+08/02/12 - A one-sided expression with an equals sign now only sets the
+           expression equal to zero if autocalc didn't work on it.  In the
+           Symbolic Math Library, or without autocalc enabled, all is the
+           same.  This makes it more likely purely numerical input is only
+           calculated, even when preceded or followed by an equals sign,
+           when autocalc is enabled.  Reason for this change:
+           Why would you want to set a constant equal to 0?
+
+           Fixed a bunch more error reporting bugs coded into version 16.0.1
+           of Mathomatic to apply identical operations to both sides of an
+           equation.  All fixed now.  Points to the error correctly now, too.
+
+08/04/12 - Major change to Symbolic Math Library.  It now works exactly like
+           the application when it comes to purely numerical input,
+           approximating and displaying the result, however sign variables
+           are not expanded and the result is not 100% simplified,
+           so running "simplify sign" afterwards helps with that.
+           To revert to the old way, just turn off autocalc, or set
+           the numerical input equal to some normal variable; then there
+           will be no automatic approximation nor simplification.
+           You can tell when an input has been approximated because it
+           was numerical input, because it will always be preceded with
+           "answer =".
+
+08/05/12 - m4/degrees.m4 copied with m4/functions.m4, when installing with
+           "make m4install", thanks to a suggestion by Reini Urban,
+           maintainer of the Cygwin version.
+
+Mathomatic version 16.0.2 released Monday 08/06/12.
+
+CHANGES MADE TO MATHOMATIC 16.0.2 TO BRING IT UP TO THE NEXT VERSION:
+
+New command "set load" loads the current set options startup file again,
+displaying the startup file as it reads it in.
+If the file doesn't exist, or something is wrong, then an error message is
+displayed and the set command returns with failure.
+Accidently putting "load" in the startup file is now handled correctly.
+
+08/09/12 - Allow "matho-primes all" and the command "list primes all" in
+           Mathomatic to continually output consecutive prime numbers.
+
+08/12/12 - Fixed any rman errors in the makefile so they won't be ignored.
+
+08/17/12 - rmath and matho no longer set the debug_level or modulus_mode,
+           so they can be set by the startup options file.
+
+08/19/12 - Allow the repeat prefix on the approximate command, making it
+           approximate and simplify as much as the calculate command
+           does.  Hopefully someday it will just give a temporary
+           result, too.  Numerical input into the symbolic math library
+           now uses "repeat approximate" instead of just "approximate"
+           to approximate the user's input, so the result is the
+           same as the Mathomatic application's result.
+
+           Disallow the same warnings to be repeatedly displayed, if the
+           current warning is the same as the previous warning.
+
+08/20/12 - Allow directory names as read command arguments, instructing
+           the read command to change the current directory to the specified
+           directory.  Without any arguments, the read command now does an
+           "ls" command in Unix/Linux, and "dir" under MS-Windows, listing
+           the current directory contents.  Running Mathomatic with a
+           directory name argument now conveniently changes directory to
+           that directory, then gives you the main prompt.
+
+08/28/12 - Made "integer" type variables much more useful.  For example,
+           the following now happens generally:
+
+1-> i^(4*integer)
+#1: i^(4*integer)
+1-> simplify
+#1: 1
+1-> i^((4*integer) + 1)
+#2: i^((4*integer) + 1)
+2-> simplify
+#2: i
+2-> i^((4*integer) + 2)
+#3: i^((4*integer) + 2)
+3-> simplify
+#3: -1
+3-> i^((4*integer) + 3)
+#4: i^((4*integer) + 3)
+4-> simplify
+#4: -1*i
+
+08/29/12 - Displays "Calculating..." whenever autocalc is used now.
+
+08/30/12 - Added ability to set the normal text color.
+           Still defaults to no color.  Use "set color 0" to set the normal
+           text color to green, as it has been for many years in the past.
+
+08/31/12 - Removed the "set preserve_surds" option, since the approximate
+           and calculate commands all take care of undoing that.
+           The code remains, however "set preserve_surds" is no longer
+           advertised.  I have never used it.
+           Surds are preserved, for accuracy's sake, by default.
+
+09/05/12 - "set" as a null set option works now, so no one will have any
+           trouble setting-up the set options startup file.
+
+Mathomatic version 16.0.3 released Saturday 09/08/12.
+
+CHANGES MADE TO MATHOMATIC 16.0.3 TO BRING IT UP TO THE NEXT VERSION:
+
+09/09/12 - Allow use of editline library in Mathomatic, because somehow
+           use of GPL libraries in LGPL code is not allowed, and GNU readline
+           is GPL.  I am so confused about this Debian bug#687063:
+           http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=687063
+
+           Based on the bug report's information sources,
+           it appears he is saying the truth about this license issue,
+           so I will have to upload new versions of
+           Mathomatic with editline instead of readline to Debian.
+           The only noticeable difference should be it doesn't save
+           the history between Mathomatic sessions.
+           I will comply with all that request it,
+           though most distributions do not include editline,
+           which has no major licensing restrictions.  Readline is still
+           perfectly usable and good as before, you just have to link
+           it in yourself.
+
+09/10/12 - Going to have to make a new release already, 2 days after the last
+           one, so I can upload this readline licensing fix to Debian by
+           linking with editline.  There is no reason for anyone to upgrade
+           to version 16.0.4, unless you wish to link with editline instead
+           of readline.  The proper code has been added.  All you have to do
+           is have the editline libraries loaded on your system,
+           and run "make EDITLINE=1" to compile and link Mathomatic with
+           editline.
+
+Mathomatic version 16.0.4 released Monday 09/10/12.
+
+CHANGES MADE TO MATHOMATIC 16.0.4 TO BRING IT UP TO THE NEXT VERSION:
+
+09/17/12 - Corrected and improved "tests/finance.in" and the terminology used,
+           thanks to Wolfram Alpha.
+
+09/20/12 - Fixed "./update" command (which updates "proto.h") to work without
+           the readline development headers and libraries installed.
+
+09/23/12 - m4/gradians.m4 copied with m4/functions.m4, when installing with
+           "make m4install" into "/usr/local/share/mathomatic/m4/",
+           so gradian trig mode can be used by typing "rmath gradians.m4"
+           at the shell prompt, while in that directory.
+           The debug level was being set in degrees.m4
+           and gradians.m4; no longer.
+
+09/25/12 - Mathomatic now always runs "set load" after "set save",
+           for the convenience of immediately loading the specified settings,
+           and for error checking.
+
+           From now on Mathomatic does not set the alarm nor hangup handlers,
+           because it crashes the entire shell window when readline
+           is compiled in and an alarm or hangup signal happens.
+           Works acceptably now that these signal handlers are not set,
+           it just quits when time is up, saying "Alarm clock";
+           The same thing happens for SIGHUP, except it just says "Hangup"
+           and quits.  I am really not liking readline nor its license now.
+           SIGALRM and SIGHUP are no longer given handlers.  The default
+           seems to be what has to be there with the current readline mess.
+           Overwriting the current signal handlers causes serious bugs,
+           but only for readline.
+
+09/29/12 - Fixed "lib/compile.testmain" to work with the latest linker.
+
+10/16/12 - Made all output methods respect "set columns", so
+           "display all >output.txt" will not always use infinite columns.
+           This goes for the Symbolic Math Library, too.
+
+Mathomatic version 16.0.5 released Sunday 10/21/12.

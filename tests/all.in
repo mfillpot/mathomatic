@@ -1,0 +1,90 @@
+; This is a Mathomatic script that reads in all test scripts.
+
+clear all
+; Test simplifying trig functions:
+read trig.in
+read hypertrig.in
+simplify all
+simplify frac all
+; Let's simplify some trig identities without using m4:
+sin^2+cos^2=1
+elim all
+simplify
+tan=sin/cos
+elim all
+csc=1/sin
+elim all
+sec=1/cos
+elim all
+cot=1/tan
+elim all
+1+tan^2=sec^2
+elim all
+cosh^2-sinh^2=1 ; The main hyperbolic trigonometry identity:
+elim all
+; Now verify them all, to show and check the new solve command usage.
+solve 13-19 verifiable 0
+pause
+clear all
+; Next, test fixed-point mode and some financial equations:
+read finance
+a=55/-3
+list
+display mixed
+display mixed factor
+display simple
+list
+display
+set no fixed_point
+display
+clear all
+read quadratic
+clear all
+read electronics
+simplify all
+clear all
+read fibonacci
+clear all
+read test
+clear all
+read fraction
+clear all
+read pie
+1
+fraction
+read demo
+read limits
+; read how_limit_works
+read test3
+read poly
+clear all
+read examples
+clear all
+read test1
+read test2
+read test6
+clear all
+read simplify
+read heron
+clear all
+read radius
+clear all
+read pyth3d
+clear all
+read distance
+clear all
+read circles
+clear all
+read ellipse
+solve all y
+simplify all
+pause
+clear all
+help examples
+clear all
+help conversions
+simplify all
+clear all
+help geometry
+simplify all
+quit

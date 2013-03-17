@@ -1,0 +1,34 @@
+
+; General quadratic (2nd degree polynomial) formula.
+; Formula for the 2 roots (solutions for x)
+; of the general quadratic equation.
+;
+a x^2 + b x + c = 0 ; The general quadratic equation.
+copy select ; Make a copy and select it.
+solve verifiable for x ; Mathomatic can easily solve and verify that:
+; This is the quadratic formula.
+; The coefficients (a, b, and c) may be any mathematical expression not containing x.
+pause
+; Here is the derivation and proof of the quadratic formula,
+; without actually using the quadratic formula,
+; because that is what we are trying to derive now, from the quadratic equation:
+#1:
+copy select ; make a copy of the general quadratic equation to work on and select it.
+-=c ; subtract "c" from both sides.
+/=a ; divide both sides by "a".
+pause Next simplify it and turn it into a repeated factor polynomial equation
+simplify
++=b^2/(4*(a^2)) ; add "b^2/(4*(a^2))" to both sides.
+; Now the LHS is a repeated factor polynomial, next factor it by pressing Enter to simplify.
+pause
+simplify ; Now the LHS is a factored polynomial, so solving for the single "x" is easy.
+set debug 1 ; Let Mathomatic do the work and show it too.
+; Show how easy it is to solve this equation now, after pressing Enter.
+pause
+x
+; Here is the raw solve result, press the Enter key to simplify and compare with the quadratic formula.
+pause
+set no debug
+repeat simplify
+compare with 2
+

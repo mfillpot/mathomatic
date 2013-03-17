@@ -1,0 +1,17 @@
+#!/bin/sh
+# Shell script to test the Mathomatic prime number tools.
+
+set -e
+set -u
+
+trap "rm -f test.out bigtest.out" EXIT
+
+make -j2 check bigcheck
+
+echo Testing matho-pascal...
+./matho-pascal >/dev/null
+
+echo Testing matho-sumsq...
+./matho-sumsq 12146807 50000000 >/dev/null
+
+echo Prime number tools tests successful.

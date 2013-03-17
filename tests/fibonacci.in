@@ -1,0 +1,23 @@
+
+; This Mathomatic input file contains the mathematical formula to
+; directly calculate the "n"th Fibonacci number.
+; The formula presented here is called Binet's formula, found at
+; http://en.wikipedia.org/wiki/Fibonacci_number
+;
+; The Fibonacci sequence is the endless integer sequence:
+; 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 ...
+; Any Fibonacci number is always the sum of the previous two Fibonacci numbers.
+;
+; Easy to understand info on the golden ratio can be found here:
+; http://www.mathsisfun.com/numbers/golden-ratio.html
+
+-1/phi=1-phi ; Derive the golden ratio (phi) from this quadratic polynomial.
+0 ; show it is quadratic
+unfactor
+solve verifiable for phi ; The golden ratio will help us directly compute Fibonacci numbers.
+replace sign with -1 ; the golden ratio constant:
+fibonacci = ((phi^n) - ((1 - phi)^n))/(phi - (1 - phi)) ; Binet's Fibonacci formula.
+eliminate phi ; Completed direct Fibonacci formula:
+simplify ; Note that Mathomatic rationalizes the denominator here.
+for n 1 20 ; Display the first 20 Fibonacci numbers by plugging in values 1-20:
+; Note that this formula should work for any positive integer value of n.

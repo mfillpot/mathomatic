@@ -1,0 +1,16 @@
+
+; General cubic (3rd degree polynomial) formula using 2 equations.
+; Formula for the 3 roots (solutions for x) of the general 3rd degree polynomial equation.
+; These formulas always seem to work correctly, whether imaginary or real solutions.
+;
+; This is currently the only way to solve cubic polynomials in Mathomatic.
+; This is also a good test of the optimize and "simplify quick" commands.
+; Try "simplify quick all" and then "optimize all" for some true optimalism!
+
+a x^3 + b x^2 + c x + d = 0 ; The general cubic equation.
+; A real solution:
+x_r=-b/{3 a}-1/{3 a} {{2 b^3-9 a b c+27 a^2 d+{(2 b^3-9 a b c+27 a^2 d)^2-4 (b^2-3 a c)^3}^.5}/{2}}^(1/3)-1/{3 a} {{2 b^3-9 a b c+27 a^2 d-{(2 b^3-9 a b c+27 a^2 d)^2-4 (b^2-3 a c)^3}^.5}/2}^(1/3)
+; The 2 imaginary solutions or 2 more real solutions:
+x_i=-b/{3 a}+{1-sign*i*3^.5}/{6 a} {{2 b^3-9 a b c+27 a^2 d+{(2 b^3-9 a b c+27 a^2 d)^2-4 (b^2-3 a c)^3}^.5}/{2}}^(1/3)+{1+sign*i*3^.5}/{6 a} {{2 b^3-9 a b c+27 a^2 d-{(2 b^3-9 a b c+27 a^2 d)^2-4 (b^2-3 a c)^3}^.5}/2}^(1/3)
+; x_r and x_i are the three solutions to the given general cubic equation.
+; Type "calculate all" to temporarily plug in coefficients.

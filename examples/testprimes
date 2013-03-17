@@ -1,0 +1,51 @@
+#!/bin/sh
+# Test matho-primes by comparing output with the BSD Games primes utility.
+# Only run this if matho-primes and the bsdgames package are installed.
+# The comparison is performed in parallel, to save time.
+# The whole test takes 30 seconds on a fast, dual-core computer.
+#
+# Checks the first 50,000,000 primes for gaps or errors.
+# It simply compares their output up to 1,000,000,000.
+#
+# Usage: testprimes [ primes_utility_name ]
+
+echo Testing matho-primes by comparing output with bsdgames primes...
+if ! matho-primes 0 0
+then
+	echo Mathomatic Prime Number Tools not installed.
+	echo Cannot find matho-primes
+	exit 1
+fi
+
+PRIMES=${1-primes}
+if ! $PRIMES 0 0
+then
+	PRIMES=/usr/games/primes
+	if $PRIMES 0 0
+	then
+		echo Using $PRIMES
+	else
+		echo bsdgames package not installed.
+		echo Cannot find primes utility.
+		exit 1
+	fi
+fi
+
+TESTOUT1=`mktemp /tmp/test.XXXXXXXXXX` || exit 1
+TESTOUT2=`mktemp /tmp/test.XXXXXXXXXX` || exit 1
+echo Starting and timing matho-primes
+time -p matho-primes 1 1000000000 >$TESTOUT1 &
+echo Starting $PRIMES
+$PRIMES 1 1000000000 >$TESTOUT2 && echo -n Word count: && wc $TESTOUT2 &
+wait
+echo Output files to compare,
+echo matho-primes output:
+ls -l $TESTOUT1
+echo primes output:
+ls -l $TESTOUT2
+echo Comparing:
+diff -uq --strip-trailing-cr $TESTOUT1 $TESTOUT2 && echo Files are identical. && echo "Test passed 100% correctly." && rm $TESTOUT1 $TESTOUT2 && exit 0
+echo
+echo Test failed.
+rm -f $TESTOUT1 $TESTOUT2
+exit 1

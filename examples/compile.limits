@@ -1,0 +1,19 @@
+#!/bin/sh
+# Compile limits.c and create the executable in ~/bin if it exists.
+# limits is a standalone program that nicely
+# displays current C data type limits and sizes.
+# Works with any C compiler, compiles with the C compiler you set CC to.
+
+CC=${CC-cc}
+
+if [ -d ~/bin ]
+then
+	LIMITS=~/bin/limits
+else
+	LIMITS=./limits
+fi
+echo Compiling limits.c
+set -e
+set -x
+$CC -Wall $CFLAGS $CPPFLAGS $LDFLAGS -o $LIMITS limits.c
+echo limits.c compiled and installed as $LIMITS

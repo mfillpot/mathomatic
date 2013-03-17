@@ -1,0 +1,20 @@
+
+; Some more fun formulas.  These are very similar to Heron's formula
+; for the area of a triangle (see "heron.in").  a, b, and c are the
+; lengths of the sides of the triangle.
+
+s=(a+b+c)/2 ; semiperimeter
+; radius of a circle inscribed in a triangle, called an incircle:
+inradius=(s*(s-a)*(s-b)*(s-c))^.5/s
+eliminate s
+simplify
+
+; The following is the equation for the radius of a circle circumscribing
+; a triangle, called a circumcircle, which is a circle that passes through
+; all the vertices of a polygon.
+radius=a*b*c/(4*(s*(s-a)*(s-b)*(s-c))^.5)
+eliminate s
+simplify
+#s ; Search backwards for the s variable; "/" searches forwards.
+clear ; No longer needed.
+display all

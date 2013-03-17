@@ -1,0 +1,18 @@
+
+; This is the famous Bailey-Borwein-Plouffe (BBP) formula.
+; Sum this n = 0 to infinity to compute pi.
+; This is especially useful for calculating pi in hexadecimal.
+; One hexadecimal digit of pi is generated with each iteration.
+((4/((8*n)+1))-(2/((8*n)+4))-(1/((8*n)+5))-(1/((8*n)+6)))/(16^n)
+simplify ; BBP simplifies to the ratio of two polynomials.
+sum n=0 to 10 ; Numerically sum BBP from n = 0 to 10 in steps of 1.
+pi ; The digits should be the same.
+repeat echo *
+x^n/n! ; Sum this n = 0 to infinity to compute (e^x).
+replace x with 1 ; Sum this n = 0 to infinity to compute e:
+sum n=0 to 20 ; Numerically sum from n = 0 to 20 in steps of 1.
+e ; The digits should be the same.
+repeat echo *
+; Euler's identity is made of these most important universal constants:
+e^(pi*i)+1=0
+simplify ; An identity is when the LHS is identical to the RHS:

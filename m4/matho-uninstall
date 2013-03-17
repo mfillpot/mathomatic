@@ -1,0 +1,24 @@
+#!/bin/sh
+# This shell script uninstalls m4 Mathomatic if installed
+# with matho-install or matho-install-degrees.
+# To uninstall Mathomatic from your computer,
+# type "sudo ./matho-uninstall".
+
+PREFIX=/usr/local
+BINDIR=$PREFIX/bin
+MANDIR=$PREFIX/share/man/man1
+MATHOMATIC=mathomatic
+BINFILES="$MATHOMATIC matho rmath functions.m4"
+MANFILES="mathomatic.1 rmath.1 matho.1"
+
+set -x
+for file in $BINFILES;
+do
+	rm -f "$BINDIR"/"$file";
+done
+for file in $MANFILES;
+do
+	rm -f "$MANDIR"/"$file";
+done
+
+echo "$MATHOMATIC" uninstalled.

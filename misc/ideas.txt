@@ -1,0 +1,70 @@
+                         Ideas to code in Mathomatic
+                         ---------------------------
+
+A GPL compatible, free software GUI needs to be written for Mathomatic.
+Anyone interested in writing one should contact me at some point, so it can
+be included in the Mathomatic distribution.
+
+Implement logarithms as a binary operator mapped from the log(x, y) or ln(x)
+functions, using m4. The rules for logarithms can be slowly added later. This
+is a large project that only George Gesslein II knows how to do properly
+(well maybe, because Mathomatic is like a highly efficient CAS written in
+assembly language, but it is written in C for portability). This easy idea
+implements each logarithm as a binary operator like in the J programming
+language, then uses m4 as a macro preprocessor to map the log(x, y) and ln(x)
+functions to it. I am currently looking for ideas from anyone on which ASCII
+character or combination of characters should best represent the logarithm
+function. My best idea so far is (a\/b) for logarithm base "b" of "a". m4
+would allow entry of ln(a) and log(a, b) after the log operator is
+implemented. ln(a) would translate to ((a)\/e). The default display in
+Mathomatic is always an operator display, but certain listing and exporting
+commands will be able to display logarithms as log functions.
+
+Simplify nested radicals like ((9 + 4*(2^.5))^.5) to (1 + 2*(2^.5)). This may
+be difficult, I have an idea how this is generally done, just need some free
+thinking and implementation time. Slow trial and error algorithms are not
+acceptable for this. The routine should temporarily square the result to make
+sure it is correct, or temporarily numerically approximate the original and
+the result and compare the resulting constants, before acceptance. Here is an
+article on one way to simplify nested radicals:
+"http://www.almaden.ibm.com/cs/people/fagin/symb85.pdf". Also, see Landau's
+algorithm (http://en.wikipedia.org/wiki/Landau%27s_algorithm).
+
+Use the GNU Scientific Library (GSL) to automatically numerically solve any
+degree numeric polynomial equation, like "examples/roots.c" does, when
+symbolic solving fails. Unfortunately, the GSL results are sometimes
+inaccurate, and it adds a library dependency, so I may not do this. Instead,
+the general cubic formula in "tests/cubic.in" could be hard-coded into the
+Mathomatic poly_solve() function, so any cubic equation could be
+automatically solved. I just haven't figured out how Mathomatic is going to
+easily handle 3 solutions per equation space. Solving quartic equations with
+"tests/quartic.in" is not recommended, due to the large, accumulated
+round-off error of floating point when approximating large formulas, and the
+many cases that quartic formula causes division by zero and fails, though
+handling an even number of solutions is very easy in Mathomatic.
+
+Implement complex number factorials, when an accurate, floating point,
+complex number gamma calculating function is found. The GSL does this.
+
+Make polynomial gcd calculation partially recursive. This is difficult, as
+the expression storage areas are currently static globals. If successful,
+this will make polynomial gcd calculation multivariate, so it will succeed
+with larger expressions with many variables. There is no need for total
+recursion, because it would never be used anyways, with the amount of
+floating point round-off error that occurs in Mathomatic. Every inexact
+floating point mathematical operation has a small round-off error that adds
+up with many operations, making polynomial gcd determination fail with large
+polynomials, anyways.
+
+Add a "polynomial" command that tells what type and degree polynomial the
+current expression is, if it is a polynomial in the optional specified
+variable. Study Maxima's facsum() function, it does a related thing.
+
+matho and rmath don't work perfectly; because they use m4 as a front end,
+there are some user interface problems. I probably should write some C code
+to do the string macro expansion as part of the main mathomatic program. If I
+am feeling better I will do that and add logarithm function support.
+
+
+  -----------------------------------------------------------------
+  This file was written by George Gesslein II of www.mathomatic.org

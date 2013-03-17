@@ -1,0 +1,21 @@
+
+; Combine 3 simultaneous linear equations with 3 unknowns (x, y, z).
+; Solve for all 3 unknowns using the eliminate, solve, and simplify commands.
+
+clear all ; restart Mathomatic
+; enter all 3 equations:
+d1=a1*x+b1*y+c1*z
+d2=a2*x+b2*y+c2*z
+d3=a3*x+b3*y+c3*z
+2 ; select equation number 2 as the current equation
+eliminate x ; eliminate variable x from the current equation
+3 ; select equation number 3
+eliminate x y ; eliminate variables x and then y from the current equation
+solve for z
+2 ; select equation number 2
+eliminate z using 3 ; find y by combining equation numbers 2 and 3
+simplify
+1 ; select equation number 1
+eliminate z using 3, y using 2; find x
+
+simplify all ; simplify and display all solutions

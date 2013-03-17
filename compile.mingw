@@ -1,0 +1,54 @@
+#!/bin/sh
+# Shell script for creating the Windows 32-bit executables "mathomatic.exe" and Prime Number Tools.
+# In Debian or its derivatives, install the MinGW cross-compiler package mingw32 (tested;
+# run "sudo apt-get install mingw32").  MinGW doesn't recognize long longs or
+# long doubles, and the 64-bit version doesn't appear to work yet.
+#
+# The 32-bit executables created here are very capable, work standalone or with Cygwin,
+# and do not require readline or editline to recall and edit command-line history,
+# this already works in the Windows console (cmd.exe and command.com).
+#
+# To compile everything with MinGW, just type:
+#	./compile.mingw
+# This file may require editing if you are not using Debian or a derivative distro.
+#
+
+# Abort on any errors:
+set -e
+
+# Define the C cross-compiler and flags we are using here:
+export CC=i586-mingw32msvc-cc
+export CFLAGS="-O3 -Wall -DMINGW -DWIN32_CONSOLE_COLORS -DBOLD_COLOR $CFLAGS" 
+
+echo Compiling Windows 32-bit Mathomatic...
+make clean
+cd icons
+i586-mingw32msvc-windres icon.rc icon.o
+cd ..
+AOUT=mathomatic.exe MATHOMATIC_OBJECTS="icons/icon.o" make -j
+make clean
+
+echo
+echo Compiling the 32-bit Prime Number Tools...
+cd primes
+make flush
+CFLAGS="-DUSE_DOUBLES $CFLAGS" make -j
+make clean
+echo
+mv matho-primes matho-primes.exe
+mv matho-pascal matho-pascal.exe
+mv matho-sumsq matho-sumsq.exe
+echo Prime Number Tools executables had .exe appended to the filenames.
+cd ..
+
+exit 0 # 64-bits isn't completely supported by MinGW yet.
+
+export CC=amd64-mingw32msvc-cc
+
+echo Compiling Windows 64-bit Mathomatic...
+make clean
+cd icons
+amd64-mingw32msvc-windres icon.rc icon.o
+cd ..
+AOUT=mathomatic64.exe MATHOMATIC_OBJECTS="icons/icon.o" make -j
+make clean

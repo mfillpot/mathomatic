@@ -1,0 +1,3716 @@
+1-> ; This is a Mathomatic script that reads in all test scripts.
+1-> 
+1-> clear all
+1-> ; Test simplifying trig functions:
+1-> read trig.in
+1-> ; Trigonometric functions as complex exponentials.
+1-> ; Use m4 Mathomatic instead for easy entry of these trig functions.
+1-> ; Based on Euler's identity: e^(i*x) = cos(x) + i*sin(x)
+1-> ; Variable x is an angle in radians.
+1-> 
+1-> ; Unity relationship: sin(x)^2 + cos(x)^2 = 1
+1-> 
+1-> ; sin(x) (sine of x) = cos(pi/2 - x)
+1-> sin=(e^(i*x)-e^(-i*x))/(2i)
+
+          ((e^(i*x)) - (e^(-i*x)))
+#1: sin = ------------------------
+                   (2*i)
+
+1-> 
+1-> ; cos(x) (cosine of x) = sin(pi/2 - x)
+1-> cos=(e^(i*x)+e^(-i*x))/2
+
+          ((e^(i*x)) + (e^(-i*x)))
+#2: cos = ------------------------
+                     2
+
+2-> 
+2-> ; tan(x) (tangent of x) = sin(x)/cos(x) = cot(pi/2 - x)
+2-> tan=(e^(i*x)-e^(-i*x))/(i*(e^(i*x)+e^(-i*x)))
+
+            ((e^(i*x)) - (e^(-i*x)))
+#3: tan = ----------------------------
+          (i*((e^(i*x)) + (e^(-i*x))))
+
+3-> 
+3-> ; cot(x) (cotangent of x) = cos(x)/sin(x) = tan(pi/2 - x)
+3-> cot=i*(e^(i*x)+e^(-i*x))/(e^(i*x)-e^(-i*x))
+
+          i*((e^(i*x)) + (e^(-i*x)))
+#4: cot = --------------------------
+           ((e^(i*x)) - (e^(-i*x)))
+
+4-> 
+4-> ; sec(x) (secant of x) = 1/cos(x) = csc(pi/2 - x)
+4-> sec=2/(e^(i*x)+e^(-i*x))
+
+                     2
+#5: sec = ------------------------
+          ((e^(i*x)) + (e^(-i*x)))
+
+5-> 
+5-> ; csc(x) (cosecant of x) = 1/sin(x) = sec(pi/2 - x)
+5-> csc=2i/(e^(i*x)-e^(-i*x))
+
+                    2*i
+#6: csc = ------------------------
+          ((e^(i*x)) - (e^(-i*x)))
+
+Successfully finished reading script file "trig.in".
+6-> read hypertrig.in
+6-> ; Definitions for hyperbolic trigonometry.
+6-> ; Use m4 Mathomatic instead for easy entry of these hypertrig functions.
+6-> ; Based on the identity cosh(x)^2-sinh(x)^2 = 1.
+6-> 
+6-> ; sinh(x); hyperbolic sine of x
+6-> sinh=(e^x-e^-x)/2
+
+           (e^x - (e^(-x)))
+#7: sinh = ----------------
+                  2
+
+7-> 
+7-> ; cosh(x); hyperbolic cosine of x
+7-> cosh=(e^x+e^-x)/2
+
+           (e^x + (e^(-x)))
+#8: cosh = ----------------
+                  2
+
+8-> 
+8-> ; tanh(x); hyperbolic tangent of x
+8-> tanh=(e^x-e^-x)/(e^x+e^-x)
+
+           (e^x - (e^(-x)))
+#9: tanh = ----------------
+           (e^x + (e^(-x)))
+
+9-> 
+9-> ; coth(x); hyperbolic cotangent of x
+9-> coth=(e^x+e^-x)/(e^x-e^-x)
+
+            (e^x + (e^(-x)))
+#10: coth = ----------------
+            (e^x - (e^(-x)))
+
+10-> 
+10-> ; sech(x); hyperbolic secant of x
+10-> sech=2/(e^x+e^-x)
+
+                   2
+#11: sech = ----------------
+            (e^x + (e^(-x)))
+
+11-> 
+11-> ; csch(x); hyperbolic cosecant of x
+11-> csch=2/(e^x-e^-x)
+
+                   2
+#12: csch = ----------------
+            (e^x - (e^(-x)))
+
+Successfully finished reading script file "hypertrig.in".
+12-> simplify all
+
+                 1
+          i*(--------- - (e^(i*x)))
+             (e^(i*x))
+#1: sin = -------------------------
+                      2
+
+
+                           1
+          ((e^(i*x)) + ---------)
+                       (e^(i*x))
+#2: cos = -----------------------
+                     2
+
+
+                     2
+#3: tan = i*(----------------- - 1)
+             ((e^(2*i*x)) + 1)
+
+
+                         2
+#4: cot = i*(1 + -----------------)
+                 ((e^(2*i*x)) - 1)
+
+
+             2*(e^(i*x))
+#5: sec = -----------------
+          ((e^(2*i*x)) + 1)
+
+
+            2*i*(e^(i*x))
+#6: csc = -----------------
+          ((e^(2*i*x)) - 1)
+
+
+                   1
+           (e^x - ---)
+                  e^x
+#7: sinh = -----------
+                2
+
+
+                   1
+           (e^x + ---)
+                  e^x
+#8: cosh = -----------
+                2
+
+
+                      2
+#9: tanh = 1 - ---------------
+               ((e^(2*x)) + 1)
+
+
+                       2
+#10: coth = 1 + ---------------
+                ((e^(2*x)) - 1)
+
+
+                 2*e^x
+#11: sech = ---------------
+            ((e^(2*x)) + 1)
+
+
+                 2*e^x
+#12: csch = ---------------
+            ((e^(2*x)) - 1)
+
+12-> simplify frac all
+
+                 1
+          i*(--------- - (e^(i*x)))
+             (e^(i*x))
+#1: sin = -------------------------
+                      2
+
+
+                           1
+          ((e^(i*x)) + ---------)
+                       (e^(i*x))
+#2: cos = -----------------------
+                     2
+
+
+          i*(1 - (e^(2*i*x)))
+#3: tan = -------------------
+           ((e^(2*i*x)) + 1)
+
+
+          i*((e^(2*i*x)) + 1)
+#4: cot = -------------------
+           ((e^(2*i*x)) - 1)
+
+
+             2*(e^(i*x))
+#5: sec = -----------------
+          ((e^(2*i*x)) + 1)
+
+
+            2*i*(e^(i*x))
+#6: csc = -----------------
+          ((e^(2*i*x)) - 1)
+
+
+                   1
+           (e^x - ---)
+                  e^x
+#7: sinh = -----------
+                2
+
+
+                   1
+           (e^x + ---)
+                  e^x
+#8: cosh = -----------
+                2
+
+
+           ((e^(2*x)) - 1)
+#9: tanh = ---------------
+           ((e^(2*x)) + 1)
+
+
+            ((e^(2*x)) + 1)
+#10: coth = ---------------
+            ((e^(2*x)) - 1)
+
+
+                 2*e^x
+#11: sech = ---------------
+            ((e^(2*x)) + 1)
+
+
+                 2*e^x
+#12: csch = ---------------
+            ((e^(2*x)) - 1)
+
+12-> ; Let's simplify some trig identities without using m4:
+12-> sin^2+cos^2=1
+
+#13: sin^2 + cos^2 = 1
+
+13-> elim all
+Eliminating variable cos using solved equation #2...
+Eliminating variable sin using solved equation #1...
+
+             1                                         1
+      i*(--------- - (e^(i*x)))       ((e^(i*x)) + ---------)
+         (e^(i*x))                                 (e^(i*x))
+#13: (-------------------------^2) + (-----------------------^2) = 1
+                  2                              2
+
+13-> simplify
+
+#13: 1 = 1
+
+13-> tan=sin/cos
+
+           sin
+#14: tan = ---
+           cos
+
+14-> elim all
+Eliminating variable tan using solved equation #3...
+Eliminating variable cos using solved equation #2...
+Eliminating variable sin using solved equation #1...
+
+                                  1
+                           i*(--------- - (e^(i*x)))
+     i*(1 - (e^(2*i*x)))      (e^(i*x))
+#14: ------------------- = -------------------------
+      ((e^(2*i*x)) + 1)                      1
+                            ((e^(i*x)) + ---------)
+                                         (e^(i*x))
+
+14-> csc=1/sin
+
+            1
+#15: csc = ---
+           sin
+
+15-> elim all
+Eliminating variable csc using solved equation #6...
+Eliminating variable sin using solved equation #1...
+
+       2*i*(e^(i*x))                  2
+#15: ----------------- = ---------------------------
+     ((e^(2*i*x)) - 1)           1
+                         (i*(--------- - (e^(i*x))))
+                             (e^(i*x))
+
+15-> sec=1/cos
+
+            1
+#16: sec = ---
+           cos
+
+16-> elim all
+Eliminating variable sec using solved equation #5...
+Eliminating variable cos using solved equation #2...
+
+        2*(e^(i*x))                 2
+#16: ----------------- = -----------------------
+     ((e^(2*i*x)) + 1)                    1
+                         ((e^(i*x)) + ---------)
+                                      (e^(i*x))
+
+16-> cot=1/tan
+
+            1
+#17: cot = ---
+           tan
+
+17-> elim all
+Eliminating variable cot using solved equation #4...
+Eliminating variable tan using solved equation #3...
+
+     i*((e^(2*i*x)) + 1)     ((e^(2*i*x)) + 1)
+#17: ------------------- = ---------------------
+      ((e^(2*i*x)) - 1)    (i*(1 - (e^(2*i*x))))
+
+17-> 1+tan^2=sec^2
+
+#18: 1 + tan^2 = sec^2
+
+18-> elim all
+Eliminating variable sec using solved equation #5...
+Eliminating variable tan using solved equation #3...
+
+          i*(1 - (e^(2*i*x)))         2*(e^(i*x))
+#18: 1 + (-------------------^2) = -----------------^2
+           ((e^(2*i*x)) + 1)       ((e^(2*i*x)) + 1)
+
+18-> cosh^2-sinh^2=1 ; The main hyperbolic trigonometry identity:
+
+#19: cosh^2 - sinh^2 = 1
+
+19-> elim all
+Eliminating variable cosh using solved equation #8...
+Eliminating variable sinh using solved equation #7...
+
+              1                 1
+      (e^x + ---)       (e^x - ---)
+             e^x               e^x
+#19: (-----------^2) - (-----------^2) = 1
+           2                 2
+
+19-> ; Now verify them all, to show and check the new solve command usage.
+19-> solve 13-19 verifiable 0
+Solving equation #13 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#13: 0 = 0
+
+This equation is an identity.
+Solving equation #14 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#14: 0 = 0
+
+This equation is an identity.
+Solving equation #15 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#15: 0 = 0
+
+This equation is an identity.
+Solving equation #16 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#16: 0 = 0
+
+This equation is an identity.
+Solving equation #17 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#17: 0 = 0
+
+This equation is an identity.
+Solving equation #18 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#18: 0 = (4*(e^(2*i*x))) - (((e^(2*i*x)) + 1)^2) + ((1 - (e^(2*i*x)))^2)
+
+This equation is an identity.
+Solving equation #19 for 0 with required identity verification...
+Solve and "repeat simplify quick" successful:
+
+#19: 0 = (4*(e^(2*x))) + (((e^(2*x)) - 1)^2) - (((e^(2*x)) + 1)^2)
+
+This equation is an identity.
+19-> pause
+19-> clear all
+1-> ; Next, test fixed-point mode and some financial equations:
+1-> read finance
+1-> 
+1-> ; Combine 2 commonly used formulas to produce the mortgage payment formula.
+1-> ; Here are 3 related financial formulas that can be "read" into Mathomatic.
+1-> 
+1-> set fixed ; Enable fixed-point money mode; rounds to the nearest cent.
+Success.
+1-> ; First, the variable definitions:
+1-> ; pv = present value
+1-> ; fv = future value (maturity value)
+1-> ; interest_rate = interest rate per period (1 = 100%)
+1-> ; n = number of periods
+1-> 
+1-> ; Compound Interest Future Value Formula:
+1-> fv1 = pv*(1+interest_rate)^n
+
+#1: fv1 = pv*((1.00 + interest_rate)^n)
+
+1-> ; Future Value Annuity Formula:
+1-> fv2 = payment*(((1+interest_rate)^n-1)/interest_rate)
+
+          payment*(((1.00 + interest_rate)^n) - 1.00)
+#2: fv2 = -------------------------------------------
+                         interest_rate
+
+2-> ; Next we will combine these to produce the standard annuity formula.
+2-> ; Set equal, then solve and simplify:
+2-> fv1 = fv2
+
+#3: fv1 = fv2
+
+3-> pause
+3-> eliminate all ; combine both formulas to produce the annuity formula:
+Eliminating variable fv2 using solved equation #2...
+Eliminating variable fv1 using solved equation #1...
+
+                                    payment*(((1.00 + interest_rate)^n) - 1.00)
+#3: pv*((1.00 + interest_rate)^n) = -------------------------------------------
+                                                   interest_rate
+
+3-> solve verifiable pv ; solve for present value:
+Solving equation #3 for pv with required verification...
+Solve and "repeat simplify quick" successful:
+
+                                    1.00
+         payment*(1.00 - --------------------------)
+                         ((1.00 + interest_rate)^n)
+#3: pv = -------------------------------------------
+                        interest_rate
+
+Solution verified.
+3-> solve verifiable payment ; or solve for payment per period:
+Solving equation #3 for payment with required verification...
+Solve and "repeat simplify quick" successful:
+
+              pv*((1.00 + interest_rate)^n)*interest_rate
+#3: payment = -------------------------------------------
+                  (((1.00 + interest_rate)^n) - 1.00)
+
+Solution verified.
+3-> pause End of finance tutorial
+3-> ; Remember we are still in fixed-point money mode,
+3-> ; unless you typed "set no fixed".
+Successfully finished reading script file "finance.in".
+3-> a=55/-3
+
+        (-55.00)
+#4: a = --------
+          3.00
+
+4-> list
+#4: a = (-55.00)/3.00
+4-> display mixed
+
+                  1.00
+#4: a = -(18.00 + ----)
+                  3.00
+
+4-> display mixed factor
+
+                             1.00
+#4: a = -((2.00*3.00^2.00) + ----)
+                             3.00
+
+4-> display simple
+
+        (-55.00)
+#4: a = --------
+          3.00
+
+4-> list
+#4: a = (-55.00)/3.00
+4-> display
+
+        (-55.00)
+#4: a = --------
+          3.00
+
+4-> set no fixed_point
+Success.
+4-> display
+
+        -55
+#4: a = ---
+         3
+
+4-> clear all
+1-> read quadratic
+1-> 
+1-> ; General quadratic (2nd degree polynomial) formula.
+1-> ; Formula for the 2 roots (solutions for x)
+1-> ; of the general quadratic equation.
+1-> ;
+1-> a x^2 + b x + c = 0 ; The general quadratic equation.
+
+#1: (a*x^2) + (b*x) + c = 0
+
+1-> copy select ; Make a copy and select it.
+
+#2: (a*x^2) + (b*x) + c = 0
+
+2-> solve verifiable for x ; Mathomatic can easily solve and verify that:
+Solving equation #2 for x with required verification...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+Solve and "repeat simplify quick" successful:
+
+                           1
+        ((((b^2 - (4*a*c))^-)*sign) - b)
+                           2
+#2: x = --------------------------------
+                     (2*a)
+
+All solutions verified.
+2-> ; This is the quadratic formula.
+2-> ; The coefficients (a, b, and c) may be any mathematical expression not containing x.
+2-> pause
+2-> ; Here is the derivation and proof of the quadratic formula,
+2-> ; without actually using the quadratic formula,
+2-> ; because that is what we are trying to derive now, from the quadratic equation:
+2-> #1:
+
+#1: (a*x^2) + (b*x) + c = 0
+
+1-> copy select ; make a copy of the general quadratic equation to work on and select it.
+
+#3: (a*x^2) + (b*x) + c = 0
+
+3-> -=c ; subtract "c" from both sides.
+
+#3: (a*x^2) + (b*x) = -c
+
+3-> /=a ; divide both sides by "a".
+
+    ((a*x^2) + (b*x))   -c
+#3: ----------------- = --
+            a           a
+
+3-> pause Next simplify it and turn it into a repeated factor polynomial equation
+3-> simplify
+
+          x*b   -c
+#3: x^2 + --- = --
+           a    a
+
+3-> +=b^2/(4*(a^2)) ; add "b^2/(4*(a^2))" to both sides.
+
+          x*b     b^2       b^2     c
+#3: x^2 + --- + ------- = ------- - -
+           a    (4*a^2)   (4*a^2)   a
+
+3-> ; Now the LHS is a repeated factor polynomial, next factor it by pressing Enter to simplify.
+3-> pause
+3-> simplify ; Now the LHS is a factored polynomial, so solving for the single "x" is easy.
+
+              b        b
+    (((2*x) + -)^2)   (-^2)
+              a        a      c
+#3: --------------- = ----- - -
+           4            4     a
+
+3-> set debug 1 ; Let Mathomatic do the work and show it too.
+Success.
+3-> ; Show how easy it is to solve this equation now, after pressing Enter.
+3-> pause
+3-> x
+level 1: 0.25*(((2*x) + (b/a))^2) = ((0.25*b^2) - (c*a))/a^2
+Dividing both sides of the equation by "0.25":
+level 1: ((2*x) + (b/a))^2 = 4*((0.25*b^2) - (c*a))/a^2
+Raising both sides of the equation to the power of 0.5:
+level 1: (2*x) + (b/a) = ((4*((0.25*b^2) - (c*a))/a^2)^0.5)*sign0
+Subtracting "b/a" from both sides of the equation:
+level 1: 2*x = (((4*((0.25*b^2) - (c*a))/a^2)^0.5)*sign0) - (b/a)
+Dividing both sides of the equation by "2":
+level 1: x = 0.5*((((4*((0.25*b^2) - (c*a))/a^2)^0.5)*sign0) - (b/a))
+Solve completed:
+level 1: x = 0.5*((((4*((0.25*b^2) - (c*a))/a^2)^0.5)*sign0) - (b/a))
+Solve successful:
+
+              b^2
+           4*(--- - (c*a))
+               4           1           b
+        (((---------------^-)*sign0) - -)
+                 a^2       2           a
+#3: x = ---------------------------------
+                        2
+
+3-> ; Here is the raw solve result, press the Enter key to simplify and compare with the quadratic formula.
+3-> pause
+3-> set no debug
+Success.
+3-> repeat simplify
+
+                           1
+        ((((b^2 - (4*c*a))^-)*sign0) - b)
+                           2
+#3: x = ---------------------------------
+                      (2*a)
+
+3-> compare with 2
+Comparing #2 with #3...
+Equations are identical.
+3-> 
+Successfully finished reading script file "quadratic.in".
+3-> clear all
+1-> read electronics
+1-> 
+1-> ; General electrical formulas:
+1-> 
+1-> volts=amps*ohms ; Ohm's Law, commonly solved for resistance (ohms) or current (amps).
+
+#1: volts = amps*ohms
+
+1-> watts=volts*amps ; Power Law
+
+#2: watts = volts*amps
+
+2-> 1/r=1/r1+1/r2 ; Resistance (r) of 2 resistors (r1 and r2) wired in parallel.
+
+    1   1    1
+#3: - = -- + --
+    r   r1   r2
+
+3-> solve verifiable r ; Solve for the resulting resistance.
+Solving equation #3 for r with required verification...
+Solve and "repeat simplify quick" successful:
+
+          r1*r2
+#3: r = ---------
+        (r2 + r1)
+
+Solution verified.
+3-> 1/r=1/r1+1/r2+1/r3 ; Resistance (r) of 3 resistors wired in parallel.
+
+    1   1    1    1
+#4: - = -- + -- + --
+    r   r1   r2   r3
+
+4-> solve verifiable r ; Solve for the resulting resistance.
+Solving equation #4 for r with required verification...
+Solve and "repeat simplify quick" successful:
+
+                 r1*r2*r3
+#4: r = --------------------------
+        ((r3*r2) + (r1*(r3 + r2)))
+
+Solution verified.
+4-> frequency=1/(2*pi*(L*C)^.5) ; Resonant frequency of an LC circuit in hertz.
+
+                       1
+#5: frequency = ----------------
+                             1
+                (2*pi*((L*C)^-))
+                             2
+
+5-> ; L is the inductance in henries, and C is the capacitance in farads.
+Successfully finished reading script file "electronics.in".
+5-> simplify all
+
+#1: volts = amps*ohms
+
+
+#2: watts = volts*amps
+
+
+          r1*r2
+#3: r = ---------
+        (r2 + r1)
+
+
+                 r1*r2*r3
+#4: r = --------------------------
+        ((r3*r2) + (r1*(r3 + r2)))
+
+
+                       1
+#5: frequency = ----------------
+                             1
+                (2*pi*((L*C)^-))
+                             2
+
+5-> clear all
+1-> read fibonacci
+1-> 
+1-> ; This Mathomatic input file contains the mathematical formula to
+1-> ; directly calculate the "n"th Fibonacci number.
+1-> ; The formula presented here is called Binet's formula, found at
+1-> ; http://en.wikipedia.org/wiki/Fibonacci_number
+1-> ;
+1-> ; The Fibonacci sequence is the endless integer sequence:
+1-> ; 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 ...
+1-> ; Any Fibonacci number is always the sum of the previous two Fibonacci numbers.
+1-> ;
+1-> ; Easy to understand info on the golden ratio can be found here:
+1-> ; http://www.mathsisfun.com/numbers/golden-ratio.html
+1-> 
+1-> -1/phi=1-phi ; Derive the golden ratio (phi) from this quadratic polynomial.
+
+    -1
+#1: --- = 1 - phi
+    phi
+
+1-> 0 ; show it is quadratic
+Solve successful:
+
+#1: 0 = ((1 - phi)*phi) + 1
+
+1-> unfactor
+
+#1: 0 = phi - phi^2 + 1
+
+1-> solve verifiable for phi ; The golden ratio will help us directly compute Fibonacci numbers.
+Solving equation #1 for phi with required verification...
+Equation is a degree 2 polynomial equation in phi.
+Equation was solved with the quadratic formula.
+Solve and "repeat simplify quick" successful:
+
+                   1
+          (1 - ((5^-)*sign))
+                   2
+#1: phi = ------------------
+                  2
+
+All solutions verified.
+1-> replace sign with -1 ; the golden ratio constant:
+
+                  1
+          (1 + (5^-))
+                  2
+#1: phi = -----------
+               2
+
+1-> fibonacci = ((phi^n) - ((1 - phi)^n))/(phi - (1 - phi)) ; Binet's Fibonacci formula.
+
+                (phi^n - ((1 - phi)^n))
+#2: fibonacci = -----------------------
+                    (phi - 1 + phi)
+
+2-> eliminate phi ; Completed direct Fibonacci formula:
+Eliminating variable phi using solved equation #1...
+
+                          1                      1
+                  (1 + (5^-))            (1 + (5^-))
+                          2                      2
+                ((-----------^n) - ((1 - -----------)^n))
+                       2                      2
+#2: fibonacci = -----------------------------------------
+                                     1
+                                  (5^-)
+                                     2
+
+2-> simplify ; Note that Mathomatic rationalizes the denominator here.
+
+                   1            1                 1
+                (5^-)*(((1 + (5^-))^n) - ((1 - (5^-))^n))
+                   2            2                 2
+#2: fibonacci = -----------------------------------------
+                                 (5*2^n)
+
+2-> for n 1 20 ; Display the first 20 Fibonacci numbers by plugging in values 1-20:
+n = 1: 1
+n = 2: 1
+n = 3: 2
+n = 4: 3
+n = 5: 5
+n = 6: 8
+n = 7: 13
+n = 8: 21
+n = 9: 34
+n = 10: 55
+n = 11: 89
+n = 12: 144
+n = 13: 233
+n = 14: 377
+n = 15: 610
+n = 16: 987
+n = 17: 1597
+n = 18: 2584
+n = 19: 4181
+n = 20: 6765
+2-> ; Note that this formula should work for any positive integer value of n.
+Successfully finished reading script file "fibonacci.in".
+2-> clear all
+1-> read test
+1-> ; Read in some of the things previously fixed in Mathomatic.
+1-> read fix1
+1-> clear all
+1-> y = (((((a+b)/(b-c))^0.25)+(((b-c)/(a+b))^0.25)+(((a-b)*i/(b-c))^0.5))*(i^0.5))^(1/n)
+
+           (a + b) 1     (b - c) 1     (a - b)*i 1      1   1
+#1: y = (((-------^-) + (-------^-) + (---------^-))*(i^-))^-
+           (b - c) 4     (a + b) 4      (b - c)  2      2   n
+
+1-> y = (a^a)*(1+(((a^(a^2))*(b^a))^(1/(1-a))))
+
+                                     1
+#2: y = a^a*(1 + (((a^(a^2))*b^a)^-------))
+                                  (1 - a)
+
+2-> y = (a^2)*(1+(((a^(2*((1.5*a)-1)))*(b^a))^(1/(1-a))))
+
+                          3*a                1
+#3: y = a^2*(1 + (((a^(2*(--- - 1)))*b^a)^-------))
+                           2              (1 - a)
+
+3-> y = (15*(d^2)/((1+(d^2))^(7/2)))-(12/((1+(d^2))^(5/2)))-6
+
+           15*d^2            12
+#4: y = ------------- - ------------- - 6
+                   7               5
+        ((1 + d^2)^-)   ((1 + d^2)^-)
+                   2               2
+
+4-> y = ((9 + (32^.5))^.5) ; should simplify to (1 + 2*(2^.5)) someday
+
+                 1   1
+#5: y = (9 + (32^-))^-
+                 2   2
+
+5-> simplify symbolic all
+
+          (b + a) 1     (c - b) 1     (a - b) 1   1
+#1: y = ((-------^-) + (-------^-) + (-------^-))^-
+          (c - b) 4     (a + b) 4     (c - b) 2   n
+
+
+                        a
+#2: y = a^a + ((a*b)^-------)
+                     (1 - a)
+
+
+                        a
+#3: y = a^2 + ((a*b)^-------)
+                     (1 - a)
+
+
+             (d^2 - 4)
+#4: y = 3*(------------- - 2)
+                      7
+           ((1 + d^2)^-)
+                      2
+
+
+                   1    1
+#5: y = (9 + (4*(2^-)))^-
+                   2    2
+
+5-> simplify all
+
+          (b + a) 1     (c - b) 1     (a - b) 1   1
+#1: y = ((-------^-) + (-------^-) + (-------^-))^-
+          (c - b) 4     (a + b) 4     (c - b) 2   n
+
+
+                        a
+#2: y = a^a + ((a*b)^-------)
+                     (1 - a)
+
+
+                        a
+#3: y = a^2 + ((a*b)^-------)
+                     (1 - a)
+
+
+             (d^2 - 4)
+#4: y = 3*(------------- - 2)
+                      7
+           ((1 + d^2)^-)
+                      2
+
+
+                   1    1
+#5: y = (9 + (4*(2^-)))^-
+                   2    2
+
+5-> x^2=|x|
+
+                1
+#6: x^2 = (x^2)^-
+                2
+
+6-> solve for x
+Equation is a degree 2 polynomial equation in x.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 3 polynomial equation in x.
+Removing possible solution: "x = 0".
+Solve successful:
+
+#6: x = sign
+
+6-> x^(1/99)=x
+
+      1
+#7: x^-- = x
+      99
+
+7-> solve verifiable x
+Solving equation #7 for x with required verification...
+Equation is a degree 0.01010101010101 polynomial equation in x.
+Raising both equation sides to the power of 99 and expanding...
+Equation is a degree 99 polynomial equation in x.
+Removing possible solution: "x = 0".
+Solve and "repeat simplify quick" successful:
+
+#7: x = sign0
+
+All solutions verified.
+7-> (2i)^.5+e^(pi*i)
+Calculating...
+ answer = i
+8-> (1-2i)/(3+4i)
+Calculating...
+ answer = (-0.4*i) - 0.2, with fractions it is: (-2*i/5) - (1/5)
+9-> divide (1-2i) (3+4i)
+
+Result of complex number division:
+-0.2 -0.4*i
+
+9-> 
+9-> y=x^3
+
+#10: y = x^3
+
+10-> extrema x
+
+#11: x = 0
+
+11-> (x+1)^4
+
+#12: (x + 1)^4
+
+12-> extrema x
+
+#13: x = -1
+
+13-> roots 4 1 0 ; The 4 roots of unity.
+
+The polar coordinates are:
+1 amplitude and
+0 radians (0 degrees).
+
+The 4 roots of (1)^(1/4) are:
+
+1 
++1*i
+-1 
+-1*i
+13-> factor number -75 100000000000000 16! 7921%14 ; should be exactly 11
+-75 = 3 * 5^2 * -1
+100000000000000 = 2^14 * 5^14
+20922789888000 = 2^15 * 3^6 * 5^3 * 7^2 * 11 * 13
+Prime number: 11 = 11
+Successfully finished reading script file "fix1.in".
+13-> read fix2
+13-> clear all
+1-> b = ((-1)^(1/((-1*n)+1)*(2+n)))*(a^(1/((-1*n)+1)))
+
+              (2 + n)        1
+#1: b = ((-1)^-------)*(a^-------)
+              (1 - n)     (1 - n)
+
+1-> x = 1/(y^(1/(n-1)*(-2+n)))/((n^(n/(n-1)))-(n^(1/(n-1))))
+
+                            1
+#2: x = -----------------------------------------
+            (n - 2)         n             1
+        ((y^-------)*((n^-------) - (n^-------)))
+            (n - 1)      (n - 1)       (n - 1)
+
+2-> y = (x+(((1/x)+1)*((x^m)+((a+b)/(x^n)/(c+d)))))/(x+1)
+
+               1                (a + b)
+        (x + ((- + 1)*(x^m + -------------)))
+               x             (x^n*(c + d))
+#3: y = -------------------------------------
+                       (x + 1)
+
+3-> y = 3 / (x^3+3x^2-x-3) - 2 / (x^3-x^2-3x+3) + 4 / (x^3+x^2-3x-3)
+
+                   3                         2                         4
+#4: y = ----------------------- - ----------------------- + -----------------------
+        (x^3 + (3*x^2) - x - 3)   (x^3 - x^2 - (3*x) + 3)   (x^3 + x^2 - (3*x) - 3)
+
+4-> (x^2 - 1)^4/(x + 1)^2
+
+    ((x^2 - 1)^4)
+#5: -------------
+     ((x + 1)^2)
+
+5-> simplify all
+
+                      1
+#1: b = ((-1)^n*a)^-------
+                   (1 - n)
+
+
+                   (2 - n)
+                (y^-------)
+                   (n - 1)
+#2: x = ---------------------------
+               n             1
+        ((n^-------) - (n^-------))
+            (n - 1)       (n - 1)
+
+
+                             (b + a)*(1 + x)
+                      (x^2 + ---------------)
+                              (x^n*(c + d))
+#3: y = (x^(m - 1)) + -----------------------
+                             (x^2 + x)
+
+
+                        (27 - (5*x^2))
+#4: y = ----------------------------------------------
+        ((4*x^3) - x^5 + (12*x^2) - (3*(x^4 + x)) - 9)
+
+
+#5: ((1 + x)^2)*((x - 1)^4)
+
+5-> 1
+
+                      1
+#1: b = ((-1)^n*a)^-------
+                   (1 - n)
+
+1-> solve verifiable a
+Solving equation #1 for a with required verification...
+Solve and "repeat simplify quick" successful:
+
+        (b^(1 - n))
+#1: a = -----------
+          (-1)^n
+
+Solution verified.
+1-> 2
+
+                   (2 - n)
+                (y^-------)
+                   (n - 1)
+#2: x = ---------------------------
+               n             1
+        ((n^-------) - (n^-------))
+            (n - 1)       (n - 1)
+
+2-> solve verifiable y
+Solving equation #2 for y with required verification...
+Solve and "repeat simplify quick" successful:
+
+                                     1
+#2: y = (((x*(n - 1))^(n - 1))*n)^-------
+                                  (2 - n)
+
+Solution verified.
+2-> 1/(x+y)
+
+       1
+#6: -------
+    (x + y)
+
+6-> taylor x, 5, 0
+Taylor series with respect to x, simplified...
+5 non-zero derivatives applied.
+
+    1    x    x^2   x^3   x^4   x^5
+#7: - - --- + --- - --- + --- - ---
+    y   y^2   y^3   y^4   y^5   y^6
+
+7-> fraction
+
+    (y^5 + (x^2*y^3) + (x^4*y) - x^5 - (x^3*y^2) - (x*y^4))
+#7: -------------------------------------------------------
+                              y^6
+
+7-> simplify fraction
+
+    (y^5 - (y^4*x) + (y^3*x^2) - (y^2*x^3) + (y*x^4) - x^5)
+#7: -------------------------------------------------------
+                              y^6
+
+7-> simplify
+
+                         x^5
+                  (x^4 - ---)
+                          y
+                 (----------- - x^3)
+                       y
+          (x^2 + -------------------)
+                          y
+         (--------------------------- - x)
+                       y
+    (1 + ---------------------------------)
+                         y
+#7: ---------------------------------------
+                       y
+
+Successfully finished reading script file "fix2.in".
+7-> read fix5
+7-> clear all
+1-> a = (x+1/2^.5)^3
+
+               1
+#1: a = (x + -----)^3
+                1
+             (2^-)
+                2
+
+1-> a = (b+((c+1)^0.5))^3
+
+                      1
+#2: a = (b + ((c + 1)^-))^3
+                      2
+
+2-> a = b*c*x*((((x^2)*c)+(b^4))^3)*(x+c)
+
+#3: a = b*c*x*(((x^2*c) + b^4)^3)*(x + c)
+
+3-> a = (((b^2)+x)^3)*((1/x)+x)*b
+
+                       1
+#4: a = ((b^2 + x)^3)*(- + x)*b
+                       x
+
+4-> a = b*(((1/b)+(1/c))^3)
+
+            1   1
+#5: a = b*((- + -)^3)
+            b   c
+
+5-> a = (b^2)*(((1/b)+(1/c))^3)
+
+              1   1
+#6: a = b^2*((- + -)^3)
+              b   c
+
+6-> a = (b^2)*((b-c)^3)
+
+#7: a = b^2*((b - c)^3)
+
+7-> simplify all
+
+                     1
+        (((2*x) + (2^-))^3)
+                     2
+#1: a = -------------------
+                 8
+
+
+                      1
+#2: a = (b + ((c + 1)^-))^3
+                      2
+
+
+#3: a = ((b^4 + (c*x^2))^3)*b*((c*x^2) + (c^2*x))
+
+
+                         1
+#4: a = ((b^2 + x)^3)*b*(- + x)
+                         x
+
+
+          1   1
+#5: a = ((- + -)^3)*b
+          c   b
+
+
+              b
+        ((1 + -)^3)
+              c
+#6: a = -----------
+             b
+
+
+#7: a = b^2*((b - c)^3)
+
+Successfully finished reading script file "fix5.in".
+7-> read fix7
+7-> ; Algebraic fractions test
+7-> clear all
+1-> (c+a-b)/(b-a)
+
+    (c + a - b)
+#1: -----------
+      (b - a)
+
+1-> ((d*(b+c))+(a*(e1+f)))/(e1+f)/(b+c)
+
+    ((d*(b + c)) + (a*(e1 + f)))
+#2: ----------------------------
+         ((e1 + f)*(b + c))
+
+2-> ((((e1^2)+d)*b*((b^2)+2))-e1-f)/b/((b^2)+2)/(e1+f)
+
+    (((e1^2 + d)*b*(b^2 + 2)) - e1 - f)
+#3: -----------------------------------
+          (b*(b^2 + 2)*(e1 + f))
+
+3-> ((b*((((e1^2)+d)*((b^2)+2))+(b*(e1+f))))+e1+f)/(e1+f)/b/((b^2)+2)
+
+    ((b*(((e1^2 + d)*(b^2 + 2)) + (b*(e1 + f)))) + e1 + f)
+#4: ------------------------------------------------------
+                    ((e1 + f)*b*(b^2 + 2))
+
+4-> ((1/(x^(1+n)))+(1/(x^n))+(x^(m-1))+(x^m)+x)/(x+1)
+
+          1         1
+    (----------- + --- + (x^(m - 1)) + x^m + x)
+     (x^(1 + n))   x^n
+#5: -------------------------------------------
+                      (x + 1)
+
+5-> (1/(a + b)) + (1/(b + c))
+
+       1         1
+#6: ------- + -------
+    (a + b)   (b + c)
+
+6-> ((x - 1)^2)*(2 + x)/((1 + x)*((x - 3)^2))
+
+     ((x - 1)^2)*(2 + x)
+#7: ---------------------
+    ((1 + x)*((x - 3)^2))
+
+7-> simplify all
+
+       c
+#1: ------- - 1
+    (b - a)
+
+
+       d          a
+#2: -------- + -------
+    (e1 + f)   (b + c)
+
+
+    (d + e1^2)         1
+#3: ---------- - -------------
+     (e1 + f)    (b^3 + (2*b))
+
+
+    (d + e1^2)     (1 + b^2)
+#4: ---------- + -------------
+     (e1 + f)    (b^3 + (2*b))
+
+
+            1
+    (x^m + ---)
+           x^n       x
+#5: ----------- + -------
+         x        (x + 1)
+
+
+       1         1
+#6: ------- + -------
+    (b + c)   (b + a)
+
+
+     (1 - x)
+    (-------^2)*(2 + x)
+     (3 - x)
+#7: -------------------
+          (1 + x)
+
+7-> fraction all
+
+    (c - b + a)
+#1: -----------
+      (b - a)
+
+
+    ((d*(b + c)) + (a*(e1 + f)))
+#2: ----------------------------
+         ((c + b)*(e1 + f))
+
+
+    (((d + e1^2)*(b^3 + (2*b))) - e1 - f)
+#3: -------------------------------------
+          (((2*b) + b^3)*(e1 + f))
+
+
+    (((d + e1^2)*(b^3 + (2*b))) + e1 + f + (b^2*(e1 + f)))
+#4: ------------------------------------------------------
+                   (((2*b) + b^3)*(e1 + f))
+
+
+    ((x^n*((x^m*(x + 1)) + x^2)) + x + 1)
+#5: -------------------------------------
+               (x^n*(x^2 + x))
+
+
+     ((2*b) + a + c)
+#6: -----------------
+    ((b + c)*(b + a))
+
+
+     (2 + x)*((1 - x)^2)
+#7: ---------------------
+    ((1 + x)*((3 - x)^2))
+
+7-> simplify fraction all
+
+    (c - b + a)
+#1: -----------
+      (b - a)
+
+
+    ((d*(b + c)) + (a*(e1 + f)))
+#2: ----------------------------
+         ((e1 + f)*(c + b))
+
+
+    (((d + e1^2)*(b^3 + (2*b))) - e1 - f)
+#3: -------------------------------------
+          ((e1 + f)*((2*b) + b^3))
+
+
+    (((d + e1^2)*(b^3 + (2*b))) + (b^2*(e1 + f)) + e1 + f)
+#4: ------------------------------------------------------
+                   ((e1 + f)*((2*b) + b^3))
+
+
+                   1
+           (x^m + ---)
+                  x^n     1
+    (x^m + ----------- + --- + x)
+                x        x^n
+#5: -----------------------------
+               (x + 1)
+
+
+     ((2*b) + a + c)
+#6: -----------------
+    ((b + c)*(b + a))
+
+
+     ((1 - x)^2)*(2 + x)
+#7: ---------------------
+    (((3 - x)^2)*(1 + x))
+
+7-> simplify all
+
+       c
+#1: ------- - 1
+    (b - a)
+
+
+       d          a
+#2: -------- + -------
+    (e1 + f)   (c + b)
+
+
+    (d + e1^2)         1
+#3: ---------- - -------------
+     (e1 + f)    ((2*b) + b^3)
+
+
+    (d + e1^2)     (1 + b^2)
+#4: ---------- + -------------
+     (e1 + f)    ((2*b) + b^3)
+
+
+            1
+    (x^m + ---)
+           x^n       x
+#5: ----------- + -------
+         x        (x + 1)
+
+
+       1         1
+#6: ------- + -------
+    (b + c)   (b + a)
+
+
+     (1 - x)
+    (-------^2)*(2 + x)
+     (3 - x)
+#7: -------------------
+          (1 + x)
+
+Successfully finished reading script file "fix7.in".
+7-> read fix8
+7-> clear all
+1-> a = (((b^2)*(x^2))+(4*(b^2)*x)+(b^2)+(2*(b^3)*x)+(2*(b^3))+(b^4)+(2*b*(x^2))+(2*b*x)+(x^2))/(((b^3)*(x^2))+(2*(b^4)*x)+(b^5))
+
+        ((b^2*x^2) + (4*b^2*x) + b^2 + (2*b^3*x) + (2*b^3) + b^4 + (2*b*x^2) + (2*b*x) + x^2)
+#1: a = -------------------------------------------------------------------------------------
+                                    ((b^3*x^2) + (2*b^4*x) + b^5)
+
+1-> y = (((b+1)^0.5)*((b^2.5)+c))+((((b^2)+b)^0.5)*a)
+
+                  1      5                      1
+#2: y = (((b + 1)^-)*((b^-) + c)) + (((b^2 + b)^-)*a)
+                  2      2                      2
+
+2-> a = (b^(1-n))/(1+(b^(m-n)))
+
+           (b^(1 - n))
+#3: a = -----------------
+        (1 + (b^(m - n)))
+
+3-> a = (((b^2)+(b*(c^(1-n)))+(b^0.5))/(b^n)/(1+(b^(m-n))))^0.5
+
+                                    1
+        (b^2 + (b*(c^(1 - n))) + (b^-))
+                                    2   1
+#4: a = -------------------------------^-
+            (b^n*(1 + (b^(m - n))))     2
+
+4-> simplify all
+
+          1
+        ((- + 1)^2)
+          b
+#1: a = -----------
+             b
+
+
+                 1      5        1
+#2: y = ((b + 1)^-)*((b^-) + ((b^-)*a) + c)
+                 2      2        2
+
+
+             b
+#3: a = -----------
+        (b^n + b^m)
+
+
+                                    1
+        (b^2 + (b*(c^(1 - n))) + (b^-))
+                                    2   1
+#4: a = -------------------------------^-
+                  (b^n + b^m)           2
+
+Successfully finished reading script file "fix8.in".
+4-> read fix9
+4-> clear all
+1-> ((1/b) + (1/c) + (1/d))^3
+
+     1   1   1
+#1: (- + - + -)^3
+     b   c   d
+
+1-> ((+/-1000*(b!^4)+/-x)^2)*((1/x)+x)*b
+
+                                            1
+#2: (((1000*sign*((b!)^4)) + (sign0*x))^2)*(- + x)*b
+                                            x
+
+2-> ((b+(2*i))^5)
+
+#3: (b + (2*i))^5
+
+3-> (((1/(b^2))+c)^2)*((1/b)+(c*b))
+
+       1           1
+#4: ((--- + c)^2)*(- + (c*b))
+      b^2          b
+
+4-> (6*(b^0.5)-3)^3
+
+           1
+#5: ((6*(b^-)) - 3)^3
+           2
+
+5-> (2-(4/(c-b)))^3
+
+            4
+#6: (2 - -------)^3
+         (c - b)
+
+6-> (((e*((2*(x^3)) + 24 + (x!) - zy)) - pi)/e)^2
+
+    ((e*((2*x^3) + 24 + x! - zy)) - pi)
+#7: -----------------------------------^2
+                     e
+
+7-> (2+3x)^3
+
+#8: (2 + (3*x))^3
+
+8-> simplify all
+
+     1   1   1
+#1: (- + - + -)^3
+     b   d   c
+
+
+                                            1
+#2: ((x + (1000*sign*sign0*((b!)^4)))^2)*b*(- + x)
+                                            x
+
+
+#3: (b + (2*i))^5
+
+
+       1           1
+#4: ((--- + c)^2)*(- + (c*b))
+      b^2          b
+
+
+                    1
+#5: -27*((1 - (2*(b^-)))^3)
+                    2
+
+
+               2
+#6: 8*((1 - -------)^3)
+            (c - b)
+
+
+               pi
+#7: (zy - 24 + -- - x! - (2*x^3))^2
+               e
+
+
+#8: (2 + (3*x))^3
+
+8-> display factor all
+
+     1   1   1
+#1: (- + - + -)^3
+     b   d   c
+
+
+                                                     1
+#2: ((x + ((2^3*5^3)*sign*sign0*((b!)^(2^2))))^2)*b*(- + x)
+                                                     x
+
+
+#3: (b + (2*i))^5
+
+
+       1           1
+#4: ((--- + c)^2)*(- + (c*b))
+      b^2          b
+
+
+                         1
+#5: (3^3*-1)*((1 - (2*(b^-)))^3)
+                         2
+
+
+                 2
+#6: 2^3*((1 - -------)^3)
+              (c - b)
+
+
+                    pi
+#7: (zy - (2^3*3) + -- - x! - (2*x^3))^2
+                    e
+
+
+#8: (2 + (3*x))^3
+
+Successfully finished reading script file "fix9.in".
+Successfully finished reading script file "test.in".
+8-> clear all
+1-> read fraction
+1-> 
+1-> ; Algebraic fractions tutorial.
+1-> ; This Mathomatic input shows how "simplify fraction" and "unfactor fraction" work.
+1-> 1/x+1/y+1/z
+
+    1   1   1
+#1: - + - + -
+    x   y   z
+
+1-> fraction ; Convert expressions with algebraic fractions into a single fraction.
+
+    ((y*z) + (x*(z + y)))
+#1: ---------------------
+           (x*y*z)
+
+1-> simplify
+
+    1   1   1
+#1: - + - + -
+    x   y   z
+
+1-> simplify fraction ; does the same as the above fraction command, but simplifies more.
+
+    ((z*y) + (x*(z + y)))
+#1: ---------------------
+           (x*y*z)
+
+1-> unfactor ; Expand the products of sums.
+
+    ((z*y) + (x*z) + (x*y))
+#1: -----------------------
+            (x*y*z)
+
+1-> unfactor fraction ; Fully expand algebraic fractions by also expanding division of sums.
+
+    1   1   1
+#1: - + - + -
+    x   y   z
+
+Successfully finished reading script file "fraction.in".
+1-> clear all
+1-> read pie
+1-> 
+1-> ; This is the famous Bailey-Borwein-Plouffe (BBP) formula.
+1-> ; Sum this n = 0 to infinity to compute pi.
+1-> ; This is especially useful for calculating pi in hexadecimal.
+1-> ; One hexadecimal digit of pi is generated with each iteration.
+1-> ((4/((8*n)+1))-(2/((8*n)+4))-(1/((8*n)+5))-(1/((8*n)+6)))/(16^n)
+
+          4             2             1             1
+    (----------- - ----------- - ----------- - -----------)
+     ((8*n) + 1)   ((8*n) + 4)   ((8*n) + 5)   ((8*n) + 6)
+#1: -------------------------------------------------------
+                             16^n
+
+1-> simplify ; BBP simplifies to the ratio of two polynomials.
+
+                    ((120*n^2) + (151*n) + 47)
+#1: ----------------------------------------------------------
+    (16^n*((512*n^4) + (1024*n^3) + (712*n^2) + (194*n) + 15))
+
+1-> sum n=0 to 10 ; Numerically sum BBP from n = 0 to 10 in steps of 1.
+
+#2: 3.1415926535898
+
+1-> pi ; The digits should be the same.
+Calculating...
+ answer = 3.1415926535898
+3-> repeat echo *
+*******************************************************************************
+3-> x^n/n! ; Sum this n = 0 to infinity to compute (e^x).
+
+    x^n
+#4: ---
+    n!
+
+4-> replace x with 1 ; Sum this n = 0 to infinity to compute e:
+
+    1
+#4: --
+    n!
+
+4-> sum n=0 to 20 ; Numerically sum from n = 0 to 20 in steps of 1.
+
+#5: 2.718281828459
+
+4-> e ; The digits should be the same.
+Calculating...
+ answer = 2.718281828459
+6-> repeat echo *
+*******************************************************************************
+6-> ; Euler's identity is made of these most important universal constants:
+6-> e^(pi*i)+1=0
+
+#7: (e^(pi*i)) + 1 = 0
+
+7-> simplify ; An identity is when the LHS is identical to the RHS:
+
+#7: 0 = 0
+
+Successfully finished reading script file "pie.in".
+7-> 1
+
+                    ((120*n^2) + (151*n) + 47)
+#1: ----------------------------------------------------------
+    (16^n*((512*n^4) + (1024*n^3) + (712*n^2) + (194*n) + 15))
+
+1-> fraction
+
+                    ((120*n^2) + (151*n) + 47)
+#1: ----------------------------------------------------------
+    (16^n*((512*n^4) + (1024*n^3) + (712*n^2) + (194*n) + 15))
+
+1-> read demo
+1-> clear all
+1-> ; Some symbolic differentiation examples follow.
+1-> 
+1-> ; Take the derivative of the absolute value function:
+1-> |x|
+
+          1
+#1: (x^2)^-
+          2
+
+1-> derivative ; The result is the sign function sgn(x), which gives the sign of x.
+Differentiating with respect to x and simplifying...
+
+        x
+#2: ---------
+           1
+    ((x^2)^-)
+           2
+
+2-> repeat echo *
+*******************************************************************************
+2-> ; Mathomatic can differentiate anything that doesn't require symbolic logarithms.
+2-> y=e^(1+1/x)
+
+               1
+#3: y = e^(1 + -)
+               x
+
+3-> derivative ; The first order derivative is:
+Differentiating the RHS with respect to x and simplifying...
+
+                  1
+         -(e^(1 + -))
+                  x
+#4: y' = ------------
+             x^2
+
+4-> derivative ; The second order derivative is:
+Differentiating the RHS with respect to x and simplifying...
+
+              1        1
+          (e^(- + 1))*(- + 2)
+              x        x
+#5: y'' = -------------------
+                  x^3
+
+5-> expand fraction ; Perhaps easier to read:
+
+              1               1
+          (e^(- + 1))   2*(e^(- + 1))
+              x               x
+#5: y'' = ----------- + -------------
+              x^4            x^3
+
+5-> repeat echo *
+*******************************************************************************
+5-> ; A Taylor series demonstration:
+5-> y=x_new^n ; x_new is what we want, without using the root operator.
+
+#6: y = x_new^n
+
+6-> x_new ; It is easily solved for in Mathomatic.
+Solve successful:
+
+              1
+#6: x_new = y^-
+              n
+
+6-> y ; But we want an algorithm to compute it without using non-integer exponentiation.
+Solve successful:
+
+#6: y = x_new^n
+
+6-> taylor x_new, 1, x_old ; build the (nth root of y) iterative approximation formula
+Taylor series of the RHS with respect to x_new, simplified...
+1 non-zero derivative applied.
+
+#7: y = x_old^n + (n*(x_old^(n - 1))*x_new) - (n*x_old^n)
+
+7-> solve verifiable x_new ; solve for the output variable
+Solving equation #7 for x_new with required verification...
+Solve and "repeat simplify quick" successful:
+
+                       y
+                   (------- - 1)
+                    x_old^n
+#7: x_new = x_old*(------------- + 1)
+                         n
+
+Solution verified.
+7-> ; That is the convergent nth root approximation formula.
+7-> copy ; "calculate x_old 10000" tests this formula, if you would like to see for yourself.
+
+                       y
+                   (------- - 1)
+                    x_old^n
+#8: x_new = x_old*(------------- + 1)
+                         n
+
+7-> replace x_old x_new with x ; make x_old (input) and x_new (output) the same
+
+             y
+           (--- - 1)
+            x^n
+#7: x = x*(--------- + 1)
+               n
+
+7-> x ; make sure the formula was correct by solving for x
+Removing possible solution: "x = 0".
+Solve successful:
+
+          1
+#7: x = y^-
+          n
+
+7-> repeat echo *
+*******************************************************************************
+7-> ; Another Taylor series demo:
+7-> e^x ; enter the exponential function
+
+#9: e^x
+
+9-> taylor x, 10, 0 ; generate a 10th order taylor series of the exponential function
+Taylor series with respect to x, simplified...
+10 non-zero derivatives applied.
+
+             x^2   x^3   x^4   x^5   x^6   x^7     x^8     x^9      x^10
+#10: 1 + x + --- + --- + --- + --- + --- + ---- + ----- + ------ + -------
+              2     6    24    120   720   5040   40320   362880   3628800
+
+10-> laplace x ; do a Laplace transform on it
+
+     1    1     1     1     1     1     1     1     1     1      1
+#11: - + --- + --- + --- + --- + --- + --- + --- + --- + ---- + ----
+     x   x^2   x^3   x^4   x^5   x^6   x^7   x^8   x^9   x^10   x^11
+
+11-> simplify ; show the structure of the result
+
+                                                       1
+                                                  (1 + -)
+                                                       x
+                                             (1 + -------)
+                                                     x
+                                        (1 + -------------)
+                                                   x
+                                   (1 + -------------------)
+                                                 x
+                              (1 + -------------------------)
+                                               x
+                         (1 + -------------------------------)
+                                             x
+                    (1 + -------------------------------------)
+                                           x
+               (1 + -------------------------------------------)
+                                         x
+          (1 + -------------------------------------------------)
+                                       x
+     (1 + -------------------------------------------------------)
+                                     x
+#11: -------------------------------------------------------------
+                                   x
+
+11-> laplace inverse x ; undo the Laplace transform
+
+             x^2   x^3   x^4   x^5   x^6   x^7     x^8     x^9      x^10
+#12: 1 + x + --- + --- + --- + --- + --- + ---- + ----- + ------ + -------
+              2     6    24    120   720   5040   40320   362880   3628800
+
+12-> compare with 10 ; check the result
+Comparing #10 with #12...
+Expressions are identical.
+Successfully finished reading script file "demo.in".
+12-> read limits
+12-> 
+12-> ; Tests for the experimental limit command.
+12-> 
+12-> clear all
+1-> ; find the derivative of:
+1-> y = 1/(x^.5)
+
+          1
+#1: y = -----
+           1
+        (x^-)
+           2
+
+1-> ; using the difference quotient:
+1-> y' = (1/(x+delta_x)^.5-1/x^.5)/delta_x
+
+                  1             1
+         (----------------- - -----)
+                         1       1
+          ((x + delta_x)^-)   (x^-)
+                         2       2
+#2: y' = ---------------------------
+                   delta_x
+
+2-> limit delta_x 0 ; take the limit as delta_x (change in x) goes to 0
+Taking the limit as delta_x goes to 0
+Solving...
+Equation is a degree 0.5 polynomial equation in delta_x.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 3 polynomial equation in delta_x.
+Removing possible solution: "delta_x = 0".
+Equation is a degree 2 polynomial equation in delta_x.
+Equation was solved with the quadratic formula.
+Equation is a degree 0.5 polynomial equation in y'.
+Raising both equation sides to the power of 2 and expanding...
+
+            -1
+#3: y' = ---------
+               3
+         (2*(x^-))
+               2
+
+2-> 3
+
+            -1
+#3: y' = ---------
+               3
+         (2*(x^-))
+               2
+
+3-> integrate x ; take the antiderivative to see if it's right
+Only the RHS will be transformed.
+Integrating the RHS with respect to x and simplifying...
+
+          1
+#4: y = -----
+           1
+        (x^-)
+           2
+
+4-> compare 1
+Comparing #1 with #4...
+Equations are identical.
+4-> 
+4-> ; test infinity limits:
+4-> 2x/(x+1)
+
+      2*x
+#5: -------
+    (x + 1)
+
+5-> limit x inf ; answer should be 2
+Taking the limit as x goes to inf
+Solving...
+
+#6: limit = 2
+
+5-> 
+5-> (3x+100-a)/(x-b)
+
+    ((3*x) + 100 - a)
+#7: -----------------
+         (x - b)
+
+7-> limit x inf ; answer should be 3
+Taking the limit as x goes to inf
+Solving...
+
+#8: limit = 3
+
+7-> 
+7-> (((x^2) - (5*x) + 6)^(1/2)) - x
+
+                       1
+#9: ((x^2 - (5*x) + 6)^-) - x
+                       2
+
+9-> limit x inf ; answer should be -5/2
+Taking the limit as x goes to inf
+Solving...
+Equation is a degree 0.5 polynomial equation in x.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+
+             -5
+#10: limit = --
+             2
+
+9-> 
+9-> x*((x^2+1)^.5-x)
+
+                   1
+#11: x*(((x^2 + 1)^-) - x)
+                   2
+
+11-> limit x inf ; answer should be 1/2
+Taking the limit as x goes to inf
+Solving...
+Equation is a degree 1.5 polynomial equation in x.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 3 polynomial equation in x.
+Removing possible solution: "x = 0".
+
+             1
+#12: limit = -
+             2
+
+11-> 
+11-> 1/x^2+1/x
+
+      1    1
+#13: --- + -
+     x^2   x
+
+13-> limit y inf ; result should be original expression with a warning.
+Warning: Limit variable not found; answer is original expression.
+
+              1    1
+#13: limit = --- + -
+             x^2   x
+
+13-> limit x inf ; result should be 0
+Taking the limit as x goes to inf
+Solving...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+
+#14: limit = 0
+
+13-> 
+13-> ((2*(x^2)) - x - 6)/((x^2) + (2*x) - 8)
+
+     ((2*x^2) - x - 6)
+#15: -----------------
+     (x^2 + (2*x) - 8)
+
+15-> limit x inf ; result should be 2
+Taking the limit as x goes to inf
+Solving...
+
+#16: limit = 2
+
+15-> 
+15-> x^2+x
+
+#17: x^2 + x
+
+17-> limit x 0 ; result should be 0
+Taking the limit as x goes to 0
+Solving...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+
+#18: limit = 0
+
+17-> limit x 2 ; result should be 6
+Taking the limit as x goes to 2
+Solving...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+
+#19: limit = 6
+
+17-> display
+
+#17: limit = x^2 + x
+
+17-> ; The following currently gives the wrong answer:
+17-> limit x inf ; result should be inf
+Taking the limit as x goes to inf
+Solving...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+
+#20: limit = 0
+
+17-> ; The following currently gives errors:
+17-> y=x+1/x
+
+             1
+#21: y = x + -
+             x
+
+21-> :limit x 0 ; result should be inf
+Taking the limit as x goes to 0
+Solving...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+Equation is a degree 0.5 polynomial equation in y.
+Raising both equation sides to the power of 2 and expanding...
+There are no possible values for the solve variable.
+Can't take the limit because solve failed.
+21-> :limit x inf; result should be inf
+Taking the limit as x goes to inf
+Solving...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+Equation is a degree 0.5 polynomial equation in y.
+Raising both equation sides to the power of 2 and expanding...
+There are no possible values for the solve variable.
+Can't take the limit because solve failed.
+Successfully finished reading script file "limits.in".
+21-> ; read how_limit_works
+21-> read test3
+21-> ; Test solving linear equations with Mathomatic.
+21-> 
+21-> read linear
+21-> 
+21-> ; Combine 3 simultaneous linear equations with 3 unknowns (x, y, z).
+21-> ; Solve for all 3 unknowns using the eliminate, solve, and simplify commands.
+21-> 
+21-> clear all ; restart Mathomatic
+1-> ; enter all 3 equations:
+1-> d1=a1*x+b1*y+c1*z
+
+#1: d1 = (a1*x) + (b1*y) + (c1*z)
+
+1-> d2=a2*x+b2*y+c2*z
+
+#2: d2 = (a2*x) + (b2*y) + (c2*z)
+
+2-> d3=a3*x+b3*y+c3*z
+
+#3: d3 = (a3*x) + (b3*y) + (c3*z)
+
+3-> 2 ; select equation number 2 as the current equation
+
+#2: d2 = (a2*x) + (b2*y) + (c2*z)
+
+2-> eliminate x ; eliminate variable x from the current equation
+Solving equation #1 for x and substituting into the current equation...
+
+                  a2*((b1*y) + (c1*z) - d1)
+#2: d2 = (b2*y) - ------------------------- + (c2*z)
+                             a1
+
+2-> 3 ; select equation number 3
+
+#3: d3 = (a3*x) + (b3*y) + (c3*z)
+
+3-> eliminate x y ; eliminate variables x and then y from the current equation
+Eliminating variable x using solved equation #1...
+Solving equation #2 for y and substituting into the current equation...
+
+                                                                b1*((z*((c2*a1) - (a2*c1))) + (a2*d1) - (d2*a1))
+                                                            a3*(------------------------------------------------ + (c1*z) - d1)
+         b3*((z*((c2*a1) - (a2*c1))) + (a2*d1) - (d2*a1))                     ((a2*b1) - (b2*a1))
+#3: d3 = ------------------------------------------------ - ------------------------------------------------------------------- + (c3*z)
+                       ((a2*b1) - (b2*a1))                                                  a1
+
+3-> solve for z
+Solve successful:
+
+        ((d3*((a2*b1) - (a1*b2))) + (b3*((d2*a1) - (a2*d1))) + (a3*((b2*d1) - (b1*d2))))
+#3: z = --------------------------------------------------------------------------------
+        ((b3*((c2*a1) - (a2*c1))) + (a3*((b2*c1) - (b1*c2))) + (c3*((a2*b1) - (a1*b2))))
+
+3-> 2 ; select equation number 2
+
+        ((z*((c2*a1) - (a2*c1))) + (a2*d1) - (d2*a1))
+#2: y = ---------------------------------------------
+                     ((a2*b1) - (b2*a1))
+
+2-> eliminate z using 3 ; find y by combining equation numbers 2 and 3
+Eliminating variable z using solved equation #3...
+
+         ((d3*((a2*b1) - (a1*b2))) + (b3*((d2*a1) - (a2*d1))) + (a3*((b2*d1) - (b1*d2))))*((c2*a1) - (a2*c1))
+        (---------------------------------------------------------------------------------------------------- + (a2*d1) - (d2*a1))
+                   ((b3*((c2*a1) - (a2*c1))) + (a3*((b2*c1) - (b1*c2))) + (c3*((a2*b1) - (a1*b2))))
+#2: y = --------------------------------------------------------------------------------------------------------------------------
+                                                           ((a2*b1) - (b2*a1))
+
+2-> simplify
+
+        ((a1*((d3*c2) - (d2*c3))) + (d1*((a2*c3) - (c2*a3))) + (c1*((d2*a3) - (d3*a2))))
+#2: y = --------------------------------------------------------------------------------
+        ((a1*((b3*c2) - (c3*b2))) + (c1*((a3*b2) - (b3*a2))) + (b1*((c3*a2) - (a3*c2))))
+
+2-> 1 ; select equation number 1
+
+        -((b1*y) + (c1*z) - d1)
+#1: x = -----------------------
+                  a1
+
+1-> eliminate z using 3, y using 2; find x
+Eliminating variable z using solved equation #3...
+Eliminating variable y using solved equation #2...
+
+          b1*((a1*((d3*c2) - (d2*c3))) + (d1*((a2*c3) - (c2*a3))) + (c1*((d2*a3) - (d3*a2))))   c1*((d3*((a2*b1) - (a1*b2))) + (b3*((d2*a1) - (a2*d1))) + (a3*((b2*d1) - (b1*d2))))
+        -(----------------------------------------------------------------------------------- + ----------------------------------------------------------------------------------- - d1)
+           ((a1*((b3*c2) - (c3*b2))) + (c1*((a3*b2) - (b3*a2))) + (b1*((c3*a2) - (a3*c2))))      ((b3*((c2*a1) - (a2*c1))) + (a3*((b2*c1) - (b1*c2))) + (c3*((a2*b1) - (a1*b2))))
+#1: x = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                               a1
+
+1-> 
+1-> simplify all ; simplify and display all solutions
+
+        ((c1*((b2*d3) - (b3*d2))) + (b1*((c3*d2) - (c2*d3))) + (d1*((b3*c2) - (c3*b2))))
+#1: x = --------------------------------------------------------------------------------
+        ((a1*((b3*c2) - (c3*b2))) + (c1*((a3*b2) - (b3*a2))) + (b1*((c3*a2) - (a3*c2))))
+
+
+        ((a1*((d3*c2) - (d2*c3))) + (d1*((a2*c3) - (c2*a3))) + (c1*((d2*a3) - (d3*a2))))
+#2: y = --------------------------------------------------------------------------------
+        ((a1*((b3*c2) - (c3*b2))) + (c1*((a3*b2) - (b3*a2))) + (b1*((c3*a2) - (a3*c2))))
+
+
+        ((b1*((d3*a2) - (a3*d2))) + (a1*((b3*d2) - (d3*b2))) + (d1*((a3*b2) - (b3*a2))))
+#3: z = --------------------------------------------------------------------------------
+        ((a1*((b3*c2) - (c3*b2))) + (c1*((a3*b2) - (b3*a2))) + (b1*((c3*a2) - (a3*c2))))
+
+Successfully finished reading script file "linear.in".
+1-> copy
+
+        ((c1*((b2*d3) - (b3*d2))) + (b1*((c3*d2) - (c2*d3))) + (d1*((b3*c2) - (c3*b2))))
+#4: x = --------------------------------------------------------------------------------
+        ((a1*((b3*c2) - (c3*b2))) + (c1*((a3*b2) - (b3*a2))) + (b1*((c3*a2) - (a3*c2))))
+
+1-> b2
+Solve successful:
+
+         ((x*((b3*((a1*c2) - (c1*a2))) + (b1*((c3*a2) - (a3*c2))))) - (d2*((b1*c3) - (c1*b3))) - (c2*((d1*b3) - (b1*d3))))
+#1: b2 = -----------------------------------------------------------------------------------------------------------------
+                                             ((c1*(d3 - (x*a3))) + (c3*((x*a1) - d1)))
+
+1-> c2
+Solve successful:
+
+         ((b2*((c1*(d3 - (x*a3))) + (c3*((x*a1) - d1)))) + (((b1*c3) - (c1*b3))*(d2 - (x*a2))))
+#1: c2 = --------------------------------------------------------------------------------------
+                             ((x*((b3*a1) - (b1*a3))) - (d1*b3) + (b1*d3))
+
+1-> b3
+Solve successful:
+
+         ((b1*((c2*(d3 - (x*a3))) + (c3*((x*a2) - d2)))) - (b2*((c1*(d3 - (x*a3))) + (c3*((x*a1) - d1)))))
+#1: b3 = -------------------------------------------------------------------------------------------------
+                                     ((c1*((x*a2) - d2)) + (c2*(d1 - (x*a1))))
+
+1-> c3
+Solve successful:
+
+         ((b3*((c1*((x*a2) - d2)) + (c2*(d1 - (x*a1))))) + (((x*a3) - d3)*((b1*c2) - (b2*c1))))
+#1: c3 = --------------------------------------------------------------------------------------
+                               ((b1*((x*a2) - d2)) + (b2*(d1 - (x*a1))))
+
+1-> b1
+Solve successful:
+
+         ((b2*((c3*(d1 - (x*a1))) + (c1*((x*a3) - d3)))) - (b3*((c1*((x*a2) - d2)) + (c2*(d1 - (x*a1))))))
+#1: b1 = -------------------------------------------------------------------------------------------------
+                                     ((c2*((x*a3) - d3)) + (c3*(d2 - (x*a2))))
+
+1-> c1
+Solve successful:
+
+         ((b1*((c2*((x*a3) - d3)) + (c3*(d2 - (x*a2))))) + (((x*a1) - d1)*((b2*c3) - (b3*c2))))
+#1: c1 = --------------------------------------------------------------------------------------
+                               ((b2*((x*a3) - d3)) + (b3*(d2 - (x*a2))))
+
+1-> d2
+Solve successful:
+
+         ((c1*((b2*((x*a3) - d3)) - (b3*x*a2))) - (((b2*c3) - (b3*c2))*((x*a1) - d1)) + (b1*((c2*(d3 - (x*a3))) + (c3*x*a2))))
+#1: d2 = ---------------------------------------------------------------------------------------------------------------------
+                                                          ((b1*c3) - (c1*b3))
+
+1-> a2
+Solve successful:
+
+         ((d2*((b1*c3) - (c1*b3))) + (((b2*c3) - (b3*c2))*((x*a1) - d1)) + ((d3 - (x*a3))*((c1*b2) - (b1*c2))))
+#1: a2 = ------------------------------------------------------------------------------------------------------
+                                                (x*((b1*c3) - (c1*b3)))
+
+1-> d3
+Solve successful:
+
+         ((((b1*c3) - (c1*b3))*((a2*x) - d2)) - (((b2*c3) - (b3*c2))*((x*a1) - d1)))
+#1: d3 = --------------------------------------------------------------------------- + (x*a3)
+                                     ((c1*b2) - (b1*c2))
+
+1-> a3
+Solve successful:
+
+         -((((b1*c3) - (c1*b3))*((a2*x) - d2)) - (((b2*c3) - (b3*c2))*((x*a1) - d1)) - (d3*((c1*b2) - (b1*c2))))
+#1: a3 = -------------------------------------------------------------------------------------------------------
+                                                 (((c1*b2) - (b1*c2))*x)
+
+1-> d1
+Solve successful:
+
+           ((((c1*b2) - (b1*c2))*((a3*x) - d3)) + (((b1*c3) - (c1*b3))*((a2*x) - d2)))
+#1: d1 = -(--------------------------------------------------------------------------- - (x*a1))
+                                       ((b2*c3) - (b3*c2))
+
+1-> a1
+Solve successful:
+
+         ((d1*((b2*c3) - (b3*c2))) + (((c1*b2) - (b1*c2))*((a3*x) - d3)) + (((b1*c3) - (c1*b3))*((a2*x) - d2)))
+#1: a1 = ------------------------------------------------------------------------------------------------------
+                                                (((b2*c3) - (b3*c2))*x)
+
+1-> x
+Solve successful:
+
+        ((d1*((b2*c3) - (b3*c2))) + (d3*((b1*c2) - (c1*b2))) + (d2*((c1*b3) - (b1*c3))))
+#1: x = --------------------------------------------------------------------------------
+        ((a1*((b2*c3) - (b3*c2))) + (a3*((b1*c2) - (c1*b2))) + (a2*((c1*b3) - (b1*c3))))
+
+1-> compare with 4
+Comparing #4 with #1...
+Simplifying both equations...
+Equations are identical.
+Successfully finished reading script file "test3.in".
+1-> read poly
+1-> 
+1-> ; Combine 3 quadratic polynomial equations with 3 unknown coefficients (a, b, c).
+1-> ; Solve for variables (a), (b), and (c).
+1-> 
+1-> clear all ; restart Mathomatic
+1-> ; enter all 3 equations:
+1-> y1=a+b*x1+c*x1^2
+
+#1: y1 = a + (b*x1) + (c*x1^2)
+
+1-> y2=a+b*x2+c*x2^2
+
+#2: y2 = a + (b*x2) + (c*x2^2)
+
+2-> y3=a+b*x3+c*x3^2
+
+#3: y3 = a + (b*x3) + (c*x3^2)
+
+3-> 2 ; select equation number 2 as the current equation
+
+#2: y2 = a + (b*x2) + (c*x2^2)
+
+2-> eliminate a ; eliminate variable (a) from the current equation
+Solving equation #1 for a and substituting into the current equation...
+
+#2: y2 = (b*x2) - (x1*(b + (c*x1))) + y1 + (c*x2^2)
+
+2-> 3 ; select equation number 3
+
+#3: y3 = a + (b*x3) + (c*x3^2)
+
+3-> eliminate a b ; eliminate variables (a) and then (b) from the current equation
+Eliminating variable a using solved equation #1...
+Solving equation #2 for b and substituting into the current equation...
+
+         (y1 - y2 + (c*(x2^2 - x1^2)))*x3        (y1 - y2 + (c*(x2^2 - x1^2)))
+#3: y3 = -------------------------------- - (x1*(----------------------------- + (c*x1))) + y1 + (c*x3^2)
+                    (x1 - x2)                              (x1 - x2)
+
+3-> solve verifiable c
+Solving equation #3 for c with required verification...
+Solve and "repeat simplify quick" successful:
+
+        ((x1*(y2 - y3)) + (x3*(y1 - y2)) + (x2*(y3 - y1)))
+#3: c = --------------------------------------------------
+                 ((x2 - x1)*(x3 - x1)*(x3 - x2))
+
+Solution verified.
+3-> simplify
+
+         (y1 - y2)   (y3 - y2)
+        (--------- + ---------)
+         (x2 - x1)   (x3 - x2)
+#3: c = -----------------------
+               (x3 - x1)
+
+3-> 2 ; select equation number 2 again
+
+        (y1 - y2 + (c*(x2^2 - x1^2)))
+#2: b = -----------------------------
+                  (x1 - x2)
+
+2-> eliminate c using 3 ; find (b) by combining equation numbers 2 and 3
+Eliminating variable c using solved equation #3...
+
+                    (y1 - y2)   (y3 - y2)
+                   (--------- + ---------)*(x2^2 - x1^2)
+                    (x2 - x1)   (x3 - x2)
+        (y1 - y2 + -------------------------------------)
+                                 (x3 - x1)
+#2: b = -------------------------------------------------
+                            (x1 - x2)
+
+2-> simplify
+
+        ((x1^2*(y2 - y3)) + (x3^2*(y1 - y2)) + (x2^2*(y3 - y1)))
+#2: b = --------------------------------------------------------
+                    ((x2 - x1)*(x3 - x1)*(x2 - x3))
+
+2-> 1 ; select equation number 1
+
+#1: a = -((x1*(b + (c*x1))) - y1)
+
+1-> eliminate c using 3, b using 2 ; find (a)
+Eliminating variable c using solved equation #3...
+Eliminating variable b using solved equation #2...
+
+                                                                           (y1 - y2)   (y3 - y2)
+                                                                          (--------- + ---------)*x1
+               ((x1^2*(y2 - y3)) + (x3^2*(y1 - y2)) + (x2^2*(y3 - y1)))    (x2 - x1)   (x3 - x2)
+#1: a = -((x1*(-------------------------------------------------------- + --------------------------)) - y1)
+                           ((x2 - x1)*(x3 - x1)*(x2 - x3))                        (x3 - x1)
+
+1-> 
+1-> simplify fraction all ; display all solutions, converting to simple fractions first
+
+        ((x1^2*((y2*x3) - (y3*x2))) + (x1*((x2^2*y3) - (x3^2*y2))) + (y1*((x3^2*x2) - (x3*x2^2))))
+#1: a = ------------------------------------------------------------------------------------------
+                                     ((x2 - x1)*(x3 - x1)*(x3 - x2))
+
+
+        ((x1^2*(y2 - y3)) + (x3^2*(y1 - y2)) + (x2^2*(y3 - y1)))
+#2: b = --------------------------------------------------------
+                    ((x2 - x1)*(x3 - x1)*(x2 - x3))
+
+
+        ((x3*(y1 - y2)) + (x2*(y3 - y1)) + (x1*(y2 - y3)))
+#3: c = --------------------------------------------------
+                 ((x2 - x1)*(x3 - x1)*(x3 - x2))
+
+Successfully finished reading script file "poly.in".
+1-> clear all
+1-> read examples
+1-> 
+1-> ; This is a line comment.  This script shows some simple examples of Mathomatic usage.
+1-> ; Mathomatic input files are scripts that may be read in with the "read" command.
+1-> 
+1-> ; Equations are entered by just typing or pasting them in:
+1-> c^2=a^2+b^2 ; The Pythagorean theorem, "c" squared equals "a" squared plus "b" squared.
+
+#1: c^2 = a^2 + b^2
+
+1-> ; The entered equation becomes the current equation and is displayed.
+1-> ; The current equation can be solved by simply typing in a variable name:
+1-> c ; which is shorthand for the solve command.  Solve for variable "c".
+Solve successful:
+
+                     1
+#1: c = ((a^2 + b^2)^-)*sign
+                     2
+
+1-> ; "sign" variables are special two-valued variables that may only be +1 or -1.
+1-> solve for b ; Another way to solve for a variable, using English.
+Solve successful:
+
+                     1
+#1: b = ((c^2 - a^2)^-)*sign0
+                     2
+
+1-> ; To output programming language code, use the code command:
+1-> code ; C language code is the default.
+b = (pow(((c*c) - (a*a)), (1.0/2.0))*sign0);
+1-> 
+1-> code java ; Mathomatic can also generate Java
+b = (Math.pow(((c*c) - (a*a)), (1.0/2.0))*sign0);
+1-> 
+1-> code python ; and Python code.
+b = ((((c*c) - (a*a))**(1.0/2.0))*sign0)
+1-> 
+1-> repeat echo *
+*******************************************************************************
+1-> a=b+1/b ; Enter another equation; this is actually a quadratic equation.
+
+            1
+#2: a = b + -
+            b
+
+2-> 0 ; Solve for zero.
+Solve successful:
+
+#2: 0 = (b*(b - a)) + 1
+
+2-> unfactor ; Expand, showing that this is a quadratic polynomial equation in "b".
+
+#2: 0 = b^2 - (b*a) + 1
+
+2-> solve verifiable b ; Require solution verification with the "verifiable" option.
+Solving equation #2 for b with required verification...
+Equation is a degree 2 polynomial equation in b.
+Equation was solved with the quadratic formula.
+Solve and "repeat simplify quick" successful:
+
+                     1
+        ((((a^2 - 4)^-)*sign) + a)
+                     2
+#2: b = --------------------------
+                    2
+
+All solutions verified.
+2-> a ; Solve back for "a" and we should get the original equation.
+Equation is a degree 0.5 polynomial equation in a.
+Raising both equation sides to the power of 2 and expanding...
+Solve successful:
+
+        (b^2 + 1)
+#2: a = ---------
+            b
+
+2-> simplify ; The simplify command makes expressions simpler and prettier.
+
+            1
+#2: a = b + -
+            b
+
+2-> repeat echo *
+*******************************************************************************
+2-> ; Mathomatic is also handy as an advanced calculator.
+2-> ; Expressions without variables entered at the main prompt are instantly evaluated:
+2-> 2+3
+Calculating...
+ answer = 5
+3-> 495/44 ; Fractions are always reduced to their simplest form:
+Calculating...
+ answer = 11.25, with fractions it is: 45/4
+4-> ; Fractions greater than 1 can easily be displayed as mixed fractions.
+4-> display mixed ; Display above fraction as a mixed fraction:
+
+                  1
+#4: answer = 11 + -
+                  4
+
+4-> display factor ; Integers and fractions are easily factored:
+
+             (3^2*5)
+#4: answer = -------
+               2^2
+
+4-> 2^.5 ; The square root of 2, rounded to the default 14 digits:
+Calculating...
+ answer = 1.4142135623731
+5-> 
+5-> repeat echo *
+*******************************************************************************
+5-> ; Symbolic logarithms like log(x) are not implemented, yet.
+5-> 27^y=9 ; An example that uses numeric logarithms.
+
+#6: 27^y = 9
+
+6-> solve verifiable y ; Require solution verification with the "verifiable" option.
+Solving equation #6 for y with required verification...
+Solve and "repeat simplify quick" successful:
+
+        2
+#6: y = -
+        3
+
+Solution verified.
+6-> 
+6-> repeat echo *
+*******************************************************************************
+6-> 0=2x^2-3x-20 ; A simple quadratic equation, to show how the calculate command works.
+
+#7: 0 = (2*x^2) - (3*x) - 20
+
+7-> solve verifiable x ; Solve for x, plugging the results into the original equation to verify.
+Solving equation #7 for x with required verification...
+Equation is a degree 2 polynomial equation in x.
+Equation was solved with the quadratic formula.
+Solve and "repeat simplify quick" successful:
+
+        3   13*sign
+#7: x = - - -------
+        4      4
+
+All solutions verified.
+7-> calculate ; Expand "sign" variables and approximate the RHS (Right-Hand Side).
+There are 2 solutions.
+
+Solution number 1 with sign = 1:
+ x = -2.5, with fractions it is: -5/2
+
+Solution number 2 with sign = -1:
+ x = 4
+7-> ; The calculate command also lets you plug values into a formula with variables, if any.
+7-> display; Display the current equation, showing that it was not modified by calculate.
+
+        3   13*sign
+#7: x = - - -------
+        4      4
+
+Successfully finished reading script file "examples.in".
+7-> clear all
+1-> read test1
+1-> y = .6666 - (4*(((10*(pi^2)*(r^3)/((d^2)*g*m*epsilon)) - 1)^(1/2))/15)
+
+                        10*pi^2*r^3         1
+                 4*((----------------- - 1)^-)
+                     (d^2*g*m*epsilon)      2
+#1: y = 0.6666 - -----------------------------
+                              15
+
+1-> simplify
+
+                         pi
+                     10*(--^2)*r^3
+                         d              1
+                 4*((------------- - 1)^-)
+                     (g*m*epsilon)      2
+#1: y = 0.6666 - -------------------------
+                            15
+
+1-> simplify symbolic
+
+                      10*pi^2*r^3         1
+                 4*((------------- - d^2)^-)
+                     (g*m*epsilon)        2
+#1: y = 0.6666 - ---------------------------
+                           (15*d)
+
+1-> r
+Solve successful:
+
+                      15*(0.6666 - y)*d
+        g*m*epsilon*((-----------------^2) + d^2)
+                              4                   1
+#1: r = -----------------------------------------^-
+                        (10*pi^2)                 3
+
+1-> repeat simplify
+
+         d  2                                 45*y^2                   1
+#1: r = (--^-)*((g*m*epsilon*(0.72487500625 + ------ - (1.8748125*y)))^-)
+         pi 3                                   32                     3
+
+1-> y
+Equation is a degree 2 polynomial equation in y.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+                                                                                                                                                                                    1
+        ((0.6666*d^2*g*m*epsilon) - (0.25773333555556*((((2.5863941835972*d^2*g*m*epsilon)^2) + (d^2*g*m*epsilon*((10.705236737008*r^3*pi^2) - (7.7599585466463*d^2*g*m*epsilon))))^-)*sign))
+                                                                                                                                                                                    2
+#1: y = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                          (d^2*g*m*epsilon)
+
+1-> repeat simplify symbolic
+
+                      10*r^3*pi^2         1
+                 4*((------------- - d^2)^-)*sign
+                     (g*m*epsilon)        2
+#1: y = 0.6666 - --------------------------------
+                              (15*d)
+
+Successfully finished reading script file "test1.in".
+1-> read test2
+1-> clear all
+1-> y=(a/2)^2/b/4
+
+         a
+        (-^2)
+         2
+#1: y = -----
+        (4*b)
+
+1-> l=f*(b-y)+z*(a-f)
+
+#2: l = (f*(b - y)) + (z*(a - f))
+
+2-> m=2*(b-y)-a+f
+
+#3: m = (2*(b - y)) - a + f
+
+3-> n=2*(b-y)+a-f
+
+#4: n = (2*(b - y)) + a - f
+
+4-> o=l*(1/m-1/n)/2
+
+           1   1
+        l*(- - -)
+           m   n
+#5: o = ---------
+            2
+
+5-> eliminate l m n y
+Eliminating variable l using solved equation #2...
+Eliminating variable m using solved equation #3...
+Eliminating variable n using solved equation #4...
+Eliminating variable y using solved equation #1...
+
+                  a
+                 (-^2)
+                  2                                  1                           1
+        ((f*(b - -----)) + (z*(a - f)))*(------------------------- - -------------------------)
+                 (4*b)                             a                           a
+                                                  (-^2)                       (-^2)
+                                                   2                           2
+                                         ((2*(b - -----)) - a + f)   ((2*(b - -----)) + a - f)
+                                                  (4*b)                       (4*b)
+#5: o = ---------------------------------------------------------------------------------------
+                                                   2
+
+5-> simplify
+
+         4*((f*((16*b^3) - (b*a^2))) + (16*b^2*z*(a - f)))*(a - f)
+#5: o = -----------------------------------------------------------
+        ((256*b^4) + (b^2*((128*a*f) - (96*a^2) - (64*f^2))) + a^4)
+
+5-> copy
+
+         4*((f*((16*b^3) - (b*a^2))) + (16*b^2*z*(a - f)))*(a - f)
+#6: o = -----------------------------------------------------------
+        ((256*b^4) + (b^2*((128*a*f) - (96*a^2) - (64*f^2))) + a^4)
+
+5-> f
+Equation is a degree 2 polynomial equation in f.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+                                                                                                                                                                                                                                             1
+         ((((4*b*a*((16*b*((2*(z + o)) - b)) + a^2))^2) + (16*b*((16*b*((b*((16*b*((b*((a^2*((4*z) + (7*o))) + (16*b*o*(z - b + o)))) - (2*a^2*((z*((2*z) + (5*o))) + (3*o^2))))) - (a^4*((7*o) + (4*z))))) + (o*a^4*(z + o)))) + (a^6*o))))^-)*sign
+                                                                                                                                                                                                                                             2
+        (------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- + (2*b*a*((16*b*(b - (2*(z + o)))) - a^2)))
+                                                                                                                              2
+#5: f = ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                                                    (4*b*((16*b*(b - z - o)) - a^2))
+
+5-> simplify symbolic
+
+                                                                                  1             a^2
+            ((sign*(((b^2*(a^2 + (16*(o^2 + (o*z))))) + (o*((a^2*b) - (16*b^3))))^-)*((8*b^2) - ---)) - (8*b^2*a*(z + o)))
+        a                                                                         2              2
+#5: f = - + --------------------------------------------------------------------------------------------------------------
+        2                                       ((16*(b^3 - (b^2*(z + o)))) - (b*a^2))
+
+5-> 6
+
+         4*((f*((16*b^3) - (b*a^2))) + (16*b^2*z*(a - f)))*(a - f)
+#6: o = -----------------------------------------------------------
+        ((256*b^4) + (b^2*((128*a*f) - (96*a^2) - (64*f^2))) + a^4)
+
+6-> derivative z
+Differentiating the RHS with respect to z and simplifying...
+
+                             64*((b*(a - f))^2)
+#7: o' = -----------------------------------------------------------
+         ((256*b^4) + (b^2*((128*a*f) - (96*a^2) - (64*f^2))) + a^4)
+
+7-> f
+Equation is a degree 2 polynomial equation in f.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+                                                                                                                                              1
+          ((((128*b^2*a*(1 + o'))^2) + (256*b^2*((o'*((32*b^2*((8*b^2*(1 + o')) - (a^2*(5 + (3*o'))))) + (a^4*(1 + o')))) - (64*((b*a)^2)))))^-)*sign0
+                                                                                                                                              2
+        -(-------------------------------------------------------------------------------------------------------------------------------------------- - (64*b^2*a*(1 + o')))
+                                                                               2
+#7: f = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                  (64*b^2*(1 + o'))
+
+7-> repeat simplify symbolic
+
+                       o'    1    a^2
+#7: f = a + (sign0*(--------^-)*(----- - (2*b)))
+                    (1 + o') 2   (8*b)
+
+Successfully finished reading script file "test2.in".
+7-> read test6
+7-> ; Combine the equations for conservation of momentum and kinetic energy
+7-> ; to solve for the resulting velocity of two objects colliding head on.
+7-> clear all
+1-> ; equations for energy:
+1-> e1=1/2*mass1*velocity1_old^2
+
+         mass1*velocity1_old^2
+#1: e1 = ---------------------
+                   2
+
+1-> e2=1/2*mass2*velocity2_old^2
+
+         mass2*velocity2_old^2
+#2: e2 = ---------------------
+                   2
+
+2-> e3=1/2*mass1*velocity1_new^2
+
+         mass1*velocity1_new^2
+#3: e3 = ---------------------
+                   2
+
+3-> e4=1/2*mass2*velocity2_new^2
+
+         mass2*velocity2_new^2
+#4: e4 = ---------------------
+                   2
+
+4-> e1+e2=e3+e4
+
+#5: e1 + e2 = e3 + e4
+
+5-> eliminate all
+Eliminating variable e4 using solved equation #4...
+Eliminating variable e3 using solved equation #3...
+Eliminating variable e2 using solved equation #2...
+Eliminating variable e1 using solved equation #1...
+
+    mass1*velocity1_old^2   mass2*velocity2_old^2   mass1*velocity1_new^2   mass2*velocity2_new^2
+#5: --------------------- + --------------------- = --------------------- + ---------------------
+              2                       2                       2                       2
+
+5-> ; equations for momentum:
+5-> #1: u1=mass1*velocity1_old
+
+#1: u1 = mass1*velocity1_old
+
+1-> #2: u2=mass2*velocity2_old
+
+#2: u2 = mass2*velocity2_old
+
+2-> #3: u3=mass1*velocity1_new
+
+#3: u3 = mass1*velocity1_new
+
+3-> #4: u4=mass2*velocity2_new
+
+#4: u4 = mass2*velocity2_new
+
+4-> u1+u2=u3+u4
+
+#6: u1 + u2 = u3 + u4
+
+6-> eliminate all
+Eliminating variable u4 using solved equation #4...
+Eliminating variable u3 using solved equation #3...
+Eliminating variable u2 using solved equation #2...
+Eliminating variable u1 using solved equation #1...
+
+#6: (mass1*velocity1_old) + (mass2*velocity2_old) = (mass1*velocity1_new) + (mass2*velocity2_new)
+
+6-> clear 1-4
+6-> eliminate velocity1_new
+Solving equation #5 for velocity1_new and substituting into the current equation...
+
+                                                             mass2*(velocity2_old^2 - velocity2_new^2)                    1
+#6: (mass1*velocity1_old) + (mass2*velocity2_old) = (mass1*((----------------------------------------- + velocity1_old^2)^-)*sign) + (mass2*velocity2_new)
+                                                                               mass1                                      2
+
+6-> velocity2_new
+Equation is a degree 0.5 polynomial equation in velocity2_new.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 2 polynomial equation in velocity2_new.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+                                                                                                                                                                                                                1
+                     ((((2*((mass1*velocity1_old) + (mass2*velocity2_old)))^2) + (4*velocity2_old*((mass1*((mass1*(velocity2_old - (2*velocity1_old))) - (2*mass2*velocity1_old))) - (mass2^2*velocity2_old))))^-)*sign0
+                                                                                                                                                                                                                2
+                    (--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- + (mass1*velocity1_old) + (mass2*velocity2_old))
+                                                                                                                      2
+#6: velocity2_new = -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                                                       (mass1 + mass2)
+
+6-> simplify
+
+                                                                   1
+                    (((((mass1*(velocity1_old - velocity2_old))^2)^-)*sign0) + (mass1*velocity1_old) + (mass2*velocity2_old))
+                                                                   2
+#6: velocity2_new = ---------------------------------------------------------------------------------------------------------
+                                                                 (mass1 + mass2)
+
+6-> velocity2_new = ((sign*((mass1*(velocity1_old-velocity2_old))^2)^.5)+(mass1*velocity1_old)+(mass2*velocity2_old))/(mass1+mass2)
+
+                                                                        1
+                    ((sign*(((mass1*(velocity1_old - velocity2_old))^2)^-)) + (mass1*velocity1_old) + (mass2*velocity2_old))
+                                                                        2
+#7: velocity2_new = --------------------------------------------------------------------------------------------------------
+                                                                (mass1 + mass2)
+
+7-> compare 6
+Comparing #6 with #7...
+Equations are identical.
+Successfully finished reading script file "test6.in".
+7-> clear all
+1-> read simplify
+1-> 
+1-> ; Some complete simplifications Mathomatic has always been able to do.
+1-> ; The result is the smallest expression that gives exactly the same results.
+1-> 
+1-> 2*(x^2-y^2)^16-(x^2-y^2)^15*(2x^2-3)
+
+#1: (2*((x^2 - y^2)^16)) - (((x^2 - y^2)^15)*((2*x^2) - 3))
+
+1-> simplify ; Simplify the previously entered expression above.
+
+#1: ((x^2 - y^2)^15)*(3 - (2*y^2))
+
+1-> repeat echo *
+*******************************************************************************
+1-> a^3/((a-b)*(a-c))+b^3/((b-c)*(b-a))+c^3/((c-a)*(c-b))
+
+           a^3                 b^3                 c^3
+#2: ----------------- + ----------------- + -----------------
+    ((a - b)*(a - c))   ((b - c)*(b - a))   ((c - a)*(c - b))
+
+2-> simplify ; Simplify algebraic fractions.
+
+#2: a + b + c
+
+2-> repeat echo *
+*******************************************************************************
+2-> (x^6+a^6)*(x+1)/((x^6+a^6)*(x^2-a^2)+a^2*x^2*(x^4-a^4))+a^2*x^2*(x+1)/(x^6-a^6-a^2*x^2*(x^2-a^2))
+
+                    (x^6 + a^6)*(x + 1)                             a^2*x^2*(x + 1)
+#3: --------------------------------------------------- + -----------------------------------
+    (((x^6 + a^6)*(x^2 - a^2)) + (a^2*x^2*(x^4 - a^4)))   (x^6 - a^6 - (a^2*x^2*(x^2 - a^2)))
+
+3-> simplify
+
+      (x + 1)
+#3: -----------
+    (x^2 - a^2)
+
+3-> repeat echo *
+*******************************************************************************
+3-> (1-(1-(y+1)/(x+y+1))/(1-x/(x+y+1)))/((y+1)^2-x/(1+x/(y-x+1))*(x*(y+1)/(y-x+1)-x))
+
+                      (y + 1)
+               (1 - -----------)
+                    (x + y + 1)
+          (1 - -----------------)
+                         x
+               (1 - -----------)
+                    (x + y + 1)
+#4: -----------------------------------
+                       x*(y + 1)
+                   x*(----------- - x)
+                      (y - x + 1)
+    (((y + 1)^2) - -------------------)
+                              x
+                    (1 + -----------)
+                         (y - x + 1)
+
+4-> simplify fraction ; Any complex fraction can be reduced to a simple fraction with this command.
+
+                      1
+#4: -------------------------------------
+    (1 + y^2 + (2*y) + (x*(y + 1)) + x^2)
+
+4-> repeat echo *
+*******************************************************************************
+4-> ((2*((x*(x+(((x^2)-1)^(1/2))))-1))+1)/((2*x*((x^2)-1))+((((x^2)-1)^(1/2))*((2*(x^2))-1)))
+
+                                 1
+         ((2*((x*(x + ((x^2 - 1)^-))) - 1)) + 1)
+                                 2
+#5: -------------------------------------------------
+                                   1
+    ((2*x*(x^2 - 1)) + (((x^2 - 1)^-)*((2*x^2) - 1)))
+                                   2
+
+5-> simplify ; Simplify an expression containing radicals (roots).
+
+          1
+#5: -------------
+               1
+    ((x^2 - 1)^-)
+               2
+
+5-> ; Rationalizing the denominator was required to simplify the above expression.
+5-> repeat echo *
+*******************************************************************************
+5-> ((x - 2*y)^4/(x^2 - 4*y^2)^2 + 1)*(y + a)*(2*y + x) / (4*y^2 + x^2)
+
+       ((x - (2*y))^4)
+    (------------------- + 1)*(y + a)*((2*y) + x)
+     ((x^2 - (4*y^2))^2)
+#6: ---------------------------------------------
+                   ((4*y^2) + x^2)
+
+6-> repeat simplify
+
+     2*(y + a)
+#6: -----------
+    ((2*y) + x)
+
+Successfully finished reading script file "simplify.in".
+6-> read heron
+6-> clear all
+1-> ; This Mathomatic script shows two reverse derivations of Heron's formula.
+1-> ; This is Heron's formula for the area of any triangle,
+1-> ; given side lengths "a", "b", and "c".
+1-> 
+1-> 2s = a+b+c
+
+#1: 2*s = a + b + c
+
+1-> triangle_area = (s*(s-a)*(s-b)*(s-c))^.5
+
+                                                1
+#2: triangle_area = (s*(s - a)*(s - b)*(s - c))^-
+                                                2
+
+2-> eliminate s ; Heron's formula:
+Solving equation #1 for s and substituting into the current equation...
+
+                                 (a + b + c)       (a + b + c)       (a + b + c)
+                    (a + b + c)*(----------- - a)*(----------- - b)*(----------- - c)
+                                      2                 2                 2           1
+#2: triangle_area = -----------------------------------------------------------------^-
+                                                    2                                 2
+
+2-> simplify ; Heron's formula simplified by Mathomatic:
+
+                                                                             1
+                    (((2*((a^2*(b^2 + c^2)) + ((b*c)^2))) - a^4 - b^4 - c^4)^-)
+                                                                             2
+#2: triangle_area = -----------------------------------------------------------
+                                                 4
+
+2-> pause
+2-> ; This is how we arrive at Heron's formula for the area
+2-> ; of any triangle, given side lengths a, b, and c, using the formula
+2-> ; for the area of a trapezoid with side lengths a, b, c, and d,
+2-> ; where a and c are the parallel sides (a is the longer parallel side).
+2-> 
+2-> ; A trapezoid is a quadrilateral with
+2-> ; two sides that are parallel to each other.
+2-> 
+2-> ; Formula for the area of a trapezoid that is not a parallelogram:
+2-> trapezoid_area=(a+c)/(4*(a-c))*((a+b-c+d)*(a-b-c+d)*(a+b-c-d)*(-a+b+c+d))^.5
+
+                                                                                                1
+                     (a + c)*(((a + b - c + d)*(a - b - c + d)*(a + b - c - d)*(b - a + c + d))^-)
+                                                                                                2
+#3: trapezoid_area = -----------------------------------------------------------------------------
+                                                      (4*(a - c))
+
+3-> pause
+3-> copy
+
+                                                                                                1
+                     (a + c)*(((a + b - c + d)*(a - b - c + d)*(a + b - c - d)*(b - a + c + d))^-)
+                                                                                                2
+#4: trapezoid_area = -----------------------------------------------------------------------------
+                                                      (4*(a - c))
+
+3-> replace c with 0 ; make the shorter parallel side length = 0
+
+                                                                        1
+                     (((a + b + d)*(a - b + d)*(a + b - d)*(b - a + d))^-)
+                                                                        2
+#3: trapezoid_area = -----------------------------------------------------
+                                               4
+
+3-> replace d with c ; Heron's formula in its simplest form:
+
+                                                                        1
+                     (((a + b + c)*(a - b + c)*(a + b - c)*(b - a + c))^-)
+                                                                        2
+#3: trapezoid_area = -----------------------------------------------------
+                                               4
+
+3-> replace trapezoid_area with triangle_area
+
+                                                                       1
+                    (((a + b + c)*(a - b + c)*(a + b - c)*(b - a + c))^-)
+                                                                       2
+#3: triangle_area = -----------------------------------------------------
+                                              4
+
+3-> pause Please press the Enter key to verify the result.
+3-> copy
+
+                                                                       1
+                    (((a + b + c)*(a - b + c)*(a + b - c)*(b - a + c))^-)
+                                                                       2
+#5: triangle_area = -----------------------------------------------------
+                                              4
+
+3-> display 2
+
+                                                                             1
+                    (((2*((a^2*(b^2 + c^2)) + ((b*c)^2))) - a^4 - b^4 - c^4)^-)
+                                                                             2
+#2: triangle_area = -----------------------------------------------------------
+                                                 4
+
+3-> compare 5 with 2 ; simplify and compare the result with Heron's formula:
+Comparing #5 with #2...
+Simplifying both equations...
+Equations are identical.
+3-> clear 5
+3-> pause
+3-> 
+3-> ; This is how we arrive at Heron's formula for the area
+3-> ; of any triangle, given side lengths a, b, and c, using
+3-> ; Brahmagupta's formula for the area of a cyclic quadrilateral,
+3-> ; making one side length equal zero, to make a cyclic triangle.
+3-> ; Since all triangles are cyclic (can be circumscribed by a circle),
+3-> ; this gives the area for any triangle.
+3-> 
+3-> 2s=a+b+c+d ; cyclic quadrilateral side lengths are a, b, c, and d
+
+#5: 2*s = a + b + c + d
+
+5-> cyclic_area = ((s-a)*(s-b)*(s-c)*(s-d))^.5
+
+                                                    1
+#6: cyclic_area = ((s - a)*(s - b)*(s - c)*(s - d))^-
+                                                    2
+
+6-> eliminate s ; Brahmagupta's formula:
+Solving equation #5 for s and substituting into the current equation...
+
+                    (a + b + c + d)       (a + b + c + d)       (a + b + c + d)       (a + b + c + d)       1
+#6: cyclic_area = ((--------------- - a)*(--------------- - b)*(--------------- - c)*(--------------- - d))^-
+                           2                     2                     2                     2              2
+
+6-> pause
+6-> copy
+
+                    (a + b + c + d)       (a + b + c + d)       (a + b + c + d)       (a + b + c + d)       1
+#7: cyclic_area = ((--------------- - a)*(--------------- - b)*(--------------- - c)*(--------------- - d))^-
+                           2                     2                     2                     2              2
+
+6-> replace d with 0 ; make one side length zero to get Heron's formula:
+
+                   (a + b + c)       (a + b + c)       (a + b + c)
+                  (----------- - a)*(----------- - b)*(----------- - c)*(a + b + c)
+                        2                 2                 2                       1
+#6: cyclic_area = -----------------------------------------------------------------^-
+                                                  2                                 2
+
+6-> pause Please press the Enter key to verify the result.
+6-> compare 2 ; simplify and compare the result with Heron's formula:
+Comparing #2 with #6...
+Simplifying both equations...
+Variable triangle_area in the first equation
+is equal to cyclic_area in the second equation.
+6-> clear
+6-> clear 1 5
+Successfully finished reading script file "heron.in".
+6-> clear all
+1-> read radius
+1-> 
+1-> ; Some more fun formulas.  These are very similar to Heron's formula
+1-> ; for the area of a triangle (see "heron.in").  a, b, and c are the
+1-> ; lengths of the sides of the triangle.
+1-> 
+1-> s=(a+b+c)/2 ; semiperimeter
+
+        (a + b + c)
+#1: s = -----------
+             2
+
+1-> ; radius of a circle inscribed in a triangle, called an incircle:
+1-> inradius=(s*(s-a)*(s-b)*(s-c))^.5/s
+
+                                            1
+               ((s*(s - a)*(s - b)*(s - c))^-)
+                                            2
+#2: inradius = -------------------------------
+                              s
+
+2-> eliminate s
+Eliminating variable s using solved equation #1...
+
+                               (a + b + c)       (a + b + c)       (a + b + c)
+                  (a + b + c)*(----------- - a)*(----------- - b)*(----------- - c)
+                                    2                 2                 2           1
+               2*(-----------------------------------------------------------------^-)
+                                                  2                                 2
+#2: inradius = -----------------------------------------------------------------------
+                                             (a + b + c)
+
+2-> simplify
+
+                                                       8*((b^2*c) + (b*c^2))              1
+               (((2*((b*(a - (3*c))) + (a*c))) - a^2 + --------------------- - b^2 - c^2)^-)
+                                                            (a + b + c)                   2
+#2: inradius = -----------------------------------------------------------------------------
+                                                     2
+
+2-> 
+2-> ; The following is the equation for the radius of a circle circumscribing
+2-> ; a triangle, called a circumcircle, which is a circle that passes through
+2-> ; all the vertices of a polygon.
+2-> radius=a*b*c/(4*(s*(s-a)*(s-b)*(s-c))^.5)
+
+                            a*b*c
+#3: radius = -----------------------------------
+                                             1
+             (4*((s*(s - a)*(s - b)*(s - c))^-))
+                                             2
+
+3-> eliminate s
+Eliminating variable s using solved equation #1...
+
+                                               a*b*c
+#3: radius = -------------------------------------------------------------------------
+                              (a + b + c)       (a + b + c)       (a + b + c)
+                 (a + b + c)*(----------- - a)*(----------- - b)*(----------- - c)
+                                   2                 2                 2           1
+             (4*(-----------------------------------------------------------------^-))
+                                                 2                                 2
+
+3-> simplify
+
+                                        a*b*c
+#3: radius = -----------------------------------------------------------
+                                                                      1
+             (((2*((a^2*(b^2 + c^2)) + ((b*c)^2))) - a^4 - b^4 - c^4)^-)
+                                                                      2
+
+3-> #s ; Search backwards for the s variable; "/" searches forwards.
+Searching backwards for variable.
+
+        (a + b + c)
+#1: s = -----------
+             2
+
+1-> clear ; No longer needed.
+1-> display all
+
+                                                       8*((b^2*c) + (b*c^2))              1
+               (((2*((b*(a - (3*c))) + (a*c))) - a^2 + --------------------- - b^2 - c^2)^-)
+                                                            (a + b + c)                   2
+#2: inradius = -----------------------------------------------------------------------------
+                                                     2
+
+
+                                        a*b*c
+#3: radius = -----------------------------------------------------------
+                                                                      1
+             (((2*((a^2*(b^2 + c^2)) + ((b*c)^2))) - a^4 - b^4 - c^4)^-)
+                                                                      2
+
+Successfully finished reading script file "radius.in".
+1-> clear all
+1-> read pyth3d
+1-> 
+1-> ; This arrives at the distance between two points in 3D space from the
+1-> ; Pythagorean theorem (distance between two points on a 2D plane).
+1-> ; The coordinate of point 1, 2D: (x1, y1), 3D: (x1, y1, z1).
+1-> ; The coordinate of point 2, 2D: (x2, y2), 3D: (x2, y2, z2).
+1-> 
+1-> distance2D^2=(x1-x2)^2+(y1-y2)^2 ; Distance formula for a 2D Cartesian plane.
+
+#1: distance2D^2 = ((x1 - x2)^2) + ((y1 - y2)^2)
+
+1-> distance3D^2=distance2D^2+(z1-z2)^2 ; Add another leg.
+
+#2: distance3D^2 = distance2D^2 + ((z1 - z2)^2)
+
+2-> eliminate distance2D ; Combine the two equations.
+Solving equation #1 for distance2D and substituting into the current equation...
+
+#2: distance3D^2 = ((x1 - x2)^2) + ((y1 - y2)^2) + ((z1 - z2)^2)
+
+2-> distance3D ; Solve to get the distance in 3D Cartesian space.
+Solve successful:
+
+                                                                  1
+#2: distance3D = ((((x1 - x2)^2) + ((y1 - y2)^2) + ((z1 - z2)^2))^-)*sign0
+                                                                  2
+
+Successfully finished reading script file "pyth3d.in".
+2-> clear all
+1-> read distance
+1-> 
+1-> ; This input arrives at the shortest distance between a point and a line
+1-> ; in 2 dimensions.  The point is at (x0, y0) in cartesian coordinates.
+1-> ; (x, y) are the points on the line.
+1-> 
+1-> a*x+b*y+c=0 ; equation of the line
+
+#1: (a*x) + (b*y) + c = 0
+
+1-> y ; solve for y
+Solve successful:
+
+        -((a*x) + c)
+#1: y = ------------
+             b
+
+1-> unfactor fraction ; equation of the line in slope-intercept form:
+
+        -c   a*x
+#1: y = -- - ---
+        b     b
+
+1-> distance=|a*(x-x0)+b*(y-y0)|/(a^2+b^2)^.5
+
+                                                  1
+               ((((a*(x - x0)) + (b*(y - y0)))^2)^-)
+                                                  2
+#2: distance = -------------------------------------
+                                       1
+                          ((a^2 + b^2)^-)
+                                       2
+
+2-> eliminate y ; Combine the above two equations to eliminate x and y.
+Eliminating variable y using solved equation #1...
+
+                                     -c   a*x            1
+               ((((a*(x - x0)) + (b*(-- - --- - y0)))^2)^-)
+                                     b     b             2
+#2: distance = --------------------------------------------
+                                          1
+                             ((a^2 + b^2)^-)
+                                          2
+
+2-> simplify ; The beautiful answer is:
+
+               (((a*x0) + c + (b*y0))^2) 1
+#2: distance = -------------------------^-
+                      (a^2 + b^2)        2
+
+2-> ; Replacing a with -m, b with 1, and c with -b results in the shortest distance from the line y=m*x+b.
+Successfully finished reading script file "distance.in".
+2-> clear all
+1-> read circles
+1-> 
+1-> ; This is a simple example of eliminate command usage.
+1-> ; Combine the equations for 2 circles of radius "r" on a 2D Cartesian plane
+1-> ; to find the points of intersection (x, y).
+1-> 
+1-> (x-x1)^2+(y-y1)^2=r^2 ; circle of radius "r" with center at (x1, y1)
+
+#1: ((x - x1)^2) + ((y - y1)^2) = r^2
+
+1-> (x-x2)^2+(y-y2)^2=r^2 ; circle of radius "r" with center at (x2, y2)
+
+#2: ((x - x2)^2) + ((y - y2)^2) = r^2
+
+2-> eliminate x ; combine the two equations, removing the x variable from the result
+Solving equation #1 for x and substituting into the current equation...
+
+                             1
+#2: (((((r^2 - ((y - y1)^2))^-)*sign) + x1 - x2)^2) + ((y - y2)^2) = r^2
+                             2
+
+2-> solve for y
+Equation is a degree 0.5 polynomial equation in y.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 2 polynomial equation in y.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       1
+         ((((4*((y1*((x2*((2*x1) - x2)) - x1^2 + (y1*(y2 - y1)) + y2^2)) + (y2*((x1*((2*x2) - x1)) - x2^2 - y2^2))))^2) + (16*((y2*((y2*((y1*((y1*((2*((x2*((2*x1) - x2)) - x1^2)) + (y2*(y2 - (4*y1))) + y1^2)) + (2*y2*((2*((x1*(x1 - (2*x2))) + x2^2)) + y2^2)))) + (x1*((x1*((3*((x1*((4*x2) - x1)) - y2^2 - (6*x2^2))) + (4*r^2))) + (2*x2*((6*x2^2) + (3*y2^2) - (4*r^2))))) + (x2^2*((4*r^2) - (3*(x2^2 + y2^2)))) - y2^4)) + (2*y1*((y1^2*((2*((x2*(x2 - (2*x1))) + x1^2)) + y1^2)) + (x1*((x1*((x1*(x1 - (4*x2))) + (6*x2^2) - (4*r^2))) + (4*x2*((2*r^2) - x2^2)))) + (x2^2*(x2^2 - (4*r^2))))))) + (y1^2*((y1^2*((3*((x2*((2*x1) - x2)) - x1^2)) - y1^2)) + (x1*((x1*((3*((x1*((4*x2) - x1)) - (6*x2^2))) + (4*r^2))) + (4*x2*((3*x2^2) - (2*r^2))))) + (x2^2*((4*r^2) - (3*x2^2))))) + (x2*((x2*((x1*((x1*((5*((x1*((4*x2) - (3*x1))) - (3*x2^2))) + (24*r^2))) + (2*x2*((3*x2^2) - (8*r^2))))) + (x2^2*((4*r^2) - x2^2)))) + (2*x1^3*((3*x1^2) - (8*r^2))))) + (x1^4*((4*r^2) - x1^2)))))^-)*sign0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       2
+        (------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ + (2*((y1*((x2*(x2 - (2*x1))) + x1^2 + (y1*(y1 - y2)) - y2^2)) + (y2*((x1*(x1 - (2*x2))) + x2^2 + y2^2)))))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           2
+#2: y = -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    (4*((y2*(y2 - (2*y1))) + y1^2 + (x2*(x2 - (2*x1))) + x1^2))
+
+2-> repeat simplify
+
+                                                             4*r^2                               1
+        (y2 + y1 + (((((x1 - x2)^2)*(----------------------------------------------------- - 1))^-)*sign0))
+                                     (y2^2 - (2*((y2*y1) + (x2*x1))) + x2^2 + y1^2 + x1^2)       2
+#2: y = ---------------------------------------------------------------------------------------------------
+                                                         2
+
+Successfully finished reading script file "circles.in".
+2-> clear all
+1-> read ellipse
+1-> 
+1-> ; This is an equation for an ellipse that was created using the rule
+1-> ; that the sum of the distances from any point on the perimeter (x, y)
+1-> ; to the two foci: (x1, y1) and (x2, y2), is a constant k.  This can
+1-> ; represent any ellipse of any orientation on the Cartesian plane.
+1-> 
+1-> k = ((x1-x)^2+(y1-y)^2)^0.5 + ((x2-x)^2+(y2-y)^2)^0.5
+
+                                       1                                   1
+#1: k = ((((x1 - x)^2) + ((y1 - y)^2))^-) + ((((x2 - x)^2) + ((y2 - y)^2))^-)
+                                       2                                   2
+
+1-> 
+1-> ; A simplified equation for a right ellipse centered at the origin (0, 0)
+1-> ; of the Cartesian plane:
+1-> 
+1-> 1 = x^2/radius1^2 + y^2/radius2^2
+
+           x^2         y^2
+#2: 1 = --------- + ---------
+        radius1^2   radius2^2
+
+2-> ; The x-intercepts are radius1 and -radius1 because y=0 there.
+2-> ; The y-intercepts are radius2 and -radius2 because x=0 there.
+Successfully finished reading script file "ellipse.in".
+2-> solve all y
+Equation is a degree 0.5 polynomial equation in y.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 0.5 polynomial equation in y.
+Raising both equation sides to the power of 2 and expanding...
+Equation is a degree 2 polynomial equation in y.
+Equation was solved with the quadratic formula.
+Solve successful:
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    1
+         ((((4*((2*x*(y1 - y2)*(x1 - x2)) + (y2*((y2*(y1 - y2)) - x2^2 + x1^2 + y1^2 + k^2)) + (y1*(x2^2 - x1^2 - y1^2 + k^2))))^2) + (64*((y1*((y1*((x2*((x2*((x*(x2 - x1 - x)) - (y1*y2))) - (x*(x1^2 + y1^2)))) + (x*((x1*((x1*(x1 - x)) + y1^2)) + (x*k^2))) + (x1^2*(k^2 + (y1*y2))) - (y1*y2*(y2^2 + k^2)))) + (y2*((x2^2*(y2^2 - x1^2 - k^2)) - (y2^2*(k^2 + x1^2)) - ((x1*k)^2))))) + (k^2*((x2*((x2*((x*(x + x1 - x2)) + y2^2)) + (x*(k^2 + x1^2)))) + (x*((x1*((x1*(x - x1)) + k^2)) + (x*(y2^2 - k^2)))))) + (y2^2*x*((x2*((x2*(x2 - x1 - x)) + y2^2 - x1^2)) + (x1*((x1*(x1 - x)) - y2^2)))))) + (32*((y1*((y1*((x2^2*(x1^2 + y1^2)) + (y1^2*((y1*y2) - x1^2)) + ((y2*k)^2))) + (y2*(x2^4 + y2^4 + x1^4 + k^4)))) - (k^2*((x2^2*(x1^2 + k^2)) + ((k*x1)^2))) + (y2^2*((x2^2*(x1^2 - y2^2)) + ((y2*x1)^2))))) + (16*((y1*((y1*((x2*((8*x*((x*x1) + (y1*y2))) - x2^3)) - (x1*((8*x*(k^2 + (y1*y2))) + x1^3)) + (y2^2*(y2^2 + y1^2)) + (y1^2*((3*k^2) - y1^2)) - (3*k^4))) + (8*y2*x*((x2*((x2*(x + x1 - x2)) + k^2 + (x1*(x1 - (2*x))) - y2^2)) + (x1*(y2^2 + (x1*(x - x1)) + k^2)) - (x*k^2))))) + (k^2*((x2*(x2^3 - (8*x*((x*x1) + y2^2)))) + (3*y2^2*(y2^2 - k^2)) + x1^4 + k^4)) + (y2^2*((x2*((8*x^2*x1) - x2^3)) - y2^4 - x1^4)))))^-)*sign
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    2
+        (-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- + (4*x*(y2 - y1)*(x1 - x2)) + (2*((y2*((y2*(y2 - y1)) + x2^2 - x1^2 - y1^2 - k^2)) + (y1*(x1^2 - x2^2 + y1^2 - k^2)))))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 2
+#1: y = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           (4*((y1*(y1 - (2*y2))) - k^2 + y2^2))
+
+Solve successful:
+
+                x             1
+#2: y = ((-((-------^2) - 1))^-)*sign0*radius2
+             radius1          2
+
+2-> simplify all
+
+                                                                                                                                                                                       1
+                     ((((k^2*(x1^2 + (4*(x^2 - (x*x2))) + y1^2 + x2^2 + y2^2 + (2*((x1*(x2 - (2*x))) - (y1*y2))))) - k^4)*(y1^2 - (2*((y1*y2) + (x2*x1))) + y2^2 + x2^2 + x1^2 - k^2))^-)*sign
+                                                                                                                                                                                       2                         (x1 + x2)
+                    (------------------------------------------------------------------------------------------------------------------------------------------------------------------------- + ((y1 - y2)*(x - ---------)*(x2 - x1)))
+        (y1 + y2)                                                                                        2                                                                                                           2
+#1: y = --------- + -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            2                                                                                                 (y1^2 - (2*y1*y2) - k^2 + y2^2)
+
+
+                  x        1
+#2: y = ((1 - (-------^2))^-)*sign0*radius2
+               radius1     2
+
+2-> pause
+2-> clear all
+1-> help examples
+*******************************************************************************
+1-> ; Example 1:
+1-> ; Here the derivative of the absolute value function is computed.
+1-> ; Expressions are entered by just typing them in:
+1-> |x| ; The absolute value of x
+
+          1
+#1: (x^2)^-
+          2
+
+1-> derivative ; The result gives the sign of x:
+Differentiating with respect to x and simplifying...
+
+        x
+#2: ---------
+           1
+    ((x^2)^-)
+           2
+
+2-> pause
+2-> repeat echo -
+-------------------------------------------------------------------------------
+2-> ; Example 2:
+2-> ; Here the calculate command is used to plug values into a solved formula.
+2-> ; A common temperature conversion formula (from "help conversions"):
+2-> fahrenheit = (9*celsius/5) + 32
+
+                 9*celsius
+#3: fahrenheit = --------- + 32
+                     5
+
+3-> repeat calculate ; plug in values until an empty line is entered
+ fahrenheit = (1.8*celsius) + 32, with fractions it is: (9*celsius/5) + 32
+3-> 
+3-> ; Solve for the other variable and simplify the result:
+3-> solve for celsius
+Solve successful:
+
+              -5*(32 - fahrenheit)
+#3: celsius = --------------------
+                       9
+
+3-> simplify
+
+              5*(fahrenheit - 32)
+#3: celsius = -------------------
+                       9
+
+3-> repeat calculate ; plug in values until an empty line is entered
+ celsius = (0.55555555555556*fahrenheit) - 17.777777777778, with fractions it is: (5*fahrenheit/9) - (160/9)
+3-> 
+3-> variables count; count all variables that occur in expressions
+fahrenheit	/* count = 1 */
+celsius		/* count = 1 */
+3-> pause
+3-> repeat echo -
+-------------------------------------------------------------------------------
+3-> ; Example 3:
+3-> ; Expand the following to polynomial form, then refactor and differentiate:
+3-> (x+y+z)^3
+
+#4: (x + y + z)^3
+
+4-> expand count ; Expand and count the resulting number of terms:
+
+#4: x^3 + (3*x^2*y) + (3*x^2*z) + (3*x*y^2) + (6*x*y*z) + (3*x*z^2) + y^3 + (3*y^2*z) + (3*y*z^2) + z^3
+
+#4: Expression consists of a total of 10 terms.
+4-> pause
+4-> simplify ; refactor:
+
+#4: (x + y + z)^3
+
+4-> derivative x ; here is the derivative, with respect to x:
+Differentiating with respect to x and simplifying...
+
+#5: 3*((x + y + z)^2)
+
+5-> expand count ; and its term count, when expanded:
+
+#5: (3*x^2) + (6*x*y) + (6*x*z) + (3*y^2) + (6*y*z) + (3*z^2)
+
+#5: Expression consists of a total of 6 terms.
+5-> clear all
+1-> help conversions
+*******************************************************************************
+Help conversions:
+-----------------
+Commonly used metric/English conversions.
+Select the equation you want (for example, with "1" or "/celsius")
+and type the unit name you want, to solve for it (like "celsius").
+Then type "repeat calculate" for units conversion and trying different values.
+These values are correct for the US and UK.
+-------------------------------------------
+1-> ; Temperature
+1-> fahrenheit = (9*celsius/5) + 32
+
+                 9*celsius
+#1: fahrenheit = --------- + 32
+                     5
+
+1-> kelvin = celsius + 273.15
+
+                       5463
+#2: kelvin = celsius + ----
+                        20
+
+2-> ; Distance
+2-> inches = centimeters/2.54
+
+             50*centimeters
+#3: inches = --------------
+                  127
+
+3-> miles = kilometers/1.609344
+
+#4: miles = 0.62137119223733*kilometers
+
+4-> ; Weight
+4-> pounds = kilograms/0.45359237
+
+#5: pounds = 2.2046226218488*kilograms
+
+5-> simplify all
+
+                 9*celsius
+#1: fahrenheit = --------- + 32
+                     5
+
+
+                       5463
+#2: kelvin = celsius + ----
+                        20
+
+
+             50*centimeters
+#3: inches = --------------
+                  127
+
+
+#4: miles = 0.62137119223733*kilometers
+
+
+#5: pounds = 2.2046226218488*kilograms
+
+5-> clear all
+1-> help geometry
+*******************************************************************************
+Help geometry:
+--------------
+Commonly used standard (Euclidean) geometric formulas
+-----------------------------------------------------
+1-> ; Triangle area, "b" is the "base" side:
+1-> triangle_area = b*height/2
+
+                    b*height
+#1: triangle_area = --------
+                       2
+
+1-> ; Here is Heron's formula for the area of any triangle
+1-> ; given all three side lengths ("a", "b", and "c"):
+1-> triangle_area = (((a + b + c)*(a - b + c)*(a + b - c)*(b - a + c))^(1/2))/4
+
+                                                                       1
+                    (((a + b + c)*(a - b + c)*(a + b - c)*(b - a + c))^-)
+                                                                       2
+#2: triangle_area = -----------------------------------------------------
+                                              4
+
+2-> 
+2-> ; Rectangle of length "l" and width "w":
+2-> rectangle_area = l*w
+
+#3: rectangle_area = l*w
+
+3-> rectangle_perimeter = 2*l + 2*w
+
+#4: rectangle_perimeter = (2*l) + (2*w)
+
+4-> 
+4-> ; Trapezoid of parallel sides "a" and "b",
+4-> ; and the "distance" between them:
+4-> trapezoid_area = distance*(a + b)/2
+
+                     distance*(a + b)
+#5: trapezoid_area = ----------------
+                            2
+
+5-> 
+5-> ; Circle of radius "r":
+5-> circle_area = pi*r^2
+
+#6: circle_area = pi*r^2
+
+6-> circle_perimeter = 2*pi*r
+
+#7: circle_perimeter = 2*pi*r
+
+7-> 
+7-> ; 3D rectangular solid of length "l", width "w", and height "h":
+7-> brick_volume = l*w*h
+
+#8: brick_volume = l*w*h
+
+8-> brick_surface_area = 2*l*w + 2*l*h + 2*w*h
+
+#9: brick_surface_area = (2*l*w) + (2*l*h) + (2*w*h)
+
+9-> 
+9-> ; 3D sphere of radius "r":
+9-> sphere_volume = 4/3*pi*r^3
+
+                     4*pi*r^3
+#10: sphere_volume = --------
+                        3
+
+10-> sphere_surface_area = 4*pi*r^2
+
+#11: sphere_surface_area = 4*pi*r^2
+
+11-> 
+11-> ; Convex 2D polygon with straight sides,
+11-> ; sum of all interior angles formula in degree, radian, and gradian units:
+11-> sum_degrees = (sides - 2)*180
+
+#12: sum_degrees = 180*(sides - 2)
+
+12-> sum_radians = (sides - 2)*pi
+
+#13: sum_radians = (sides - 2)*pi
+
+13-> sum_grads = (sides - 2)*180*10/9 ; Rarely used gradian formula.
+
+#14: sum_grads = 200*(sides - 2)
+
+14-> ; "sides" is the number of sides of any convex 2D polygon.
+14-> ; Convex means that all interior angles are less than 180 degrees.
+14-> ; Type "elim sides" to get the radians/degrees/grads conversion formulas.
+14-> simplify all
+
+                    b*height
+#1: triangle_area = --------
+                       2
+
+
+                                                                             1
+                    (((2*((b^2*(a^2 + c^2)) + ((a*c)^2))) - a^4 - b^4 - c^4)^-)
+                                                                             2
+#2: triangle_area = -----------------------------------------------------------
+                                                 4
+
+
+#3: rectangle_area = l*w
+
+
+#4: rectangle_perimeter = 2*(l + w)
+
+
+                     distance*(a + b)
+#5: trapezoid_area = ----------------
+                            2
+
+
+#6: circle_area = pi*r^2
+
+
+#7: circle_perimeter = 2*pi*r
+
+
+#8: brick_volume = l*w*h
+
+
+#9: brick_surface_area = 2*((l*(w + h)) + (w*h))
+
+
+                     4*pi*r^3
+#10: sphere_volume = --------
+                        3
+
+
+#11: sphere_surface_area = 4*pi*r^2
+
+
+#12: sum_degrees = 180*(sides - 2)
+
+
+#13: sum_radians = pi*(sides - 2)
+
+
+#14: sum_grads = 200*(sides - 2)
+
+14-> quit
+ByeBye!! from Mathomatic.

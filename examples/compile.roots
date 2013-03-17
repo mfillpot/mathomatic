@@ -1,0 +1,13 @@
+#!/bin/sh
+# Compile roots.c and create the executable in ~/bin if it exists.
+# roots is a command-line numerical polynomial equation solver.
+# Requires the GNU Scientific Library (GSL) development files.
+
+if [ -d ~/bin ]
+then
+	ROOTS=~/bin/roots
+else
+	ROOTS=roots
+fi
+echo Compiling roots.c
+gcc -O3 -Wall $CFLAGS $CPPFLAGS $LDFLAGS -o $ROOTS roots.c `pkg-config --cflags --libs gsl` && echo Done, executable installed in $ROOTS

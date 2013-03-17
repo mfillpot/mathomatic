@@ -1,0 +1,12 @@
+
+; This input arrives at the shortest distance between a point and a line
+; in 2 dimensions.  The point is at (x0, y0) in cartesian coordinates.
+; (x, y) are the points on the line.
+
+a*x+b*y+c=0 ; equation of the line
+y ; solve for y
+unfactor fraction ; equation of the line in slope-intercept form:
+distance=|a*(x-x0)+b*(y-y0)|/(a^2+b^2)^.5
+eliminate y ; Combine the above two equations to eliminate x and y.
+simplify ; The beautiful answer is:
+; Replacing a with -m, b with 1, and c with -b results in the shortest distance from the line y=m*x+b.

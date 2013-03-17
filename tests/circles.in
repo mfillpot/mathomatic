@@ -1,0 +1,10 @@
+
+; This is a simple example of eliminate command usage.
+; Combine the equations for 2 circles of radius "r" on a 2D Cartesian plane
+; to find the points of intersection (x, y).
+
+(x-x1)^2+(y-y1)^2=r^2 ; circle of radius "r" with center at (x1, y1)
+(x-x2)^2+(y-y2)^2=r^2 ; circle of radius "r" with center at (x2, y2)
+eliminate x ; combine the two equations, removing the x variable from the result
+solve for y
+repeat simplify

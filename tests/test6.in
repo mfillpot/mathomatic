@@ -1,0 +1,23 @@
+; Combine the equations for conservation of momentum and kinetic energy
+; to solve for the resulting velocity of two objects colliding head on.
+clear all
+; equations for energy:
+e1=1/2*mass1*velocity1_old^2
+e2=1/2*mass2*velocity2_old^2
+e3=1/2*mass1*velocity1_new^2
+e4=1/2*mass2*velocity2_new^2
+e1+e2=e3+e4
+eliminate all
+; equations for momentum:
+#1: u1=mass1*velocity1_old
+#2: u2=mass2*velocity2_old
+#3: u3=mass1*velocity1_new
+#4: u4=mass2*velocity2_new
+u1+u2=u3+u4
+eliminate all
+clear 1-4
+eliminate velocity1_new
+velocity2_new
+simplify
+velocity2_new = ((sign*((mass1*(velocity1_old-velocity2_old))^2)^.5)+(mass1*velocity1_old)+(mass2*velocity2_old))/(mass1+mass2)
+compare 6

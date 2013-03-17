@@ -1,0 +1,13 @@
+#!/bin/sh
+# Shell script for creating the executable "mathomatic_secure",
+# which lacks the code for file I/O and shelling out.
+# The result can safely be used as an application on open public servers.
+# The Mathomatic run-time option -s4 performs exactly the same function,
+# so this script that makes a separate executable is no longer necessary.
+
+# You will need to install the libeditline-dev package to run this.
+
+echo Compiling Secure Mathomatic...
+set -v
+gcc -O3 -Wall -Wshadow -Wno-char-subscripts -fexceptions $CFLAGS $CPPFLAGS -DEDITLINE -DUNIX -DVERSION=\"`cat VERSION`\" -DSECURE -DTIMEOUT_SECONDS=3600 $LDFLAGS *.c -lm -leditline $LDLIBS -o mathomatic_secure && echo ./mathomatic_secure created.
+make clean # for any subsequent makes

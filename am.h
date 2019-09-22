@@ -170,20 +170,20 @@ enum language_list {
 
 /* Debugging macros: */
 #if	SILENT
-#define	list_esdebug(level, en)		{ ; }	/* Display an equation space. */
-#define	list_tdebug(level)		{ ; }	/* Display the temporary equation (e.g.: when solving). */
-#define	side_debug(level, p1, n1)	{ ; }	/* Display any expression. */
-#define debug_string(level, str)	{ ; }	/* Display any ASCII string. */
+#define	list_esdebug(mathomatic, level, en)		{ ; }	/* Display an equation space. */
+#define	list_tdebug(mathomatic, level)		{ ; }	/* Display the temporary equation (e.g.: when solving). */
+#define	side_debug(mathomatic, level, p1, n1)	{ ; }	/* Display any expression. */
+#define debug_string(mathomatic, level, str)	{ ; }	/* Display any ASCII string. */
 #else
-#define	list_esdebug(level, en)		list_debug(level, lhs[en], n_lhs[en], rhs[en], n_rhs[en])
-#define list_tdebug(level)		list_debug(level, tlhs, n_tlhs, trhs, n_trhs)
-#define	side_debug(level, p1, n1)	list_debug(level, p1, n1, NULL, 0)
-#define debug_string(level, str)	{ if (debug_level >= (level)) fprintf(gfp, "%s\n", str); }
+#define	list_esdebug(mathomatic, level, en)		list_debug(mathomatic, level, mathomatic->lhs[en], mathomatic->n_lhs[en], mathomatic->rhs[en], mathomatic->n_rhs[en])
+#define list_tdebug(mathomatic, level)		list_debug(mathomatic, level, mathomatic->tlhs, mathomatic->n_tlhs, mathomatic->trhs, mathomatic->n_trhs)
+#define	side_debug(mathomatic, level, p1, n1)	list_debug(mathomatic, level, p1, n1, NULL, 0)
+#define debug_string(mathomatic, level, str)	{ if (mathomatic->debug_level >= (level)) fprintf(mathomatic->gfp, "%s\n", str); }
 #endif
 
 /* The correct ways to determine if equation number "en" (origin 0) contains an expression or equation. */
-#define empty_equation_space(en)	((en) < 0 || (en) >= n_equations || n_lhs[(en)] <= 0)
-#define	equation_space_is_equation(en)	((en) >= 0 && (en) < n_equations && n_lhs[(en)] > 0 && n_rhs[(en)] > 0)
+#define empty_equation_space(mathomatic, en)	((en) < 0 || (en) >= mathomatic->n_equations || mathomatic->n_lhs[(en)] <= 0)
+#define	equation_space_is_equation(mathomatic, en)	((en) >= 0 && (en) < mathomatic->n_equations && mathomatic->n_lhs[(en)] > 0 && mathomatic->n_rhs[(en)] > 0)
 
 /*
  * The following are macros for displaying help text.
@@ -192,10 +192,10 @@ enum language_list {
  * This is helpful when the output device has less than 80 text character columns.
  */
 #if	NOT80COLUMNS
-#define SP(str)	fprintf(gfp, "%s ", str)	/* display part of a paragraph, separated with spaces (Space Paragraph) */
-#define EP(str)	fprintf(gfp, "%s\n", str)	/* display the end of a paragraph (End Paragraph) */
+#define SP(mathomatic, str)	fprintf(mathomatic->gfp, "%s ", str)	/* display part of a paragraph, separated with spaces (Space Paragraph) */
+#define EP(mathomatic, str)	fprintf(mathomatic->gfp, "%s\n", str)	/* display the end of a paragraph (End Paragraph) */
 #else	/* Otherwise the following only works nicely with 80 column or wider screens; */
 	/* all strings passed to it should be less than 80 columns if possible, so it doesn't wrap around. */
-#define SP(str)	fprintf(gfp, "%s\n", str)
-#define EP(str)	fprintf(gfp, "%s\n", str)
+#define SP(mathomatic, str)	fprintf(mathomatic->gfp, "%s\n", str)
+#define EP(mathomatic, str)	fprintf(mathomatic->gfp, "%s\n", str)
 #endif

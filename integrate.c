@@ -24,21 +24,21 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 
 #include "includes.h"
 
-static int integrate_sub(token_type *equation, int *np, int loc, int eloc, long v);
-static int laplace_sub(token_type *equation, int *np, int loc, int eloc, long v);
-static int inv_laplace_sub(token_type *equation, int *np, int loc, int eloc, long v);
+static int integrate_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v);
+static int laplace_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v);
+static int inv_laplace_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v);
 
-static int	constant_var_number = 1;	/* makes unique numbers for the constant of integration */
+//static int	constant_var_number = 1;	/* makes unique numbers for the constant of integration */
 
 /*
  * Make variable "v" always raised to a power,
  * unless it is on the right side of a power operator.
  */
 void
-make_powers(equation, np, v)
-token_type	*equation;	/* pointer to beginning of equation side */
-int		*np;		/* pointer to length of equation side */
-long		v;		/* Mathomatic variable */
+make_powers(MathoMatic* mathomatic, token_type *equation, int *np, long v)
+//token_type	*equation;	/* pointer to beginning of equation side */
+//int		*np;		/* pointer to length of equation side */
+//long		v;		/* Mathomatic variable */
 {
 	int	i;
 	int	level;
@@ -52,8 +52,8 @@ long		v;		/* Mathomatic variable */
 		}
 		if (equation[i].kind == VARIABLE && equation[i].token.variable == v) {
 			if ((i + 1) >= *np || equation[i+1].token.operatr != POWER) {
-				if (*np + 2 > n_tokens) {
-					error_huge();
+				if (*np + 2 > mathomatic->n_tokens) {
+					error_huge(mathomatic);
 				}
 				level++;
 				equation[i].level = level;
@@ -81,22 +81,22 @@ long		v;		/* Mathomatic variable */
  * Return true if successful.
  */
 int
-int_dispatch(equation, np, v, func)
-token_type	*equation;	/* pointer to beginning of equation side to integrate */
-int		*np;		/* pointer to length of equation side */
-long		v;		/* integration variable */
-int		(*func)(token_type *equation, int *np, int loc, int eloc, long v);	/* integration function to call for each term */
+int_dispatch(MathoMatic* mathomatic, token_type *equation, int *np, long v, int	(*func)(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v))
+//token_type	*equation;	/* pointer to beginning of equation side to integrate */
+//int		*np;		/* pointer to length of equation side */
+//long		v;		/* integration variable */
+//int		(*func)(token_type *equation, int *np, int loc, int eloc, long v);	/* integration function to call for each term */
 {
 	int	i, j;
 
-	make_powers(equation, np, v);
+	make_powers(mathomatic, equation, np, v);
 	for (j = 0, i = 1;; i += 2) {
 		if (i >= *np) {
-			return((*func)(equation, np, j, i, v));
+			return((*func)(mathomatic, equation, np, j, i, v));
 		}
 		if (equation[i].level == 1
 		    && (equation[i].token.operatr == PLUS || equation[i].token.operatr == MINUS)) {
-			if (!(*func)(equation, np, j, i, v)) {
+			if (!(*func)(mathomatic, equation, np, j, i, v)) {
 				return false;
 			}
 			for (i = j + 1;; i += 2) {
@@ -119,12 +119,12 @@ int		(*func)(token_type *equation, int *np, int loc, int eloc, long v);	/* integ
  * Return true if successful.
  */
 static int
-integrate_sub(equation, np, loc, eloc, v)
-token_type	*equation;	/* pointer to beginning of equation side */
-int		*np;		/* pointer to length of equation side */
-int		loc;		/* beginning location of term */
-int		eloc;		/* end location of term */
-long		v;		/* variable of integration */
+integrate_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v)
+//token_type	*equation;	/* pointer to beginning of equation side */
+//int		*np;		/* pointer to length of equation side */
+//int		loc;		/* beginning location of term */
+//int		eloc;		/* end location of term */
+//long		v;		/* variable of integration */
 {
 	int		i, j, k;
 	int		len;
@@ -132,7 +132,7 @@ long		v;		/* variable of integration */
 	int		count;
 	int		div_flag;
 
-	level = min_level(&equation[loc], eloc - loc);
+	level = min_level(mathomatic, &equation[loc], eloc - loc);
 	/* determine if the term is a polynomial term in "v" */
 	for (i = loc, count = 0; i < eloc; i += 2) {
 		if (equation[i].kind == VARIABLE && equation[i].token.variable == v) {
@@ -183,8 +183,8 @@ long		v;		/* variable of integration */
 				    && equation[i].kind == CONSTANT
 				    && equation[i].token.constant == 1.0)
 					return false;
-				if (*np + 2 > n_tokens)
-					error_huge();
+				if (*np + 2 > mathomatic->n_tokens)
+					error_huge(mathomatic);
 				for (j = i; j < eloc && equation[j].level >= level; j++)
 					equation[j].level++;
 				equation[i-3].token.operatr = TIMES;
@@ -201,8 +201,8 @@ long		v;		/* variable of integration */
 			for (j = i; j < eloc && equation[j].level >= level; j++)
 				equation[j].level++;
 			len = j - i;
-			if (*np + len + 5 > n_tokens)
-				error_huge();
+			if (*np + len + 5 > mathomatic->n_tokens)
+				error_huge(mathomatic);
 			blt(&equation[j+2], &equation[j], (*np - j) * sizeof(token_type));
 			*np += 2;
 			eloc += 2;
@@ -224,8 +224,8 @@ long		v;		/* variable of integration */
 			return true;
 		}
 	}
-	if (*np + 2 > n_tokens) {
-		error_huge();
+	if (*np + 2 > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 	blt(&equation[eloc+2], &equation[eloc], (*np - eloc) * sizeof(token_type));
 	*np += 2;
@@ -243,8 +243,7 @@ long		v;		/* variable of integration */
  * The integrate command.
  */
 int
-integrate_cmd(cp)
-char	*cp;
+integrate_cmd(MathoMatic* mathomatic, char *cp)
 {
 	int		i, j;
 	int		len;
@@ -257,13 +256,13 @@ char	*cp;
 	long		l1;
 
 	cp_start = cp;
-	if (current_not_defined()) {
+	if (current_not_defined(mathomatic)) {
 		return false;
 	}
-	n_tlhs = 0;
-	n_trhs = 0;
-	solved = solved_equation(cur_equation);
-	i = next_espace();
+	mathomatic->n_tlhs = 0;
+	mathomatic->n_trhs = 0;
+	solved = solved_equation(mathomatic, mathomatic->cur_equation);
+	i = next_espace(mathomatic);
 	for (;; cp = skip_param(cp)) {
 		if (strcmp_tospace(cp, "definite") == 0) {
 			definite_flag = true;
@@ -276,27 +275,27 @@ char	*cp;
 		break;
 	}
 	if (constant_flag && definite_flag) {
-		error(_("Conflicting options given."));
+		error(mathomatic, _("Conflicting options given."));
 		return false;
 	}
-	if (n_rhs[cur_equation]) {
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
 		if (!solved) {
-			warning(_("Not a solved equation."));
+			warning(mathomatic, _("Not a solved equation."));
 		}
-		debug_string(0, _("Only the RHS will be transformed."));
-		source = rhs[cur_equation];
-		nps = &n_rhs[cur_equation];
-		dest = rhs[i];
-		np = &n_rhs[i];
+		debug_string(mathomatic, 0, _("Only the RHS will be transformed."));
+		source = mathomatic->rhs[mathomatic->cur_equation];
+		nps = &mathomatic->n_rhs[mathomatic->cur_equation];
+		dest = mathomatic->rhs[i];
+		np = &mathomatic->n_rhs[i];
 	} else {
-		source = lhs[cur_equation];
-		nps = &n_lhs[cur_equation];
-		dest = lhs[i];
-		np = &n_lhs[i];
+		source = mathomatic->lhs[mathomatic->cur_equation];
+		nps = &mathomatic->n_lhs[mathomatic->cur_equation];
+		dest = mathomatic->lhs[i];
+		np = &mathomatic->n_lhs[i];
 	}
 	if (*cp) {
-		if (isvarchar(*cp)) {
-			cp = parse_var2(&v, cp);
+		if (isvarchar(mathomatic, *cp)) {
+			cp = parse_var2(mathomatic, &v, cp);
 			if (cp == NULL) {
 				return false;
 			}
@@ -305,60 +304,60 @@ char	*cp;
 			integrate_order = strtod(cp, &cp);
 		}
 		if (!isfinite(integrate_order) || integrate_order <= 0 || fmod(integrate_order, 1.0) != 0.0) {
-			error(_("The order must be a positive integer."));
+			error(mathomatic, _("The order must be a positive integer."));
 			return false;
 		}
 	}
 
 	if (*cp) {
 		cp = skip_comma_space(cp);
-		input_column += (cp - cp_start);
-		cp = parse_expr(tlhs, &n_tlhs, cp, false);
-		if (cp == NULL || n_tlhs <= 0) {
+		mathomatic->input_column += (cp - cp_start);
+		cp = parse_expr(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, cp, false);
+		if (cp == NULL || mathomatic->n_tlhs <= 0) {
 			return false;
 		}
 	}
 	if (*cp) {
 		cp_start = cp;
 		cp = skip_comma_space(cp);
-		input_column += (cp - cp_start);
-		cp = parse_expr(trhs, &n_trhs, cp, false);
-		if (cp == NULL || extra_characters(cp) || n_trhs <= 0) {
+		mathomatic->input_column += (cp - cp_start);
+		cp = parse_expr(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, cp, false);
+		if (cp == NULL || extra_characters(mathomatic, cp) || mathomatic->n_trhs <= 0) {
 			return false;
 		}
 	}
-	show_usage = false;
+	mathomatic->show_usage = false;
 	if (v == 0) {
-		if (!prompt_var(&v)) {
+		if (!prompt_var(mathomatic, &v)) {
 			return false;
 		}
 	}
 #if	!SILENT
-	list_var(v, 0);
-	if (n_rhs[cur_equation]) {
-		fprintf(gfp, _("Integrating the RHS with respect to %s"), var_str);
+	list_var(mathomatic, v, 0);
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
+		fprintf(mathomatic->gfp, _("Integrating the RHS with respect to %s"), mathomatic->var_str);
 	} else {
-		fprintf(gfp, _("Integrating with respect to %s"), var_str);
+		fprintf(mathomatic->gfp, _("Integrating with respect to %s"), mathomatic->var_str);
 	}
 	if (integrate_order != 1.0) {
-		fprintf(gfp, _(" %.*g times"), precision, integrate_order);
+		fprintf(mathomatic->gfp, _(" %.*g times"), mathomatic->precision, integrate_order);
 	}
-	fprintf(gfp, _(" and simplifying...\n"));
+	fprintf(mathomatic->gfp, _(" and simplifying...\n"));
 #endif
-	partial_flag = false;
-	uf_simp(source, nps);
-	partial_flag = true;
-	factorv(source, nps, v);
+	mathomatic->partial_flag = false;
+	uf_simp(mathomatic, source, nps);
+	mathomatic->partial_flag = true;
+	factorv(mathomatic, source, nps, v);
 	blt(dest, source, *nps * sizeof(token_type));
 	n1 = *nps;
 	for (l1 = 0; l1 < integrate_order; l1++) {
-		if (!int_dispatch(dest, &n1, v, integrate_sub)) {
-			error(_("Integration failed, not a polynomial."));
+		if (!int_dispatch(mathomatic, dest, &n1, v, integrate_sub)) {
+			error(mathomatic, _("Integration failed, not a polynomial."));
 			return false;
 		}
 		if (constant_flag) {
-			if (n1 + 2 > n_tokens) {
-				error_huge();
+			if (n1 + 2 > mathomatic->n_tokens) {
+				error_huge(mathomatic);
 			}
 			for (j = 0; j < n1; j++) {
 				dest[j].level++;
@@ -369,66 +368,66 @@ char	*cp;
 			n1++;
 			dest[n1].kind = VARIABLE;
 			dest[n1].level = 1;
-			snprintf(var_name_buf, sizeof(var_name_buf), "C_%d", constant_var_number);
-			if (parse_var(&dest[n1].token.variable, var_name_buf) == NULL) {
+			snprintf(var_name_buf, sizeof(var_name_buf), "C_%d", mathomatic->constant_var_number);
+			if (parse_var(mathomatic, &dest[n1].token.variable, var_name_buf) == NULL) {
 				return false;
 			}
 			n1++;
-			constant_var_number++;
-			if (constant_var_number < 0) {
-				constant_var_number = 1;
+			mathomatic->constant_var_number++;
+			if (mathomatic->constant_var_number < 0) {
+				mathomatic->constant_var_number = 1;
 			}
 		}
-		simp_loop(dest, &n1);
+		simp_loop(mathomatic, dest, &n1);
 	}
 	if (definite_flag) {
-		if (n_tlhs == 0) {
-			my_strlcpy(prompt_str, _("Enter lower bound: "), sizeof(prompt_str));
-			if (!get_expr(tlhs, &n_tlhs)) {
+		if (mathomatic->n_tlhs == 0) {
+			my_strlcpy(mathomatic->prompt_str, _("Enter lower bound: "), sizeof(mathomatic->prompt_str));
+			if (!get_expr(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs)) {
 				return false;
 			}
 		}
-		if (n_trhs == 0) {
-			my_strlcpy(prompt_str, _("Enter upper bound: "), sizeof(prompt_str));
-			if (!get_expr(trhs, &n_trhs)) {
+		if (mathomatic->n_trhs == 0) {
+			my_strlcpy(mathomatic->prompt_str, _("Enter upper bound: "), sizeof(mathomatic->prompt_str));
+			if (!get_expr(mathomatic, mathomatic->trhs, &mathomatic->n_trhs)) {
 				return false;
 			}
 		}
-		blt(scratch, dest, n1 * sizeof(token_type));
+		blt(mathomatic->scratch, dest, n1 * sizeof(token_type));
 		n2 = n1;
-		subst_var_with_exp(scratch, &n2, tlhs, n_tlhs, v);
-		subst_var_with_exp(dest, &n1, trhs, n_trhs, v);
-		if (n1 + 1 + n2 > n_tokens) {
-			error_huge();
+		subst_var_with_exp(mathomatic, mathomatic->scratch, &n2, mathomatic->tlhs, mathomatic->n_tlhs, v);
+		subst_var_with_exp(mathomatic, dest, &n1, mathomatic->trhs, mathomatic->n_trhs, v);
+		if (n1 + 1 + n2 > mathomatic->n_tokens) {
+			error_huge(mathomatic);
 		}
 		for (j = 0; j < n1; j++) {
 			dest[j].level++;
 		}
 		for (j = 0; j < n2; j++) {
-			scratch[j].level++;
+			mathomatic->scratch[j].level++;
 		}
 		dest[n1].kind = OPERATOR;
 		dest[n1].level = 1;
 		dest[n1].token.operatr = MINUS;
 		n1++;
-		blt(&dest[n1], scratch, n2 * sizeof(token_type));
+		blt(&dest[n1], mathomatic->scratch, n2 * sizeof(token_type));
 		n1 += n2;
 	}
-	simpa_side(dest, &n1, false, false);
+	simpa_side(mathomatic, dest, &n1, false, false);
 	*np = n1;
-	if (n_rhs[cur_equation]) {
-		blt(lhs[i], lhs[cur_equation], n_lhs[cur_equation] * sizeof(token_type));
-		n_lhs[i] = n_lhs[cur_equation];
-		if (solved && isvarchar('\'')) {
-			len = list_var(lhs[i][0].token.variable, 0);
-			for (l1 = 0; l1 < integrate_order && len > 0 && var_str[len-1] == '\''; l1++) {
-				var_str[--len] = '\0';
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
+		blt(mathomatic->lhs[i], mathomatic->lhs[mathomatic->cur_equation], mathomatic->n_lhs[mathomatic->cur_equation] * sizeof(token_type));
+		mathomatic->n_lhs[i] = mathomatic->n_lhs[mathomatic->cur_equation];
+		if (solved && isvarchar(mathomatic, '\'')) {
+			len = list_var(mathomatic, mathomatic->lhs[i][0].token.variable, 0);
+			for (l1 = 0; l1 < integrate_order && len > 0 && mathomatic->var_str[len-1] == '\''; l1++) {
+				mathomatic->var_str[--len] = '\0';
 			}
-			parse_var(&lhs[i][0].token.variable, var_str);
+			parse_var(mathomatic, &mathomatic->lhs[i][0].token.variable, mathomatic->var_str);
 		}
 	}
-	cur_equation = i;
-	return return_result(cur_equation);
+	mathomatic->cur_equation = i;
+	return return_result(mathomatic, mathomatic->cur_equation);
 }
 
 /*
@@ -437,17 +436,13 @@ char	*cp;
  * Return true if successful.
  */
 static int
-laplace_sub(equation, np, loc, eloc, v)
-token_type	*equation;
-int		*np;
-int		loc, eloc;
-long		v;
+laplace_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v)
 {
 	int		i, j, k;
 	int		len;
 	int		level, mlevel;
 
-	mlevel = min_level(&equation[loc], eloc - loc) + 1;
+	mlevel = min_level(mathomatic, &equation[loc], eloc - loc) + 1;
 	for (j = loc; j < eloc; j++)
 		equation[j].level += 2;
 	for (i = loc; i < eloc; i += 2) {
@@ -460,8 +455,8 @@ long		v;
 			for (j = i; j < eloc && equation[j].level >= level; j++)
 				equation[j].level++;
 			len = j - i;
-			if (*np + len + 7 > n_tokens)
-				error_huge();
+			if (*np + len + 7 > mathomatic->n_tokens)
+				error_huge(mathomatic);
 			blt(&equation[j+4], &equation[j], (*np - j) * sizeof(token_type));
 			*np += 4;
 			eloc += 4;
@@ -502,8 +497,8 @@ long		v;
 			return true;
 		}
 	}
-	if (*np + 2 > n_tokens) {
-		error_huge();
+	if (*np + 2 > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 	blt(&equation[eloc+2], &equation[eloc], (*np - eloc) * sizeof(token_type));
 	*np += 2;
@@ -523,17 +518,13 @@ long		v;
  * Return true if successful.
  */
 static int
-inv_laplace_sub(equation, np, loc, eloc, v)
-token_type	*equation;
-int		*np;
-int		loc, eloc;
-long		v;
+inv_laplace_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int eloc, long v)
 {
 	int	i, j, k;
 	int	len;
 	int	level, mlevel;
 
-	mlevel = min_level(&equation[loc], eloc - loc) + 1;
+	mlevel = min_level(mathomatic, &equation[loc], eloc - loc) + 1;
 	for (j = loc; j < eloc; j++)
 		equation[j].level += 2;
 	for (i = loc; i < eloc; i += 2) {
@@ -548,8 +539,8 @@ long		v;
 			for (j = i; j < eloc && equation[j].level >= level; j++)
 				equation[j].level++;
 			len = j - i;
-			if (*np + len + 7 > n_tokens)
-				error_huge();
+			if (*np + len + 7 > mathomatic->n_tokens)
+				error_huge(mathomatic);
 			equation[i-3].token.operatr = TIMES;
 			blt(&equation[j+2], &equation[j], (*np - j) * sizeof(token_type));
 			*np += 2;
@@ -589,8 +580,7 @@ long		v;
  * The laplace command.
  */
 int
-laplace_cmd(cp)
-char	*cp;
+laplace_cmd(MathoMatic* mathomatic, char *cp)
 {
 	int		i;
 	long		v = 0;
@@ -598,84 +588,83 @@ char	*cp;
 	token_type	*source, *dest;
 	int		n1, *nps, *np;
 
-	if (current_not_defined()) {
+	if (current_not_defined(mathomatic)) {
 		return false;
 	}
-	solved = solved_equation(cur_equation);
-	i = next_espace();
-	if (n_rhs[cur_equation]) {
+	solved = solved_equation(mathomatic, mathomatic->cur_equation);
+	i = next_espace(mathomatic);
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
 		if (!solved) {
-			warning(_("Not a solved equation."));
+			warning(mathomatic, _("Not a solved equation."));
 		}
 #if	!SILENT
-		fprintf(gfp, _("Only the RHS will be transformed.\n"));
+		fprintf(mathomatic->gfp, _("Only the RHS will be transformed.\n"));
 #endif
-		source = rhs[cur_equation];
-		nps = &n_rhs[cur_equation];
-		dest = rhs[i];
-		np = &n_rhs[i];
+		source = mathomatic->rhs[mathomatic->cur_equation];
+		nps = &mathomatic->n_rhs[mathomatic->cur_equation];
+		dest = mathomatic->rhs[i];
+		np = &mathomatic->n_rhs[i];
 	} else {
-		source = lhs[cur_equation];
-		nps = &n_lhs[cur_equation];
-		dest = lhs[i];
-		np = &n_lhs[i];
+		source = mathomatic->lhs[mathomatic->cur_equation];
+		nps = &mathomatic->n_lhs[mathomatic->cur_equation];
+		dest = mathomatic->lhs[i];
+		np = &mathomatic->n_lhs[i];
 	}
 	inverse_flag = (strcmp_tospace(cp, "inverse") == 0);
 	if (inverse_flag) {
 		cp = skip_param(cp);
 	}
 	if (*cp) {
-		cp = parse_var2(&v, cp);
+		cp = parse_var2(mathomatic, &v, cp);
 		if (cp == NULL) {
 			return false;
 		}
-		if (extra_characters(cp)) {
+		if (extra_characters(mathomatic, cp)) {
 			return false;
 		}
 	}
-	show_usage = false;
+	mathomatic->show_usage = false;
 	if (v == 0) {
-		if (!prompt_var(&v)) {
+		if (!prompt_var(mathomatic, &v)) {
 			return false;
 		}
 	}
-	partial_flag = false;
-	uf_simp(source, nps);
-	partial_flag = true;
-	factorv(source, nps, v);
+	mathomatic->partial_flag = false;
+	uf_simp(mathomatic, source, nps);
+	mathomatic->partial_flag = true;
+	factorv(mathomatic, source, nps, v);
 	blt(dest, source, *nps * sizeof(token_type));
 	n1 = *nps;
 	if (inverse_flag) {
-		if (!poly_in_v(dest, n1, v, true) || !int_dispatch(dest, &n1, v, inv_laplace_sub)) {
-			error(_("Inverse Laplace transformation failed."));
+		if (!poly_in_v(mathomatic, dest, n1, v, true) || !int_dispatch(mathomatic, dest, &n1, v, inv_laplace_sub)) {
+			error(mathomatic, _("Inverse Laplace transformation failed."));
 			return false;
 		}
 	} else {
-		if (!poly_in_v(dest, n1, v, false) || !int_dispatch(dest, &n1, v, laplace_sub)) {
-			error(_("Laplace transformation failed, not a polynomial."));
+		if (!poly_in_v(mathomatic, dest, n1, v, false) || !int_dispatch(mathomatic, dest, &n1, v, laplace_sub)) {
+			error(mathomatic, _("Laplace transformation failed, not a polynomial."));
 			return false;
 		}
 	}
 #if	1
-	simp_loop(dest, &n1);
+	simp_loop(mathomatic, dest, &n1);
 #else
-	simpa_side(dest, &n1, false, false);
+	simpa_side(mathomatic, dest, &n1, false, false);
 #endif
-	if (n_rhs[cur_equation]) {
-		blt(lhs[i], lhs[cur_equation], n_lhs[cur_equation] * sizeof(token_type));
-		n_lhs[i] = n_lhs[cur_equation];
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
+		blt(mathomatic->lhs[i], mathomatic->lhs[mathomatic->cur_equation], mathomatic->n_lhs[mathomatic->cur_equation] * sizeof(token_type));
+		mathomatic->n_lhs[i] = mathomatic->n_lhs[mathomatic->cur_equation];
 	}
 	*np = n1;
-	cur_equation = i;
-	return return_result(cur_equation);
+	mathomatic->cur_equation = i;
+	return return_result(mathomatic, mathomatic->cur_equation);
 }
 
 /*
  * Numerical integrate command.
  */
 int
-nintegrate_cmd(cp)
-char	*cp;
+nintegrate_cmd(MathoMatic* mathomatic, char *cp)
 {
 	long		v = 0;			/* Mathomatic variable */
 	int		i, j, k, i1, i2;
@@ -689,33 +678,33 @@ char	*cp;
 	char		*cp_start;
 
 	cp_start = cp;
-	if (current_not_defined()) {
+	if (current_not_defined(mathomatic)) {
 		return false;
 	}
-	n_tlhs = 0;
-	n_trhs = 0;
-	solved = solved_equation(cur_equation);
-	i = next_espace();
-	if (n_rhs[cur_equation]) {
+	mathomatic->n_tlhs = 0;
+	mathomatic->n_trhs = 0;
+	solved = solved_equation(mathomatic, mathomatic->cur_equation);
+	i = next_espace(mathomatic);
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
 		if (!solved) {
-			warning(_("Not a solved equation."));
+			warning(mathomatic, _("Not a solved equation."));
 		}
-		source = rhs[cur_equation];
-		nps = &n_rhs[cur_equation];
-		dest = rhs[i];
-		np = &n_rhs[i];
+		source = mathomatic->rhs[mathomatic->cur_equation];
+		nps = &mathomatic->n_rhs[mathomatic->cur_equation];
+		dest = mathomatic->rhs[i];
+		np = &mathomatic->n_rhs[i];
 	} else {
-		source = lhs[cur_equation];
-		nps = &n_lhs[cur_equation];
-		dest = lhs[i];
-		np = &n_lhs[i];
+		source = mathomatic->lhs[mathomatic->cur_equation];
+		nps = &mathomatic->n_lhs[mathomatic->cur_equation];
+		dest = mathomatic->lhs[i];
+		np = &mathomatic->n_lhs[i];
 	}
 	trap_flag = (strncasecmp(cp, "trap", 4) == 0);
 	if (trap_flag) {
 		cp = skip_param(cp);
 	}
 	if (*cp) {
-		cp = parse_var2(&v, cp);
+		cp = parse_var2(mathomatic, &v, cp);
 		if (cp == NULL) {
 			return false;
 		}
@@ -723,38 +712,38 @@ char	*cp;
 			iterations = decstrtol(cp, &cp);
 		}
 		if (iterations <= 0 || (iterations % 2) != 0) {
-			error(_("Number of partitions must be a positive, even integer."));
+			error(mathomatic, _("Number of partitions must be a positive, even integer."));
 			return false;
 		}
 	}
 	if (*cp) {
-		input_column += (cp - cp_start);
-		cp = parse_expr(tlhs, &n_tlhs, cp, false);
-		if (cp == NULL || n_tlhs <= 0) {
+		mathomatic->input_column += (cp - cp_start);
+		cp = parse_expr(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, cp, false);
+		if (cp == NULL || mathomatic->n_tlhs <= 0) {
 			return false;
 		}
 	}
 	if (*cp) {
 		cp_start = cp;
 		cp = skip_comma_space(cp);
-		input_column += (cp - cp_start);
-		cp = parse_expr(trhs, &n_trhs, cp, false);
-		if (cp == NULL || extra_characters(cp) || n_trhs <= 0) {
+		mathomatic->input_column += (cp - cp_start);
+		cp = parse_expr(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, cp, false);
+		if (cp == NULL || extra_characters(mathomatic, cp) || mathomatic->n_trhs <= 0) {
 			return false;
 		}
 	}
-	show_usage = false;
+	mathomatic->show_usage = false;
 	if (v == 0) {
-		if (!prompt_var(&v)) {
+		if (!prompt_var(mathomatic, &v)) {
 			return false;
 		}
 	}
 #if	!SILENT
-	list_var(v, 0);
-	if (n_rhs[cur_equation]) {
-		fprintf(gfp, _("Numerically integrating the RHS with respect to %s...\n"), var_str);
+	list_var(mathomatic, v, 0);
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
+		fprintf(mathomatic->gfp, _("Numerically integrating the RHS with respect to %s...\n"), mathomatic->var_str);
 	} else {
-		fprintf(gfp, _("Numerically integrating with respect to %s...\n"), var_str);
+		fprintf(mathomatic->gfp, _("Numerically integrating with respect to %s...\n"), mathomatic->var_str);
 	}
 #endif
 	singularity = false;
@@ -770,72 +759,72 @@ char	*cp;
 		}
 	}
 	if (singularity) {
-		warning(_("Singularity detected, result of numerical integration might be wrong."));
+		warning(mathomatic, _("Singularity detected, result of numerical integration might be wrong."));
 	}
-	if (n_tlhs == 0) {
-		my_strlcpy(prompt_str, _("Enter lower bound: "), sizeof(prompt_str));
-		if (!get_expr(tlhs, &n_tlhs)) {
+	if (mathomatic->n_tlhs == 0) {
+		my_strlcpy(mathomatic->prompt_str, _("Enter lower bound: "), sizeof(mathomatic->prompt_str));
+		if (!get_expr(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs)) {
 			return false;
 		}
 	}
-	subst_constants(tlhs, &n_tlhs);
-	simp_loop(tlhs, &n_tlhs);
-	if (exp_contains_infinity(tlhs, n_tlhs)) {
-		error(_("Not computable because: Lower bound contains infinity or NaN."));
+	subst_constants(mathomatic->tlhs, &mathomatic->n_tlhs);
+	simp_loop(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+	if (exp_contains_infinity(mathomatic->tlhs, mathomatic->n_tlhs)) {
+		error(mathomatic, _("Not computable because: Lower bound contains infinity or NaN."));
 		return false;
 	}
-	if (n_trhs == 0) {
-		my_strlcpy(prompt_str, _("Enter upper bound: "), sizeof(prompt_str));
-		if (!get_expr(trhs, &n_trhs)) {
+	if (mathomatic->n_trhs == 0) {
+		my_strlcpy(mathomatic->prompt_str, _("Enter upper bound: "), sizeof(mathomatic->prompt_str));
+		if (!get_expr(mathomatic, mathomatic->trhs, &mathomatic->n_trhs)) {
 			return false;
 		}
 	}
-	subst_constants(trhs, &n_trhs);
-	simp_loop(trhs, &n_trhs);
-	if (exp_contains_infinity(trhs, n_trhs)) {
-		error(_("Not computable because: Upper bound contains infinity or NaN."));
+	subst_constants(mathomatic->trhs, &mathomatic->n_trhs);
+	simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+	if (exp_contains_infinity(mathomatic->trhs, mathomatic->n_trhs)) {
+		error(mathomatic, _("Not computable because: Upper bound contains infinity or NaN."));
 		return false;
 	}
-	if ((n_tlhs + n_trhs + 3) > n_tokens) {
-		error_huge();
+	if ((mathomatic->n_tlhs + mathomatic->n_trhs + 3) > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 #if	!SILENT
-	fprintf(gfp, _("Approximating the definite integral\n"));
+	fprintf(mathomatic->gfp, _("Approximating the definite integral\n"));
 	if (trap_flag) {
-		fprintf(gfp, _("using the trapezoid method (%d partitions)...\n"), iterations);
+		fprintf(mathomatic->gfp, _("using the trapezoid method (%d partitions)...\n"), iterations);
 	} else {
-		fprintf(gfp, _("using Simpson's rule (%d partitions)...\n"), iterations);
+		fprintf(mathomatic->gfp, _("using Simpson's rule (%d partitions)...\n"), iterations);
 	}
 #endif
 	subst_constants(source, nps);
-	simp_loop(source, nps);
-	for (j = 0; j < n_trhs; j++) {
-		trhs[j].level += 2;
+	simp_loop(mathomatic, source, nps);
+	for (j = 0; j < mathomatic->n_trhs; j++) {
+		mathomatic->trhs[j].level += 2;
 	}
-	trhs[n_trhs].level = 2;
-	trhs[n_trhs].kind = OPERATOR;
-	trhs[n_trhs].token.operatr = MINUS;
-	n_trhs++;
-	j = n_trhs;
-	blt(&trhs[n_trhs], tlhs, n_tlhs * sizeof(token_type));
-	n_trhs += n_tlhs;
-	for (; j < n_trhs; j++) {
-		trhs[j].level += 2;
+	mathomatic->trhs[mathomatic->n_trhs].level = 2;
+	mathomatic->trhs[mathomatic->n_trhs].kind = OPERATOR;
+	mathomatic->trhs[mathomatic->n_trhs].token.operatr = MINUS;
+	mathomatic->n_trhs++;
+	j = mathomatic->n_trhs;
+	blt(&mathomatic->trhs[mathomatic->n_trhs], mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+	mathomatic->n_trhs += mathomatic->n_tlhs;
+	for (; j < mathomatic->n_trhs; j++) {
+		mathomatic->trhs[j].level += 2;
 	}
-	trhs[n_trhs].level = 1;
-	trhs[n_trhs].kind = OPERATOR;
-	trhs[n_trhs].token.operatr = DIVIDE;
-	n_trhs++;
-	trhs[n_trhs].level = 1;
-	trhs[n_trhs].kind = CONSTANT;
-	trhs[n_trhs].token.constant = iterations;
-	n_trhs++;
-	simp_loop(trhs, &n_trhs);
-	dest[0] = zero_token;
+	mathomatic->trhs[mathomatic->n_trhs].level = 1;
+	mathomatic->trhs[mathomatic->n_trhs].kind = OPERATOR;
+	mathomatic->trhs[mathomatic->n_trhs].token.operatr = DIVIDE;
+	mathomatic->n_trhs++;
+	mathomatic->trhs[mathomatic->n_trhs].level = 1;
+	mathomatic->trhs[mathomatic->n_trhs].kind = CONSTANT;
+	mathomatic->trhs[mathomatic->n_trhs].token.constant = iterations;
+	mathomatic->n_trhs++;
+	simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+	dest[0] = mathomatic->zero_token;
 	n1 = 1;
 	for (j = 0; j <= iterations; j++) {
-		if ((n1 + 1 + *nps) > n_tokens)
-			error_huge();
+		if ((n1 + 1 + *nps) > mathomatic->n_tokens)
+			error_huge(mathomatic);
 		for (k = 0; k < n1; k++) {
 			dest[k].level++;
 		}
@@ -853,14 +842,14 @@ char	*cp;
 		for (k = i1; k < n1; k += 2) {
 			if (dest[k].kind == VARIABLE && dest[k].token.variable == v) {
 				level = dest[k].level;
-				i2 = n_tlhs + 2 + n_trhs;
-				if ((n1 + i2) > n_tokens)
-					error_huge();
+				i2 = mathomatic->n_tlhs + 2 + mathomatic->n_trhs;
+				if ((n1 + i2) > mathomatic->n_tokens)
+					error_huge(mathomatic);
 				blt(&dest[k+1+i2], &dest[k+1], (n1 - (k + 1)) * sizeof(token_type));
 				n1 += i2;
 				i2 = k;
-				blt(&dest[k], tlhs, n_tlhs * sizeof(token_type));
-				k += n_tlhs;
+				blt(&dest[k], mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+				k += mathomatic->n_tlhs;
 				level++;
 				for (; i2 < k; i2++) {
 					dest[i2].level += level;
@@ -880,8 +869,8 @@ char	*cp;
 				ep->token.operatr = TIMES;
 				k += 3;
 				i2 = k;
-				blt(&dest[k], trhs, n_trhs * sizeof(token_type));
-				k += n_trhs;
+				blt(&dest[k], mathomatic->trhs, mathomatic->n_trhs * sizeof(token_type));
+				k += mathomatic->n_trhs;
 				for (; i2 < k; i2++) {
 					dest[i2].level += level;
 				}
@@ -889,8 +878,8 @@ char	*cp;
 			}
 		}
 		if (j > 0 && j < iterations) {
-			if ((n1 + 2) > n_tokens)
-				error_huge();
+			if ((n1 + 2) > mathomatic->n_tokens)
+				error_huge(mathomatic);
 			ep = &dest[n1];
 			ep->level = 2;
 			ep->kind = OPERATOR;
@@ -911,16 +900,16 @@ char	*cp;
 		}
 
 		/* simplify and approximate the partial result quickly: */
-		approximate_roots = true;
-		elim_loop(dest, &n1);
-		ufactor(dest, &n1);
-		simp_divide(dest, &n1);
-		factor_imaginary(dest, &n1);
-		approximate_roots = false;
-		side_debug(1, dest, n1);
+		mathomatic->approximate_roots = true;
+		elim_loop(mathomatic, dest, &n1);
+		ufactor(mathomatic, dest, &n1);
+		simp_divide(mathomatic, dest, &n1);
+		factor_imaginary(mathomatic, dest, &n1);
+		mathomatic->approximate_roots = false;
+		side_debug(mathomatic, 1, dest, n1);
 
 		if (exp_contains_infinity(dest, n1)) {
-			error(_("Integration failed because result contains infinity or NaN (a singularity)."));
+			error(mathomatic, _("Integration failed because result contains infinity or NaN (a singularity)."));
 			return false;
 		}
 		/* detect an ever growing result: */
@@ -934,14 +923,14 @@ char	*cp;
 			break;
 		default:
 			if ((n1 / 8) >= first_size) {
-				error(_("Result growing, integration failed."));
+				error(mathomatic, _("Result growing, integration failed."));
 				return false;
 			}
 			break;
 		}
 	}
-	if ((n1 + 3 + n_trhs) > n_tokens)
-		error_huge();
+	if ((n1 + 3 + mathomatic->n_trhs) > mathomatic->n_tokens)
+		error_huge(mathomatic);
 	for (k = 0; k < n1; k++)
 		dest[k].level++;
 	ep = &dest[n1];
@@ -962,34 +951,34 @@ char	*cp;
 	ep->token.operatr = TIMES;
 	n1 += 3;
 	k = n1;
-	blt(&dest[k], trhs, n_trhs * sizeof(token_type));
-	n1 += n_trhs;
+	blt(&dest[k], mathomatic->trhs, mathomatic->n_trhs * sizeof(token_type));
+	n1 += mathomatic->n_trhs;
 	for (; k < n1; k++)
 		dest[k].level++;
 
 	/* simplify and approximate the result even more: */
-	approximate_roots = true;
+	mathomatic->approximate_roots = true;
 	do {
-		elim_loop(dest, &n1);
-		ufactor(dest, &n1);
-		simp_divide(dest, &n1);
-	} while (factor_imaginary(dest, &n1));
-	approximate_roots = false;
+		elim_loop(mathomatic, dest, &n1);
+		ufactor(mathomatic, dest, &n1);
+		simp_divide(mathomatic, dest, &n1);
+	} while (factor_imaginary(mathomatic, dest, &n1));
+	mathomatic->approximate_roots = false;
 
 #if	!SILENT
-	fprintf(gfp, _("Numerical integration successful:\n"));
+	fprintf(mathomatic->gfp, _("Numerical integration successful:\n"));
 #endif
 	*np = n1;
-	if (n_rhs[cur_equation]) {
-		blt(lhs[i], lhs[cur_equation], n_lhs[cur_equation] * sizeof(token_type));
-		n_lhs[i] = n_lhs[cur_equation];
-		if (solved && isvarchar('\'')) {
-			len = list_var(lhs[i][0].token.variable, 0);
-			if (len > 0 && var_str[len-1] == '\'') {
-				var_str[--len] = '\0';
+	if (mathomatic->n_rhs[mathomatic->cur_equation]) {
+		blt(mathomatic->lhs[i], mathomatic->lhs[mathomatic->cur_equation], mathomatic->n_lhs[mathomatic->cur_equation] * sizeof(token_type));
+		mathomatic->n_lhs[i] = mathomatic->n_lhs[mathomatic->cur_equation];
+		if (solved && isvarchar(mathomatic, '\'')) {
+			len = list_var(mathomatic, mathomatic->lhs[i][0].token.variable, 0);
+			if (len > 0 && mathomatic->var_str[len-1] == '\'') {
+				mathomatic->var_str[--len] = '\0';
 			}
-			parse_var(&lhs[i][0].token.variable, var_str);
+			parse_var(mathomatic, &mathomatic->lhs[i][0].token.variable, mathomatic->var_str);
 		}
 	}
-	return return_result(i);
+	return return_result(mathomatic, i);
 }

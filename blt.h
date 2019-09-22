@@ -40,7 +40,7 @@ int		cnt;
 		if (cnt == 0) {
 			return dest;
 		} else {
-			error_bug("blt() cnt < 0");
+			error_bug(mathomatic, "blt() cnt < 0");
 		}
 	}
 	if (src == dest) {

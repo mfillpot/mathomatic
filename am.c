@@ -34,25 +34,25 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
  * but really can go to any file you wish.
  */
 void
-display_startup_message(fp)
-FILE	*fp;	/* output file pointer */
+display_startup_message(MathoMatic* mathomatic, FILE *fp)
+//FILE	*fp;	/* output file pointer */
 {
 	long	es_size;
 
 #if	SECURE
 	fprintf(fp, _("Secure "));
 #else
-	if (security_level >= 2)
+	if (mathomatic->security_level >= 2)
 		fprintf(fp, _("Secure "));
-	else if (security_level == -1)
+	else if (mathomatic->security_level == -1)
 		fprintf(fp, "m4 ");
 #endif
 	fprintf(fp, "Mathomatic version %s\n", VERSION);
-	if (html_flag)
+	if (mathomatic->html_flag)
 		fprintf(fp, "Copyright &copy; 1987-2012 George Gesslein II.\n");
 	else
 		fprintf(fp, "Copyright (C) 1987-2012 George Gesslein II.\n");
-	es_size = (long) n_tokens * sizeof(token_type) * 2L / 1000L;
+	es_size = (long) mathomatic->n_tokens * sizeof(token_type) * 2L / 1000L;
 	if (es_size >= 1000) {
 		fprintf(fp, _("%d equation spaces available in RAM; %ld megabytes per equation space.\n"),
 		    N_EQUATIONS, (es_size + 500L) / 1000L);
@@ -66,14 +66,14 @@ FILE	*fp;	/* output file pointer */
  * Standard function to report an error to the user.
  */
 void
-error(str)
-const char	*str;		/* constant string to display */
+error(MathoMatic* mathomatic, const char *str)
+//const char	*str;		/* constant string to display */
 {
-	error_str = str;	/* save reference to str, must be a constant string, temporary strings don't work */
+	mathomatic->error_str = str;	/* save reference to str, must be a constant string, temporary strings don't work */
 #if	!SILENT && !LIBRARY
-	set_color(2);		/* set color to red */
+	set_color(mathomatic, 2);		/* set color to red */
 	printf("%s\n", str);
-	default_color(false);	/* restore to default color */
+	default_color(mathomatic, false);	/* restore to default color */
 #endif
 }
 
@@ -81,13 +81,13 @@ const char	*str;		/* constant string to display */
  * Reset last call to error(), as if it didn't happen.
  */
 void
-reset_error(void)
+reset_error(MathoMatic* mathomatic)
 {
 #if	!SILENT && !LIBRARY
-	if (error_str)
+	if (mathomatic->error_str)
 		printf(_("Forgetting previous error.\n"));
 #endif
-	error_str = NULL;
+	mathomatic->error_str = NULL;
 }
 
 /*
@@ -95,21 +95,21 @@ reset_error(void)
  * A warning is less serious than an error.
  */
 void
-warning(str)
-const char	*str;		/* constant string to display */
+warning(MathoMatic* mathomatic, const char *str)
+//const char	*str;		/* constant string to display */
 {
 	int	already_warned = false;
 
-	if (warning_str) {
-		if (strcmp(str, warning_str) == 0)
+	if (mathomatic->warning_str) {
+		if (strcmp(str, mathomatic->warning_str) == 0)
 			already_warned = true;
 	}
-	warning_str = str;	/* save reference to str, must be a constant string, temporary strings don't work */
+	mathomatic->warning_str = str;	/* save reference to str, must be a constant string, temporary strings don't work */
 #if	!SILENT && !LIBRARY
-	if (!already_warned && debug_level >= -1) {
-		set_color(1);		/* set color to yellow */
+	if (!already_warned && mathomatic->debug_level >= -1) {
+		set_color(mathomatic, 1);		/* set color to yellow */
 		printf("Warning: %s\n", str);
-		default_color(false);	/* restore to default color */
+		default_color(mathomatic, false);	/* restore to default color */
 	}
 #endif
 }
@@ -120,9 +120,9 @@ const char	*str;		/* constant string to display */
  * There is no return.
  */
 void
-error_huge(void)
+error_huge(MathoMatic* mathomatic)
 {
-	longjmp(jmp_save, 14);
+	longjmp(mathomatic->jmp_save, 14);
 }
 
 /*
@@ -131,11 +131,11 @@ error_huge(void)
  * There is no return.
  */
 void
-error_bug(str)
-const char	*str;	/* constant string to display */
+error_bug(MathoMatic* mathomatic, const char *str)
+//const char	*str;	/* constant string to display */
 {
 /* Return and display the passed error message in str. */
-	error(str);	/* str must be a constant string, temporary strings don't work */
+	error(mathomatic, str);	/* str must be a constant string, temporary strings don't work */
 #if	SILENT || LIBRARY
 	printf("%s\n", str);
 #endif
@@ -144,7 +144,7 @@ const char	*str;	/* constant string to display */
 #if	!LIBRARY
 	printf(_("Type \"help bugs\" for info on how to report bugs found in this program.\n"));
 #endif
-	longjmp(jmp_save, 13);	/* Abort the current operation with the critical error number 13. */
+	longjmp(mathomatic->jmp_save, 13);	/* Abort the current operation with the critical error number 13. */
 }
 
 /*
@@ -153,22 +153,22 @@ const char	*str;	/* constant string to display */
  * There is no return if an error message is displayed.
  */
 void
-check_err(void)
+check_err(MathoMatic* mathomatic)
 {
 	switch (errno) {
 	case EDOM:
 		errno = 0;
-		if (domain_check) {
-			domain_check = false;
+		if (mathomatic->domain_check) {
+			mathomatic->domain_check = false;
 		} else {
-			error(_("Domain error in constant."));
-			longjmp(jmp_save, 2);
+			error(mathomatic, _("Domain error in constant."));
+			longjmp(mathomatic->jmp_save, 2);
 		}
 		break;
 	case ERANGE:
 		errno = 0;
-		error(_("Floating point constant out of range."));
-		longjmp(jmp_save, 2);
+		error(mathomatic, _("Floating point constant out of range."));
+		longjmp(mathomatic->jmp_save, 2);
 		break;
 	}
 }
@@ -179,7 +179,7 @@ check_err(void)
  * Return true if the global integers screen_columns and/or screen_rows were set.
  */
 int
-get_screen_size(void)
+get_screen_size(MathoMatic* mathomatic)
 {
 	int	rv = false;
 
@@ -190,17 +190,17 @@ get_screen_size(void)
 	ws.ws_row = 0;
 	if (ioctl(1, TIOCGWINSZ, &ws) >= 0) {
 		if (ws.ws_col > 0) {
-			screen_columns = ws.ws_col;
+			mathomatic->screen_columns = ws.ws_col;
 			rv = true;
 		}
 		if (ws.ws_row > 0) {
-			screen_rows = ws.ws_row;
+			mathomatic->screen_rows = ws.ws_row;
 			rv = true;
 		}
 	}
 #else
-	screen_columns = STANDARD_SCREEN_COLUMNS;
-	screen_rows = STANDARD_SCREEN_ROWS;
+	mathomatic->screen_columns = STANDARD_SCREEN_COLUMNS;
+	mathomatic->screen_rows = STANDARD_SCREEN_ROWS;
 	rv = true;
 #endif
 	return rv;
@@ -213,24 +213,24 @@ get_screen_size(void)
  * Return true with vscreen[] allocated to TEXT_ROWS*current_columns characters if successful.
  */
 int
-malloc_vscreen(void)
+malloc_vscreen(MathoMatic* mathomatic)
 {
 	int	i;
 
-	if (current_columns == 0 || ((screen_columns > 0) ? (current_columns != screen_columns) : (current_columns != TEXT_COLUMNS))) {
-		if (screen_columns > 0) {
-			current_columns = screen_columns;
+	if (mathomatic->current_columns == 0 || ((mathomatic->screen_columns > 0) ? (mathomatic->current_columns != mathomatic->screen_columns) : (mathomatic->current_columns != TEXT_COLUMNS))) {
+		if (mathomatic->screen_columns > 0) {
+			mathomatic->current_columns = mathomatic->screen_columns;
 		} else {
-			current_columns = TEXT_COLUMNS;
+			mathomatic->current_columns = TEXT_COLUMNS;
 		}
 		for (i = 0; i < TEXT_ROWS; i++) {
-			if (vscreen[i]) {
-				free(vscreen[i]);
+			if (mathomatic->vscreen[i]) {
+				free(mathomatic->vscreen[i]);
 			}
-			vscreen[i] = malloc(current_columns + 1);
-			if (vscreen[i] == NULL) {
-				error(_("Out of memory (can't malloc(3))."));
-				current_columns = 0;
+			mathomatic->vscreen[i] = malloc(mathomatic->current_columns + 1);
+			if (mathomatic->vscreen[i] == NULL) {
+				error(mathomatic, _("Out of memory (can't malloc(3))."));
+				mathomatic->current_columns = 0;
 				return false;
 			}
 		}
@@ -250,20 +250,20 @@ malloc_vscreen(void)
  * Returns true if successful, otherwise Mathomatic cannot be used.
  */
 int
-init_mem(void)
+init_mem(MathoMatic* mathomatic)
 {
-	if (n_tokens <= 0)
+	if (mathomatic->n_tokens <= 0)
 		return false;
-	if ((scratch = (token_type *) malloc(((n_tokens * 3) / 2) * sizeof(token_type))) == NULL
-	    || (tes = (token_type *) malloc(n_tokens * sizeof(token_type))) == NULL
-	    || (tlhs = (token_type *) malloc(n_tokens * sizeof(token_type))) == NULL
-	    || (trhs = (token_type *) malloc(n_tokens * sizeof(token_type))) == NULL) {
-		return false;
-	}
-	if (alloc_next_espace() < 0) {	/* make sure there is at least 1 equation space */
+	if ((mathomatic->scratch = (token_type *) malloc(((mathomatic->n_tokens * 3) / 2) * sizeof(token_type))) == NULL
+	    || (mathomatic->tes = (token_type *) malloc(mathomatic->n_tokens * sizeof(token_type))) == NULL
+	    || (mathomatic->tlhs = (token_type *) malloc(mathomatic->n_tokens * sizeof(token_type))) == NULL
+	    || (mathomatic->trhs = (token_type *) malloc(mathomatic->n_tokens * sizeof(token_type))) == NULL) {
 		return false;
 	}
-	clear_all();
+	if (alloc_next_espace(mathomatic) < 0) {	/* make sure there is at least 1 equation space */
+		return false;
+	}
+	clear_all(mathomatic);
 	return true;
 }
 
@@ -278,36 +278,36 @@ init_mem(void)
  * Inclusion of this routine was requested by Tam Hanna for use with Symbian OS.
  */
 void
-free_mem(void)
+free_mem(MathoMatic* mathomatic)
 {
 	int	i;
 
-	clear_all();
+	clear_all(mathomatic);
 
-	free(scratch);
-	free(tes);
-	free(tlhs);
-	free(trhs);
+	free(mathomatic->scratch);
+	free(mathomatic->tes);
+	free(mathomatic->tlhs);
+	free(mathomatic->trhs);
 
 	for (i = 0; i < N_EQUATIONS; i++) {
-		if (lhs[i]) {
-			free(lhs[i]);
-			lhs[i] = NULL;
+		if (mathomatic->lhs[i]) {
+			free(mathomatic->lhs[i]);
+			mathomatic->lhs[i] = NULL;
 		}
-		if (rhs[i]) {
-			free(rhs[i]);
-			rhs[i] = NULL;
+		if (mathomatic->rhs[i]) {
+			free(mathomatic->rhs[i]);
+			mathomatic->rhs[i] = NULL;
 		}
 	}
-	n_equations = 0;
+	mathomatic->n_equations = 0;
 
 	for (i = 0; i < TEXT_ROWS; i++) {
-		if (vscreen[i]) {
-			free(vscreen[i]);
-			vscreen[i] = NULL;
+		if (mathomatic->vscreen[i]) {
+			free(mathomatic->vscreen[i]);
+			mathomatic->vscreen[i] = NULL;
 		}
 	}
-	current_columns = 0;
+	mathomatic->current_columns = 0;
 }
 #endif
 
@@ -319,23 +319,23 @@ free_mem(void)
  * Always returns true, or doesn't return on error.
  */
 int
-check_gvars(void)
+check_gvars(MathoMatic* mathomatic)
 {
-	if (!(domain_check == false &&
-	high_prec == false &&
-	partial_flag == true &&
-	symb_flag == false &&
-	sign_cmp_flag == false &&
-	approximate_roots == false))
-		error_bug("Global vars got changed!");
+	if (!(mathomatic->domain_check == false &&
+	mathomatic->high_prec == false &&
+	mathomatic->partial_flag == true &&
+	mathomatic->symb_flag == false &&
+	mathomatic->sign_cmp_flag == false &&
+	mathomatic->approximate_roots == false))
+		error_bug(mathomatic, "Global vars got changed!");
 
-	if (!(zero_token.level == 1 &&
-	zero_token.kind == CONSTANT &&
-	zero_token.token.constant == 0.0 &&
-	one_token.level == 1 &&
-	one_token.kind == CONSTANT &&
-	one_token.token.constant == 1.0))
-		error_bug("Global constants got changed!");
+	if (!(mathomatic->zero_token.level == 1 &&
+	mathomatic->zero_token.kind == CONSTANT &&
+	mathomatic->zero_token.token.constant == 0.0 &&
+	mathomatic->one_token.level == 1 &&
+	mathomatic->one_token.kind == CONSTANT &&
+	mathomatic->one_token.token.constant == 1.0))
+		error_bug(mathomatic, "Global constants got changed!");
 
 	return true;
 }
@@ -347,48 +347,48 @@ check_gvars(void)
  * This is also called when processing is aborted with a longjmp(3).
  */
 void
-init_gvars(void)
+init_gvars(MathoMatic* mathomatic)
 {
-	domain_check = false;
-	high_prec = false;
-	partial_flag = true;
-	symb_flag = false;
-	sign_cmp_flag = false;
-	approximate_roots = false;
-	repeat_flag = false;
+	mathomatic->domain_check = false;
+	mathomatic->high_prec = false;
+	mathomatic->partial_flag = true;
+	mathomatic->symb_flag = false;
+	mathomatic->sign_cmp_flag = false;
+	mathomatic->approximate_roots = false;
+	mathomatic->repeat_flag = false;
 
 	/* initialize the universal and often used constant "0" expression */
-	zero_token.level = 1;
-	zero_token.kind = CONSTANT;
-	zero_token.token.constant = 0.0;
+	mathomatic->zero_token.level = 1;
+	mathomatic->zero_token.kind = CONSTANT;
+	mathomatic->zero_token.token.constant = 0.0;
 
 	/* initialize the universal and often used constant "1" expression */
-	one_token.level = 1;
-	one_token.kind = CONSTANT;
-	one_token.token.constant = 1.0;
+	mathomatic->one_token.level = 1;
+	mathomatic->one_token.kind = CONSTANT;
+	mathomatic->one_token.token.constant = 1.0;
 }
 
 /*
  * Clean up when processing is unexpectedly interrupted or terminated.
  */
 void
-clean_up(void)
+clean_up(MathoMatic* mathomatic)
 {
 	int	i;
 
-	init_gvars();		/* reset the global variables to the default */
-	if (gfp != default_out) {	/* reset the output file to default */
+	init_gvars(mathomatic);		/* reset the global variables to the default */
+	if (mathomatic->gfp != mathomatic->default_out) {	/* reset the output file to default */
 #if	!SECURE
-		if (gfp != stdout && gfp != stderr)
-			fclose(gfp);
+		if (mathomatic->gfp != stdout && mathomatic->gfp != stderr)
+			fclose(mathomatic->gfp);
 #endif
-		gfp = default_out;
+		mathomatic->gfp = mathomatic->default_out;
 	}
-	gfp_filename = NULL;
-	for (i = 0; i < n_equations; i++) {
-		if (n_lhs[i] <= 0) {
-			n_lhs[i] = 0;
-			n_rhs[i] = 0;
+	mathomatic->gfp_filename = NULL;
+	for (i = 0; i < mathomatic->n_equations; i++) {
+		if (mathomatic->n_lhs[i] <= 0) {
+			mathomatic->n_lhs[i] = 0;
+			mathomatic->n_rhs[i] = 0;
 		}
 	}
 }
@@ -398,21 +398,21 @@ clean_up(void)
  * so that the next sign variables returned by next_sign() will be unique.
  */
 void
-set_sign_array(void)
+set_sign_array(MathoMatic* mathomatic)
 {
 	int	i, j;
 
-	CLEAR_ARRAY(sign_array);
-	for (i = 0; i < n_equations; i++) {
-		if (n_lhs[i] > 0) {
-			for (j = 0; j < n_lhs[i]; j += 2) {
-				if (lhs[i][j].kind == VARIABLE && (lhs[i][j].token.variable & VAR_MASK) == SIGN) {
-					sign_array[(lhs[i][j].token.variable >> VAR_SHIFT) & SUBSCRIPT_MASK] = true;
+	CLEAR_ARRAY(mathomatic->sign_array);
+	for (i = 0; i < mathomatic->n_equations; i++) {
+		if (mathomatic->n_lhs[i] > 0) {
+			for (j = 0; j < mathomatic->n_lhs[i]; j += 2) {
+				if (mathomatic->lhs[i][j].kind == VARIABLE && (mathomatic->lhs[i][j].token.variable & VAR_MASK) == SIGN) {
+					mathomatic->sign_array[(mathomatic->lhs[i][j].token.variable >> VAR_SHIFT) & SUBSCRIPT_MASK] = true;
 				}
 			}
-			for (j = 0; j < n_rhs[i]; j += 2) {
-				if (rhs[i][j].kind == VARIABLE && (rhs[i][j].token.variable & VAR_MASK) == SIGN) {
-					sign_array[(rhs[i][j].token.variable >> VAR_SHIFT) & SUBSCRIPT_MASK] = true;
+			for (j = 0; j < mathomatic->n_rhs[i]; j += 2) {
+				if (mathomatic->rhs[i][j].kind == VARIABLE && (mathomatic->rhs[i][j].token.variable & VAR_MASK) == SIGN) {
+					mathomatic->sign_array[(mathomatic->rhs[i][j].token.variable >> VAR_SHIFT) & SUBSCRIPT_MASK] = true;
 				}
 			}
 		}
@@ -424,20 +424,19 @@ set_sign_array(void)
  * Mark it used.
  */
 int
-next_sign(vp)
-long	*vp;
+next_sign(MathoMatic* mathomatic, long *vp)
 {
 	int	i;
 
 	for (i = 0;; i++) {
-		if (i >= ARR_CNT(sign_array)) {
+		if (i >= ARR_CNT(mathomatic->sign_array)) {
 			/* out of unique sign variables */
 			*vp = SIGN;
 			return false;
 		}
-		if (!sign_array[i]) {
+		if (!mathomatic->sign_array[i]) {
 			*vp = SIGN + (((long) i) << VAR_SHIFT);
-			sign_array[i] = true;
+			mathomatic->sign_array[i] = true;
 			break;
 		}
 	}
@@ -449,23 +448,23 @@ long	*vp;
  * Similar to a restart.
  */
 void
-clear_all(void)
+clear_all(MathoMatic* mathomatic)
 {
 	int	i;
 
 /* select first equation space */
-	cur_equation = 0;
+	mathomatic->cur_equation = 0;
 /* erase all equation spaces by setting their length to zero */
-	CLEAR_ARRAY(n_lhs);
-	CLEAR_ARRAY(n_rhs);
+	CLEAR_ARRAY(mathomatic->n_lhs);
+	CLEAR_ARRAY(mathomatic->n_rhs);
 /* forget all variables names */
-	for (i = 0; var_names[i]; i++) {
-		free(var_names[i]);
-		var_names[i] = NULL;
+	for (i = 0; mathomatic->var_names[i]; i++) {
+		free(mathomatic->var_names[i]);
+		mathomatic->var_names[i] = NULL;
 	}
 /* reset everything to a known state */
-	CLEAR_ARRAY(sign_array);
-	init_gvars();
+	CLEAR_ARRAY(mathomatic->sign_array);
+	init_gvars(mathomatic);
 }
 
 /*
@@ -473,24 +472,24 @@ clear_all(void)
  * zeroing and allocating if necessary.
  */
 int
-alloc_espace(i)
-int	i;	/* equation space number */
+alloc_espace(MathoMatic* mathomatic, int i)
+//int	i;	/* equation space number */
 {
 	if (i < 0 || i >= N_EQUATIONS)
 		return false;
-	n_lhs[i] = 0;
-	n_rhs[i] = 0;
-	if (lhs[i] && rhs[i])
+	mathomatic->n_lhs[i] = 0;
+	mathomatic->n_rhs[i] = 0;
+	if (mathomatic->lhs[i] && mathomatic->rhs[i])
 		return true;	/* already allocated */
-	if (lhs[i] || rhs[i])
+	if (mathomatic->lhs[i] || mathomatic->rhs[i])
 		return false;	/* something is wrong */
-	lhs[i] = (token_type *) malloc(n_tokens * sizeof(token_type));
-	if (lhs[i] == NULL)
+	mathomatic->lhs[i] = (token_type *) malloc(mathomatic->n_tokens * sizeof(token_type));
+	if (mathomatic->lhs[i] == NULL)
 		return false;
-	rhs[i] = (token_type *) malloc(n_tokens * sizeof(token_type));
-	if (rhs[i] == NULL) {
-		free(lhs[i]);
-		lhs[i] = NULL;
+	mathomatic->rhs[i] = (token_type *) malloc(mathomatic->n_tokens * sizeof(token_type));
+	if (mathomatic->rhs[i] == NULL) {
+		free(mathomatic->lhs[i]);
+		mathomatic->lhs[i] = NULL;
 		return false;
 	}
 	return true;
@@ -503,21 +502,21 @@ int	i;	/* equation space number */
  * Returns true if successful.
  */
 int
-alloc_to_espace(en)
-int	en;	/* equation space number */
+alloc_to_espace(MathoMatic* mathomatic, int en)
+//int	en;	/* equation space number */
 {
 	if (en < 0 || en >= N_EQUATIONS)
 		return false;
 	for (;;) {
-		if (en < n_equations)
+		if (en < mathomatic->n_equations)
 			return true;
-		if (n_equations >= N_EQUATIONS)
+		if (mathomatic->n_equations >= N_EQUATIONS)
 			return false;
-		if (!alloc_espace(n_equations)) {
-			warning(_("Memory is exhausted."));
+		if (!alloc_espace(mathomatic, mathomatic->n_equations)) {
+			warning(mathomatic, _("Memory is exhausted."));
 			return false;
 		}
-		n_equations++;
+		mathomatic->n_equations++;
 	}
 }
 
@@ -527,32 +526,32 @@ int	en;	/* equation space number */
  * Returns empty equation space number ready for use or -1 on error.
  */
 int
-alloc_next_espace(void)
+alloc_next_espace(MathoMatic* mathomatic)
 {
 	int	i, n;
 
-	for (n = cur_equation, i = 0;; n = (n + 1) % N_EQUATIONS, i++) {
+	for (n = mathomatic->cur_equation, i = 0;; n = (n + 1) % N_EQUATIONS, i++) {
 		if (i >= N_EQUATIONS)
 			return -1;
-		if (n >= n_equations) {
-			n = n_equations;
-			if (!alloc_espace(n)) {
-				warning(_("Memory is exhausted."));
-				for (n = 0; n < n_equations; n++) {
-					if (n_lhs[n] == 0) {
-						n_rhs[n] = 0;
+		if (n >= mathomatic->n_equations) {
+			n = mathomatic->n_equations;
+			if (!alloc_espace(mathomatic, n)) {
+				warning(mathomatic, _("Memory is exhausted."));
+				for (n = 0; n < mathomatic->n_equations; n++) {
+					if (mathomatic->n_lhs[n] == 0) {
+						mathomatic->n_rhs[n] = 0;
 						return n;
 					}
 				}
 				return -1;
 			}
-			n_equations++;
+			mathomatic->n_equations++;
 			return n;
 		}
-		if (n_lhs[n] == 0)
+		if (mathomatic->n_lhs[n] == 0)
 			break;
 	}
-	n_rhs[n] = 0;
+	mathomatic->n_rhs[n] = 0;
 	return n;
 }
 
@@ -560,32 +559,32 @@ alloc_next_espace(void)
  * Return the number of the next empty equation space, otherwise don't return.
  */
 int
-next_espace(void)
+next_espace(MathoMatic* mathomatic)
 {
 	int		i, j;
 	long		answer_v = 0;		/* Mathomatic answer variable */
 
-	i = alloc_next_espace();
+	i = alloc_next_espace(mathomatic);
 	if (i < 0) {
 #if	!SILENT
 		printf(_("Deleting old numeric calculations to free up equation spaces.\n"));
 #endif
-		parse_var(&answer_v, "answer");	/* convert to a Mathomatic variable */
-		for (j = 0; j < n_equations; j++) {
-			if (n_lhs[j] == 1 && lhs[j][0].kind == VARIABLE
-			    && lhs[j][0].token.variable == answer_v) {
+		parse_var(mathomatic, &answer_v, "answer");	/* convert to a Mathomatic variable */
+		for (j = 0; j < mathomatic->n_equations; j++) {
+			if (mathomatic->n_lhs[j] == 1 && mathomatic->lhs[j][0].kind == VARIABLE
+			    && mathomatic->lhs[j][0].token.variable == answer_v) {
 				/* delete calculation from memory */
-				n_lhs[j] = 0;
-				n_rhs[j] = 0;
+				mathomatic->n_lhs[j] = 0;
+				mathomatic->n_rhs[j] = 0;
 			}
 		}
-		i = alloc_next_espace();
+		i = alloc_next_espace(mathomatic);
 		if (i < 0) {
-			error(_("Out of free equation spaces."));
+			error(mathomatic, _("Out of free equation spaces."));
 #if	!SILENT
 			printf(_("Use the clear command on unnecessary equations and try again.\n"));
 #endif
-			longjmp(jmp_save, 3);	/* do not return */
+			longjmp(mathomatic->jmp_save, 3);	/* do not return */
 		}
 	}
 	return i;
@@ -596,35 +595,35 @@ next_espace(void)
  * "dest" is overwritten.
  */
 void
-copy_espace(src, dest)
-int	src, dest;	/* equation space numbers */
+copy_espace(MathoMatic* mathomatic, int src, int dest)
+//int	src, dest;	/* equation space numbers */
 {
 	if (src == dest) {
 #if	DEBUG
-		error_bug("Internal error: copy_espace() source and destination the same.");
+		error_bug(mathomatic, "Internal error: copy_espace() source and destination the same.");
 #endif
 		return;
 	}
-	blt(lhs[dest], lhs[src], n_lhs[src] * sizeof(token_type));
-	n_lhs[dest] = n_lhs[src];
-	blt(rhs[dest], rhs[src], n_rhs[src] * sizeof(token_type));
-	n_rhs[dest] = n_rhs[src];
+	blt(mathomatic->lhs[dest], mathomatic->lhs[src], mathomatic->n_lhs[src] * sizeof(token_type));
+	mathomatic->n_lhs[dest] = mathomatic->n_lhs[src];
+	blt(mathomatic->rhs[dest], mathomatic->rhs[src], mathomatic->n_rhs[src] * sizeof(token_type));
+	mathomatic->n_rhs[dest] = mathomatic->n_rhs[src];
 }
 
 /*
  * Return true if equation space "i" is a valid equation solved for a normal variable.
  */
 int
-solved_equation(i)
-int	i;
+solved_equation(MathoMatic* mathomatic, int i)
+//int	i;
 {
-	if (empty_equation_space(i))
+	if (empty_equation_space(mathomatic, i))
 		return false;
-	if (n_rhs[i] <= 0)
+	if (mathomatic->n_rhs[i] <= 0)
 		return false;
-	if (n_lhs[i] != 1 || lhs[i][0].kind != VARIABLE || (lhs[i][0].token.variable & VAR_MASK) <= SIGN)
+	if (mathomatic->n_lhs[i] != 1 || mathomatic->lhs[i][0].kind != VARIABLE || (mathomatic->lhs[i][0].token.variable & VAR_MASK) <= SIGN)
 		return false;
-	if (found_var(rhs[i], n_rhs[i], lhs[i][0].token.variable))
+	if (found_var(mathomatic->rhs[i], mathomatic->n_rhs[i], mathomatic->lhs[i][0].token.variable))
 		return false;
 	return true;
 }
@@ -655,17 +654,17 @@ long		v;	/* standard Mathomatic variable */
  * Return true if variable "v" exists in equation space "i".
  */
 int
-var_in_equation(i, v)
-int	i;	/* equation space number */
-long	v;	/* standard Mathomatic variable */
+var_in_equation(MathoMatic* mathomatic, int i, long v)
+//int	i;	/* equation space number */
+//long	v;	/* standard Mathomatic variable */
 {
-	if (empty_equation_space(i))
+	if (empty_equation_space(mathomatic, i))
 		return false;
-	if (found_var(lhs[i], n_lhs[i], v))
+	if (found_var(mathomatic->lhs[i], mathomatic->n_lhs[i], v))
 		return true;
-	if (n_rhs[i] <= 0)
+	if (mathomatic->n_rhs[i] <= 0)
 		return false;
-	if (found_var(rhs[i], n_rhs[i], v))
+	if (found_var(mathomatic->rhs[i], mathomatic->n_rhs[i], v))
 		return true;
 	return false;
 }
@@ -678,27 +677,27 @@ long	v;	/* standard Mathomatic variable */
  * If found, return true with cur_equation set to the equation space the variable is found in.
  */
 int
-search_all_for_var(v, forward_direction)
-long	v;
-int	forward_direction;
+search_all_for_var(MathoMatic* mathomatic, long v, int forward_direction)
+//long	v;
+//int	forward_direction;
 {
 	int	i, n;
 
-	i = cur_equation;
-	for (n = 0; n < n_equations; n++) {
+	i = mathomatic->cur_equation;
+	for (n = 0; n < mathomatic->n_equations; n++) {
 		if (forward_direction) {
-			if (i >= (n_equations - 1))
+			if (i >= (mathomatic->n_equations - 1))
 				i = 0;
 			else
 				i++;
 		} else {
 			if (i <= 0)
-				i = n_equations - 1;
+				i = mathomatic->n_equations - 1;
 			else
 				i--;
 		}
-		if (var_in_equation(i, v)) {
-			cur_equation = i;
+		if (var_in_equation(mathomatic, i, v)) {
+			mathomatic->cur_equation = i;
 			return true;
 		}
 	}
@@ -709,27 +708,27 @@ int	forward_direction;
  * Replace all occurrences of variable from_v with to_v in an equation space.
  */
 void
-rename_var_in_es(en, from_v, to_v)
-int	en;	 	/* equation space number */
-long	from_v, to_v;	/* Mathomatic variables */
+rename_var_in_es(MathoMatic* mathomatic, int en, long from_v, long to_v)
+//int	en;	 	/* equation space number */
+//long	from_v, to_v;	/* Mathomatic variables */
 {
 	int	i;
 
-	if (empty_equation_space(en)) {
+	if (empty_equation_space(mathomatic, en)) {
 #if	DEBUG
-		error_bug("Invalid or empty equation number given to rename_var_in_es().");
+		error_bug(mathomatic, "Invalid or empty equation number given to rename_var_in_es().");
 #else
 		return;
 #endif
 	}
-	for (i = 0; i < n_lhs[en]; i += 2)
-		if (lhs[en][i].kind == VARIABLE
-		    && lhs[en][i].token.variable == from_v)
-			lhs[en][i].token.variable = to_v;
-	for (i = 0; i < n_rhs[en]; i += 2)
-		if (rhs[en][i].kind == VARIABLE
-		    && rhs[en][i].token.variable == from_v)
-			rhs[en][i].token.variable = to_v;
+	for (i = 0; i < mathomatic->n_lhs[en]; i += 2)
+		if (mathomatic->lhs[en][i].kind == VARIABLE
+		    && mathomatic->lhs[en][i].token.variable == from_v)
+			mathomatic->lhs[en][i].token.variable = to_v;
+	for (i = 0; i < mathomatic->n_rhs[en]; i += 2)
+		if (mathomatic->rhs[en][i].kind == VARIABLE
+		    && mathomatic->rhs[en][i].token.variable == from_v)
+			mathomatic->rhs[en][i].token.variable = to_v;
 }
 
 /*
@@ -738,12 +737,12 @@ long	from_v, to_v;	/* Mathomatic variables */
  * Return true if something was substituted.
  */
 int
-subst_var_with_exp(equation, np, expression, len, v)
-token_type	*equation;	/* equation side pointer */
-int		*np;		/* pointer to equation side length */
-token_type	*expression;	/* expression pointer */
-int		len;		/* expression length */
-long		v;		/* variable to substitute with expression */
+subst_var_with_exp(MathoMatic* mathomatic, token_type *equation, int *np, token_type *expression, int len, long v)
+//token_type	*equation;	/* equation side pointer */
+//int		*np;		/* pointer to equation side length */
+//token_type	*expression;	/* expression pointer */
+//int		len;		/* expression length */
+//long		v;		/* variable to substitute with expression */
 {
 	int	j, k;
 	int	level;
@@ -754,8 +753,8 @@ long		v;		/* variable to substitute with expression */
 	for (j = *np - 1; j >= 0; j--) {
 		if (equation[j].kind == VARIABLE && equation[j].token.variable == v) {
 			level = equation[j].level;
-			if (*np + len - 1 > n_tokens) {
-				error_huge();
+			if (*np + len - 1 > mathomatic->n_tokens) {
+				error_huge(mathomatic);
 			}
 			if (len > 1) {
 				blt(&equation[j+len], &equation[j+1], (*np - (j + 1)) * sizeof(token_type));
@@ -768,8 +767,8 @@ long		v;		/* variable to substitute with expression */
 		}
 	}
 	if (substituted) {
-		if (is_integer_var(v) && !is_integer_expr(expression, len)) {
-			warning(_("Substituting integer variable with non-integer expression."));
+		if (is_integer_var(mathomatic, v) && !is_integer_expr(mathomatic, expression, len)) {
+			warning(mathomatic, _("Substituting integer variable with non-integer expression."));
 		}
 	}
 	return substituted;
@@ -779,16 +778,16 @@ long		v;		/* variable to substitute with expression */
  * Return the base (minimum) parentheses level encountered in a Mathomatic "expression".
  */
 int
-min_level(expression, n)
-token_type	*expression;	/* expression pointer */
-int		n;		/* expression length */
+min_level(MathoMatic* mathomatic, token_type *expression, int n)
+//token_type	*expression;	/* expression pointer */
+//int		n;		/* expression length */
 {
 	int		min1;
 	token_type	*p1, *ep;
 
 #if	DEBUG
 	if (expression == NULL)
-		error_bug("NULL pointer passed to min_level().");
+		error_bug(mathomatic, "NULL pointer passed to min_level().");
 #endif
 	switch (n) {
 	case 1:
@@ -797,7 +796,7 @@ int		n;		/* expression length */
 		return expression[1].level;
 	default:
 		if (n <= 0 || (n & 1) != 1)
-			error_bug("Invalid expression length in call to min_level().");
+			error_bug(mathomatic, "Invalid expression length in call to min_level().");
 		break;
 	}
 	min1 = expression[1].level;
@@ -817,19 +816,18 @@ int		n;		/* expression length */
  * Return -1 on error.
  */
 int
-get_default_en(cp)
-char	*cp;
+get_default_en(MathoMatic* mathomatic, char *cp)
 {
 	int	i;
 
 	if (*cp == '\0') {
-		i = cur_equation;
+		i = mathomatic->cur_equation;
 	} else {
 		i = decstrtol(cp, &cp) - 1;
-		if (extra_characters(cp))
+		if (extra_characters(mathomatic, cp))
 			return -1;
 	}
-	if (not_defined(i)) {
+	if (not_defined(mathomatic, i)) {
 		return -1;
 	}
 	return i;
@@ -842,27 +840,27 @@ char	*cp;
  * Return true if successful.
  */
 int
-get_expr(equation, np)
-token_type	*equation;	/* where the parsed expression is stored (equation side) */
-int		*np;		/* pointer to the returned parsed expression length */
+get_expr(MathoMatic* mathomatic, token_type *equation, int *np)
+//token_type	*equation;	/* where the parsed expression is stored (equation side) */
+//int		*np;		/* pointer to the returned parsed expression length */
 {
 	char	buf[DEFAULT_N_TOKENS];
 	char	*cp;
 
 #if	LIBRARY
-	snprintf(buf, sizeof(buf), "#%+d", pull_number);
-	pull_number++;
-	cp = parse_expr(equation, np, buf, true);
-	if (extra_characters(cp))
+	snprintf(buf, sizeof(buf), "#%+d", mathomatic->pull_number);
+	mathomatic->pull_number++;
+	cp = parse_expr(mathomatic, equation, np, buf, true);
+	if (extra_characters(mathomatic, cp))
 		return false;
 	return(cp && *np > 0);
 #else
 	for (;;) {
-		if ((cp = get_string(buf, sizeof(buf))) == NULL) {
+		if ((cp = get_string(mathomatic, buf, sizeof(buf))) == NULL) {
 			return false;
 		}
-		cp = parse_expr(equation, np, cp, true);
-		if (cp && !extra_characters(cp)) {
+		cp = parse_expr(mathomatic, equation, np, cp, true);
+		if (cp && !extra_characters(mathomatic, cp)) {
 			break;
 		}
 	}
@@ -876,22 +874,22 @@ int		*np;		/* pointer to the returned parsed expression length */
  * Return true if successful.
  */
 int
-prompt_var(vp)
-long	*vp;	/* pointer to the returned variable */
+prompt_var(MathoMatic* mathomatic, long *vp)
+//long	*vp;	/* pointer to the returned variable */
 {
 	char	buf[MAX_CMD_LEN];
 	char	*cp;
 
 	for (;;) {
-		my_strlcpy(prompt_str, _("Enter variable: "), sizeof(prompt_str));
-		if ((cp = get_string(buf, sizeof(buf))) == NULL) {
+		my_strlcpy(mathomatic->prompt_str, _("Enter variable: "), sizeof(mathomatic->prompt_str));
+		if ((cp = get_string(mathomatic, buf, sizeof(buf))) == NULL) {
 			return false;
 		}
 		if (*cp == '\0') {
 			return false;
 		}
-		cp = parse_var2(vp, cp);
-		if (cp == NULL || extra_characters(cp)) {
+		cp = parse_var2(mathomatic, vp, cp);
+		if (cp == NULL || extra_characters(mathomatic, cp)) {
 			continue;
 		}
 		return true;
@@ -902,18 +900,18 @@ long	*vp;	/* pointer to the returned variable */
  * Return true and display a message if equation "i" is undefined.
  */
 int
-not_defined(i)
-int	i;	/* equation space number */
+not_defined(MathoMatic* mathomatic, int i)
+//int	i;	/* equation space number */
 {
-	if (i < 0 || i >= n_equations) {
-		error(_("Invalid equation number."));
+	if (i < 0 || i >= mathomatic->n_equations) {
+		error(mathomatic, _("Invalid equation number."));
 		return true;
 	}
-	if (n_lhs[i] <= 0) {
-		if (i == cur_equation) {
-			error(_("Current equation space is empty."));
+	if (mathomatic->n_lhs[i] <= 0) {
+		if (i == mathomatic->cur_equation) {
+			error(mathomatic, _("Current equation space is empty."));
 		} else {
-			error(_("Equation space is empty."));
+			error(mathomatic, _("Equation space is empty."));
 		}
 		return true;
 	}
@@ -926,17 +924,17 @@ int	i;	/* equation space number */
  * Return true and display a message if the current equation space is empty or not defined.
  */
 int
-current_not_defined(void)
+current_not_defined(MathoMatic* mathomatic)
 {
 	int	i;
 
-	i = cur_equation;
-	if (i < 0 || i >= n_equations) {
-		error(_("Current equation number out of range; reset to 1."));
-		i = cur_equation = 0;
+	i = mathomatic->cur_equation;
+	if (i < 0 || i >= mathomatic->n_equations) {
+		error(mathomatic, _("Current equation number out of range; reset to 1."));
+		i = mathomatic->cur_equation = 0;
 	}
-	if (n_lhs[i] <= 0) {
-		error(_("No current equation or expression."));
+	if (mathomatic->n_lhs[i] <= 0) {
+		error(mathomatic, _("No current equation or expression."));
 		return true;
 	}
 	return false;
@@ -950,12 +948,12 @@ current_not_defined(void)
  * Returns "string" if successful or NULL on error.
  */
 char *
-get_string(string, n)
-char	*string;	/* storage for input string */
-int	n;		/* maximum size of "string" in bytes */
+get_string(MathoMatic* mathomatic, char *string, int n)
+//char	*string;	/* storage for input string */
+//int	n;		/* maximum size of "string" in bytes */
 {
 #if	LIBRARY
-	error(_("Library usage error. Input requested, possibly due to missing command-line argument."));
+	error(mathomatic, _("Library usage error. Input requested, possibly due to missing command-line argument."));
 	return NULL;
 #else
 	int	i;
@@ -965,62 +963,62 @@ int	n;		/* maximum size of "string" in bytes */
 
 #if	DEBUG
 	if (string == NULL)
-		error_bug("NULL pointer passed to get_string().");
+		error_bug(mathomatic, "NULL pointer passed to get_string().");
 #endif
-	if (quiet_mode) {
-		prompt_str[0] = '\0';	/* don't display a prompt */
+	if (mathomatic->quiet_mode) {
+		mathomatic->prompt_str[0] = '\0';	/* don't display a prompt */
 	}
-	input_column = strlen(prompt_str);
+	mathomatic->input_column = strlen(mathomatic->prompt_str);
 	fflush(NULL);	/* flush everything before gathering input */
 #if	READLINE || EDITLINE
-	if (readline_enabled) {
-		cp = readline(prompt_str);
+	if (mathomatic->readline_enabled) {
+		cp = readline(mathomatic->prompt_str);
 		if (cp == NULL) {
-			if (!quiet_mode)
+			if (!mathomatic->quiet_mode)
 				printf(_("\nEnd of input.\n"));
 			exit_program(0);
 		}
 		my_strlcpy(string, cp, n);
-		if (skip_space(cp)[0] && (last_history_string == NULL || strcmp(last_history_string, cp))) {
+		if (skip_space(cp)[0] && (mathomatic->last_history_string == NULL || strcmp(mathomatic->last_history_string, cp))) {
 			add_history(cp);
-			last_history_string = cp;
+			mathomatic->last_history_string = cp;
 		} else {
 			free(cp);
 		}
 	} else {
-		printf("%s", prompt_str);
+		printf("%s", mathomatic->prompt_str);
 		fflush(stdout);
 		if (fgets(string, n, stdin) == NULL) {
-			if (!quiet_mode)
+			if (!mathomatic->quiet_mode)
 				printf(_("\nEnd of input.\n"));
 			exit_program(0);
 		}
 	}
 #else
-	printf("%s", prompt_str);
+	printf("%s", mathomatic->prompt_str);
 	fflush(stdout);
 	if (fgets(string, n, stdin) == NULL) {
-		if (!quiet_mode)
+		if (!mathomatic->quiet_mode)
 			printf(_("\nEnd of input.\n"));
 		exit_program(0);
 	}
 #endif
-	if (abort_flag) {
-		abort_flag = false;
-		longjmp(jmp_save, 13);
+	if (mathomatic->abort_flag) {
+		mathomatic->abort_flag = false;
+		longjmp(mathomatic->jmp_save, 13);
 	}
 	/* Fix an fgets() peculiarity: */
 	i = strlen(string) - 1;
 	if (i >= 0 && string[i] == '\n') {
 		string[i] = '\0';
 	}
-	if ((gfp != stdout && gfp != stderr) || (echo_input && !quiet_mode)) {
+	if ((mathomatic->gfp != stdout && mathomatic->gfp != stderr) || (mathomatic->echo_input && !mathomatic->quiet_mode)) {
 		/* Input that is prompted for is now included in the redirected output
 		   of a command to a file, making redirection like logging. */
-		fprintf(gfp, "%s%s\n", prompt_str, string);
+		fprintf(mathomatic->gfp, "%s%s\n", mathomatic->prompt_str, string);
 	}
-	set_error_level(string);
-	abort_flag = false;
+	set_error_level(mathomatic, string);
+	mathomatic->abort_flag = false;
 	return string;
 #endif
 }
@@ -1032,7 +1030,7 @@ int	n;		/* maximum size of "string" in bytes */
  * Return false if "n" or not interactive.
  */
 int
-get_yes_no(void)
+get_yes_no(MathoMatic* mathomatic)
 {
 	char	*cp;
 	char	buf[MAX_CMD_LEN];
@@ -1043,7 +1041,7 @@ get_yes_no(void)
 	}
 #endif
 	for (;;) {
-		if ((cp = get_string(buf, sizeof(buf))) == NULL) {
+		if ((cp = get_string(mathomatic, buf, sizeof(buf))) == NULL) {
 			return false;
 		}
 		str_tolower(cp);
@@ -1064,35 +1062,35 @@ get_yes_no(void)
  * Return true if successful.
  */
 int
-return_result(en)
-int	en;	/* equation space number the result is in */
+return_result(MathoMatic* mathomatic, int en)
+//int	en;	/* equation space number the result is in */
 {
-	if (empty_equation_space(en)) {
+	if (empty_equation_space(mathomatic, en)) {
 		return false;
 	}
 #if	LIBRARY
-	make_fractions_and_group(en);
-	if (factor_int_flag) {
-		factor_int_equation(en);
+	make_fractions_and_group(mathomatic, en);
+	if (mathomatic->factor_int_flag) {
+		factor_int_equation(mathomatic, en);
 	}
-	free_result_str();
+	free_result_str(mathomatic);
 #if	1	/* Set this to 1 to allow display2d to decide library output mode. */
-	if (display2d) {
-		result_str = flist_equation_string(en);
-		if (result_str == NULL)
-			result_str = list_equation(en, false);
+	if (mathomatic->display2d) {
+		mathomatic->result_str = flist_equation_string(mathomatic, en);
+		if (mathomatic->result_str == NULL)
+			mathomatic->result_str = list_equation(mathomatic, en, false);
 	} else {
-		result_str = list_equation(en, false);
+		mathomatic->result_str = list_equation(mathomatic, en, false);
 	}
 #else	/* For feeding command output to the next command's input only. */
-	result_str = list_equation(en, false);
+	mathomatic->result_str = list_equation(mathomatic, en, false);
 #endif
-	result_en = en;
-	if (gfp == stdout) {
-		return(result_str != NULL);
+	mathomatic->result_en = en;
+	if (mathomatic->gfp == stdout) {
+		return(mathomatic->result_str != NULL);
 	}
 #endif
-	return(list_sub(en) != 0);
+	return(list_sub(mathomatic, en) != 0);
 }
 
 /*
@@ -1100,13 +1098,13 @@ int	en;	/* equation space number the result is in */
  * in the symbolic math library.
  */
 void
-free_result_str(void)
+free_result_str(MathoMatic* mathomatic)
 {
-	if (result_str) {
-		free(result_str);
-		result_str = NULL;
+	if (mathomatic->result_str) {
+		free(mathomatic->result_str);
+		mathomatic->result_str = NULL;
 	}
-	result_en = -1;
+	mathomatic->result_en = -1;
 }
 
 /*
@@ -1130,9 +1128,7 @@ char	*cp;
  * and ending equation number in "*jp".
  */
 int
-get_range(cpp, ip, jp)
-char	**cpp;
-int	*ip, *jp;
+get_range(MathoMatic* mathomatic, char **cpp, int *ip, int *jp)
 {
 	int	i;
 	char	*cp;
@@ -1142,8 +1138,8 @@ int	*ip, *jp;
 	if (is_all(cp)) {
 		cp = skip_param(cp);
 		*ip = 0;
-		*jp = n_equations - 1;
-		while (*jp > 0 && n_lhs[*jp] == 0)
+		*jp = mathomatic->n_equations - 1;
+		while (*jp > 0 && mathomatic->n_lhs[*jp] == 0)
 			(*jp)--;
 	} else {
 		if (*cp == '0') {
@@ -1152,11 +1148,11 @@ int	*ip, *jp;
 		if (isdigit(*cp)) {
 			*ip = strtol(cp, &cp, 10) - 1;
 		} else {
-			*ip = cur_equation;
+			*ip = mathomatic->cur_equation;
 		}
 		if (*cp != '-') {
 			if (*cp == '\0' || *cp == ',' || isspace(*cp)) {
-				if (not_defined(*ip)) {
+				if (not_defined(mathomatic, *ip)) {
 					return false;
 				}
 				*jp = *ip;
@@ -1164,18 +1160,18 @@ int	*ip, *jp;
 				return true;
 			} else {
 use_current:
-				*jp = *ip = cur_equation;
+				*jp = *ip = mathomatic->cur_equation;
 #if	1
-				rv = !empty_equation_space(cur_equation);	/* don't display error message */
+				rv = !empty_equation_space(mathomatic, mathomatic->cur_equation);	/* don't display error message */
 				if (rv) {
-					debug_string(1, _("Defaulting to the current equation space."));
+					debug_string(mathomatic, 1, _("Defaulting to the current equation space."));
 				} else {
-					debug_string(1, _("Defaulting to current empty equation space."));
+					debug_string(mathomatic, 1, _("Defaulting to current empty equation space."));
 				}
 #else
-				rv = !current_not_defined();		/* display an error message if error */
+				rv = !current_not_defined(mathomatic);		/* display an error message if error */
 				if (rv) {
-					debug_string(1, _("Defaulting to the current equation space."));
+					debug_string(mathomatic, 1, _("Defaulting to the current equation space."));
 				}
 #endif
 				return rv;
@@ -1188,13 +1184,13 @@ use_current:
 		if (isdigit(*cp)) {
 			*jp = strtol(cp, &cp, 10) - 1;
 		} else {
-			*jp = cur_equation;
+			*jp = mathomatic->cur_equation;
 		}
 		if (*cp && !isspace(*cp)) {
 			goto use_current;
 		}
 		if (*ip < 0 || *ip >= N_EQUATIONS || *jp < 0 || *jp >= N_EQUATIONS) {
-			error(_("Invalid equation number (out of range)."));
+			error(mathomatic, _("Invalid equation number (out of range)."));
 			return false;
 		}
 		if (*jp < *ip) {
@@ -1205,12 +1201,12 @@ use_current:
 	}
 	cp = skip_comma_space(cp);
 	for (i = *ip; i <= *jp; i++) {
-		if (n_lhs[i] > 0) {
+		if (mathomatic->n_lhs[i] > 0) {
 			*cpp = cp;
 			return true;
 		}
 	}
-	error(_("No expressions defined in specified range."));
+	error(mathomatic, _("No expressions defined in specified range."));
 	return false;
 }
 
@@ -1222,14 +1218,14 @@ use_current:
  * Otherwise just returns false indicating everything is OK.
  */
 int
-extra_characters(cp)
-char	*cp;	/* command line string */
+extra_characters(MathoMatic* mathomatic, char *cp)
+//char	*cp;	/* command line string */
 {
 	if (cp) {
 		cp = skip_comma_space(cp);
 		if (*cp) {
 			printf(_("\nError: \"%s\" not required on input line.\n"), cp);
-			error(_("Extra characters or unrecognized argument."));
+			error(mathomatic, _("Extra characters or unrecognized argument."));
 			return true;
 		}
 	}
@@ -1241,14 +1237,12 @@ char	*cp;	/* command line string */
  * otherwise display an error message and return false.
  */
 int
-get_range_eol(cpp, ip, jp)
-char	**cpp;
-int	*ip, *jp;
+get_range_eol(MathoMatic* mathomatic, char **cpp, int *ip, int *jp)
 {
-	if (!get_range(cpp, ip, jp)) {
+	if (!get_range(mathomatic, cpp, ip, jp)) {
 		return false;
 	}
-	if (extra_characters(*cpp)) {
+	if (extra_characters(mathomatic, *cpp)) {
 		return false;
 	}
 	return true;
@@ -1346,7 +1340,7 @@ char	*cp1, *cp2;
 
 #if	DEBUG
 	if (cp1 == NULL || cp2 == NULL)
-		error_bug("NULL pointer passed to strcmp_tospace().");
+		error_bug(mathomatic, "NULL pointer passed to strcmp_tospace().");
 #endif
 	for (cp1a = cp1; *cp1a && !isdelimiter(*cp1a); cp1a++)
 		;
@@ -1383,11 +1377,11 @@ int		level;	/* parentheses level number to check */
  * Return the number of level 1 additive type operators.
  */
 int
-level1_plus_count(p1, n1)
-token_type	*p1;	/* expression pointer */
-int		n1;	/* expression length */
+level1_plus_count(MathoMatic* mathomatic, token_type *p1, int n1)
+//token_type	*p1;	/* expression pointer */
+//int		n1;	/* expression length */
 {
-	return level_plus_count(p1, n1, min_level(p1, n1));
+	return level_plus_count(p1, n1, min_level(mathomatic, p1, n1));
 }
 
 /*
@@ -1531,11 +1525,10 @@ int		n1;	/* expression length */
  * Display a warning and return true if passed double is 0.
  */
 int
-check_divide_by_zero(denominator)
-double	denominator;
+check_divide_by_zero(MathoMatic* mathomatic, double denominator)
 {
 	if (denominator == 0) {
-		warning(_("Division by zero."));
+		warning(mathomatic, _("Division by zero."));
 		return true;
 	}
 	return false;
@@ -1572,9 +1565,9 @@ char	*cp;	/* string containing filename to modify */
  * otherwise return true.
  */
 int
-load_rc(return_true_if_no_file, ofp)
-int	return_true_if_no_file;
-FILE	*ofp;	/* if non-NULL, display each line as read in to this file */
+load_rc(MathoMatic* mathomatic, int return_true_if_no_file, FILE *ofp)
+//int	return_true_if_no_file;
+//FILE	*ofp;	/* if non-NULL, display each line as read in to this file */
 {
 	FILE	*fp = NULL;
 	char	buf[MAX_CMD_LEN];
@@ -1583,40 +1576,40 @@ FILE	*ofp;	/* if non-NULL, display each line as read in to this file */
 
 	cp = getenv("HOME");
 	if (cp) {
-		snprintf(rc_file, sizeof(rc_file), "%s/%s", cp, ".mathomaticrc");
-		fp = fopen(rc_file, "r");
+		snprintf(mathomatic->rc_file, sizeof(mathomatic->rc_file), "%s/%s", cp, ".mathomaticrc");
+		fp = fopen(mathomatic->rc_file, "r");
 	}
 #if	CYGWIN || MINGW
 	if (fp == NULL && cp) {
-		snprintf(rc_file, sizeof(rc_file), "%s/%s", cp, "mathomatic.rc");
-		fp = fopen(rc_file, "r");
+		snprintf(mathomatic->rc_file, sizeof(mathomatic->rc_file), "%s/%s", cp, "mathomatic.rc");
+		fp = fopen(mathomatic->rc_file, "r");
 	}
 	if (fp == NULL && dir_path) {
-		snprintf(rc_file, sizeof(rc_file), "%s/%s", dir_path, "mathomatic.rc");
-		fp = fopen(rc_file, "r");
+		snprintf(mathomatic->rc_file, sizeof(mathomatic->rc_file), "%s/%s", dir_path, "mathomatic.rc");
+		fp = fopen(mathomatic->rc_file, "r");
 	}
 #endif
 	if (fp == NULL) {
 		if (return_true_if_no_file) {
 			return true;
 		} else {
-			perror(rc_file);
+			perror(mathomatic->rc_file);
 			return false;
 		}
 	}
-	if (!quiet_mode && !eoption) {
-		printf(_("Loading startup set options from \"%s\".\n"), rc_file);
+	if (!mathomatic->quiet_mode && !mathomatic->eoption) {
+		printf(_("Loading startup set options from \"%s\".\n"), mathomatic->rc_file);
 	}
 	while ((cp = fgets(buf, sizeof(buf), fp)) != NULL) {
 		if (ofp)
 			fprintf(ofp, "%s", cp);
-		set_error_level(cp);
-		if (!set_options(cp, true))
+		set_error_level(mathomatic, cp);
+		if (!set_options(mathomatic, cp, true))
 			rv = false;
 	}
 	if (fclose(fp)) {
 		rv = false;
-		perror(rc_file);
+		perror(mathomatic->rc_file);
 	}
 	return rv;
 }
@@ -1629,18 +1622,17 @@ FILE	*ofp;	/* if non-NULL, display each line as read in to this file */
  * otherwise return true.
  */
 int
-display_rc(ofp)
-FILE	*ofp;
+display_rc(MathoMatic* mathomatic, FILE *ofp)
 {
 	FILE	*fp = NULL;
 	char	buf[MAX_CMD_LEN];
 	char	*cp;
 	int	rv = true;
 
-	printf(_("Displaying startup set options from \"%s\":\n\n"), rc_file);
-	fp = fopen(rc_file, "r");
+	printf(_("Displaying startup set options from \"%s\":\n\n"), mathomatic->rc_file);
+	fp = fopen(mathomatic->rc_file, "r");
 	if (fp == NULL) {
-		perror(rc_file);
+		perror(mathomatic->rc_file);
 		return false;
 	}
 	while ((cp = fgets(buf, sizeof(buf), fp)) != NULL) {
@@ -1648,7 +1640,7 @@ FILE	*ofp;
 	}
 	if (fclose(fp)) {
 		rv = false;
-		perror(rc_file);
+		perror(mathomatic->rc_file);
 	}
 	return rv;
 }

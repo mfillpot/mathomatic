@@ -34,13 +34,13 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
  * The following structure is used for each Mathomatic command.
  */
 typedef	struct {
-	char	*name;			/* command name to be typed by user (must not contain any spaces) */
-	char	*secondary_name;	/* another name for this command */
+	const char	*name;			/* command name to be typed by user (must not contain any spaces) */
+	const char	*secondary_name;	/* another name for this command */
 	int	(*func)();		/* function that handles this command */
 					/* function is passed a char pointer and returns true if successful */
-	char	*usage;			/* command syntax text */
-	char	*info;			/* one line description of command */
-	char	*extra;			/* one line extra info on command */
+	const char	*usage;			/* command syntax text */
+	const char	*info;			/* one line description of command */
+	const char	*extra;			/* one line extra info on command */
 } com_type;
 
 /*
@@ -112,7 +112,7 @@ static const com_type com_list[] = {
 };
 
 #if	HELP
-char	*example_strings[] = {
+const char	*example_strings[] = {
 	"; Example 1:\n",
 	"; Here the derivative of the absolute value function is computed.\n",
 	"; Expressions are entered by just typing them in:\n",
@@ -149,7 +149,7 @@ char	*example_strings[] = {
 #endif
 
 #if	HELP
-char	*geometry_strings[] = {
+const char	*geometry_strings[] = {
 	"; Triangle area, \"b\" is the \"base\" side:\n",
 	"triangle_area = b*height/2\n",
 	"; Here is Heron's formula for the area of any triangle\n",
@@ -187,7 +187,7 @@ char	*geometry_strings[] = {
 	NULL
 };
 
-char	*conversion_strings[] = {
+const char	*conversion_strings[] = {
 	"; Temperature\n",
 	"fahrenheit = (9*celsius/5) + 32\n",
 	"kelvin = celsius + 273.15\n",

@@ -51,12 +51,12 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
  * Standard size expression storage areas that may be
  * manipulated or simplified are the equation spaces, tlhs[], trhs[], and tes[] only.
  */
-token_type	divisor[DIVISOR_SIZE];		/* static expression storage areas for polynomial and smart division */
-int		n_divisor;			/* length of expression in divisor[] */
-token_type	quotient[DIVISOR_SIZE];
-int		n_quotient;			/* length of expression in quotient[] */
-token_type	gcd_divisor[DIVISOR_SIZE];	/* static expression storage area for polynomial GCD routine */
-int		len_d;				/* length of expression in gcd_divisor[] */
+//token_type	divisor[DIVISOR_SIZE];		/* static expression storage areas for polynomial and smart division */
+//int		n_divisor;			/* length of expression in divisor[] */
+//token_type	quotient[DIVISOR_SIZE];
+//int		n_quotient;			/* length of expression in quotient[] */
+//token_type	gcd_divisor[DIVISOR_SIZE];	/* static expression storage area for polynomial GCD routine */
+//int		len_d;				/* length of expression in gcd_divisor[] */
 
 static int pf_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level, int do_repeat);
 static int pf_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int len, int level, int do_repeat);
@@ -621,25 +621,25 @@ do_gcd(MathoMatic* mathomatic, long *vp)
 	int	count;
 
 	for (count = 1; count < 50; count++) {
-		switch (poly_div(mathomatic, mathomatic->trhs, mathomatic->n_trhs, gcd_divisor, len_d, vp)) {
+		switch (poly_div(mathomatic, mathomatic->trhs, mathomatic->n_trhs, mathomatic->gcd_divisor, mathomatic->len_d, vp)) {
 		case 0:
 			/* divide failed */
 			return(1 - count);
 		case 2:
 			/* Total success!  Remainder is zero. */
 			debug_string(mathomatic, 2, "Found raw polynomial GCD:");
-			side_debug(mathomatic, 2, gcd_divisor, len_d);
+			side_debug(mathomatic, 2, mathomatic->gcd_divisor, mathomatic->len_d);
 			return count;
 		}
 		/* Do the Euclidean shuffle: swap trhs[] (remainder) and gcd_divisor[] */
-		if (len_d > mathomatic->n_tokens || mathomatic->n_trhs > DIVISOR_SIZE)
+		if (mathomatic->len_d > mathomatic->n_tokens || mathomatic->n_trhs > DIVISOR_SIZE)
 			return 0;
 		blt(mathomatic->scratch, mathomatic->trhs, mathomatic->n_trhs * sizeof(token_type));
-		blt(mathomatic->trhs, gcd_divisor, len_d * sizeof(token_type));
-		blt(gcd_divisor, mathomatic->scratch, mathomatic->n_trhs * sizeof(token_type));
+		blt(mathomatic->trhs, mathomatic->gcd_divisor, mathomatic->len_d * sizeof(token_type));
+		blt(mathomatic->gcd_divisor, mathomatic->scratch, mathomatic->n_trhs * sizeof(token_type));
 		i = mathomatic->n_trhs;
-		mathomatic->n_trhs = len_d;
-		len_d = i;
+		mathomatic->n_trhs = mathomatic->len_d;
+		mathomatic->len_d = i;
 	}
 	return 0;
 }
@@ -667,7 +667,7 @@ poly_gcd(MathoMatic* mathomatic, token_type *larger, int llen, token_type *small
 	debug_string(mathomatic, 3, "Entering poly_gcd():");
 	side_debug(mathomatic, 3, larger, llen);
 	side_debug(mathomatic, 3, smaller, slen);
-	if (llen > mathomatic->n_tokens || slen > min(ARR_CNT(gcd_divisor), mathomatic->n_tokens))
+	if (llen > mathomatic->n_tokens || slen > min(ARR_CNT(mathomatic->gcd_divisor), mathomatic->n_tokens))
 		return 0;
 	if (mathomatic->trhs != larger) {
 		blt(mathomatic->trhs, larger, llen * sizeof(token_type));
@@ -679,33 +679,33 @@ poly_gcd(MathoMatic* mathomatic, token_type *larger, int llen, token_type *small
 	mathomatic->n_tlhs = slen;
 	if (!remove_factors(mathomatic))
 		return 0;
-	if (mathomatic->n_tlhs > ARR_CNT(gcd_divisor))
+	if (mathomatic->n_tlhs > ARR_CNT(mathomatic->gcd_divisor))
 		return 0;
-	blt(gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-	len_d = mathomatic->n_tlhs;
+	blt(mathomatic->gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+	mathomatic->len_d = mathomatic->n_tlhs;
 	count = do_gcd(mathomatic, &v);
 	if (count <= 0)
 		return 0;
 	if (count > 1) {
-		if (len_d > mathomatic->n_tokens)
+		if (mathomatic->len_d > mathomatic->n_tokens)
 			return 0;
-		blt(mathomatic->tlhs, gcd_divisor, len_d * sizeof(token_type));
-		mathomatic->n_tlhs = len_d;
+		blt(mathomatic->tlhs, mathomatic->gcd_divisor, mathomatic->len_d * sizeof(token_type));
+		mathomatic->n_tlhs = mathomatic->len_d;
 		if (!remove_factors(mathomatic))
 			return 0;
-		if (mathomatic->n_tlhs > ARR_CNT(gcd_divisor))
+		if (mathomatic->n_tlhs > ARR_CNT(mathomatic->gcd_divisor))
 			return 0;
-		blt(gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-		len_d = mathomatic->n_tlhs;
-		if (poly_div(mathomatic, larger, llen, gcd_divisor, len_d, &v) != 2) {
+		blt(mathomatic->gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+		mathomatic->len_d = mathomatic->n_tlhs;
+		if (poly_div(mathomatic, larger, llen, mathomatic->gcd_divisor, mathomatic->len_d, &v) != 2) {
 			debug_string(mathomatic, 1, "Polynomial GCD found, but larger divide failed in poly_gcd().");
 			return 0;
 		}
 	}
-	if (len_d > mathomatic->n_tokens)
+	if (mathomatic->len_d > mathomatic->n_tokens)
 		return 0;
-	blt(mathomatic->trhs, gcd_divisor, len_d * sizeof(token_type));
-	mathomatic->n_trhs = len_d;
+	blt(mathomatic->trhs, mathomatic->gcd_divisor, mathomatic->len_d * sizeof(token_type));
+	mathomatic->n_trhs = mathomatic->len_d;
 	uf_simp(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
 	uf_simp(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
 	debug_string(mathomatic, 3, "poly_gcd() successful.");
@@ -758,7 +758,7 @@ poly2_gcd(MathoMatic* mathomatic, token_type *larger, int llen, token_type *smal
 	debug_string(mathomatic, 3, "Entering poly2_gcd():");
 	side_debug(mathomatic, 3, larger, llen);
 	side_debug(mathomatic, 3, smaller, slen);
-	if (llen > mathomatic->n_tokens || slen > min(ARR_CNT(gcd_divisor), mathomatic->n_tokens))
+	if (llen > mathomatic->n_tokens || slen > min(ARR_CNT(mathomatic->gcd_divisor), mathomatic->n_tokens))
 		return 0;
 	blt(mathomatic->trhs, larger, llen * sizeof(token_type));
 	mathomatic->n_trhs = llen;
@@ -781,34 +781,34 @@ poly2_gcd(MathoMatic* mathomatic, token_type *larger, int llen, token_type *smal
 			return 0;
 	}
 #endif
-	if (mathomatic->n_tlhs > ARR_CNT(gcd_divisor))
+	if (mathomatic->n_tlhs > ARR_CNT(mathomatic->gcd_divisor))
 		return 0;
-	blt(gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-	len_d = mathomatic->n_tlhs;
+	blt(mathomatic->gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+	mathomatic->len_d = mathomatic->n_tlhs;
 	count = do_gcd(mathomatic, &v);
 	if (count <= 0)
 		return count;
 	if (count > 1) {
-		if (require_additive && level1_plus_count(mathomatic, gcd_divisor, len_d) == 0)
+		if (require_additive && level1_plus_count(mathomatic, mathomatic->gcd_divisor, mathomatic->len_d) == 0)
 			return 0;
-		if (poly_div(mathomatic, smaller, slen, gcd_divisor, len_d, &v) != 2) {
+		if (poly_div(mathomatic, smaller, slen, mathomatic->gcd_divisor, mathomatic->len_d, &v) != 2) {
 			debug_string(mathomatic, 1, "Polynomial GCD found, but smaller divide failed in poly2_gcd().");
 			return 0;
 		}
-		blt(mathomatic->trhs, gcd_divisor, len_d * sizeof(token_type));
-		mathomatic->n_trhs = len_d;
-		if (mathomatic->n_tlhs > ARR_CNT(gcd_divisor))
+		blt(mathomatic->trhs, mathomatic->gcd_divisor, mathomatic->len_d * sizeof(token_type));
+		mathomatic->n_trhs = mathomatic->len_d;
+		if (mathomatic->n_tlhs > ARR_CNT(mathomatic->gcd_divisor))
 			return 0;
-		blt(gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-		len_d = mathomatic->n_tlhs;
+		blt(mathomatic->gcd_divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+		mathomatic->len_d = mathomatic->n_tlhs;
 		blt(mathomatic->tlhs, mathomatic->trhs, mathomatic->n_trhs * sizeof(token_type));
 		mathomatic->n_tlhs = mathomatic->n_trhs;
 		if (poly_div(mathomatic, larger, llen, mathomatic->tlhs, mathomatic->n_tlhs, &v) != 2) {
 			debug_string(mathomatic, 1, "Polynomial GCD found, but larger divide failed in poly2_gcd().");
 			return 0;
 		}
-		blt(mathomatic->trhs, gcd_divisor, len_d * sizeof(token_type));
-		mathomatic->n_trhs = len_d;
+		blt(mathomatic->trhs, mathomatic->gcd_divisor, mathomatic->len_d * sizeof(token_type));
+		mathomatic->n_trhs = mathomatic->len_d;
 	} else {
 		mathomatic->n_trhs = 1;
 		mathomatic->trhs[0] = mathomatic->one_token;
@@ -1460,21 +1460,21 @@ poly_div_sub(MathoMatic* mathomatic, token_type *d1, int len1, token_type *d2, i
 		return false;
 
 	/* Initialize the quotient. */
-	n_quotient = 1;
-	quotient[0] = mathomatic->zero_token;
+	mathomatic->n_quotient = 1;
+	mathomatic->quotient[0] = mathomatic->zero_token;
 	/* Store the divisor. */
-	if (mathomatic->n_tlhs > ARR_CNT(divisor))
+	if (mathomatic->n_tlhs > ARR_CNT(mathomatic->divisor))
 		return false;
-	blt(divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-	n_divisor = mathomatic->n_tlhs;
-	sum_size = mathomatic->n_trhs + n_quotient;
+	blt(mathomatic->divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+	mathomatic->n_divisor = mathomatic->n_tlhs;
+	sum_size = mathomatic->n_trhs + mathomatic->n_quotient;
 	/* Loop until polynomial division is finished. */
 	for (;;) {
 		if (t1 > 0 && mathomatic->trhs[t1-1].token.operatr == MINUS)
 			sign = MINUS;
 		else
 			sign = PLUS;
-		if (t2 > 0 && divisor[t2-1].token.operatr == MINUS) {
+		if (t2 > 0 && mathomatic->divisor[t2-1].token.operatr == MINUS) {
 			if (sign == MINUS)
 				sign = PLUS;
 			else
@@ -1490,24 +1490,24 @@ poly_div_sub(MathoMatic* mathomatic, token_type *d1, int len1, token_type *d2, i
 		mathomatic->tlhs[mathomatic->n_tlhs].kind = OPERATOR;
 		mathomatic->tlhs[mathomatic->n_tlhs].token.operatr = DIVIDE;
 		mathomatic->n_tlhs++;
-		blt(&mathomatic->tlhs[mathomatic->n_tlhs], &divisor[t2], len_t2 * sizeof(token_type));
+		blt(&mathomatic->tlhs[mathomatic->n_tlhs], &mathomatic->divisor[t2], len_t2 * sizeof(token_type));
 		i = mathomatic->n_tlhs;
 		mathomatic->n_tlhs += len_t2;
 		for (; i < mathomatic->n_tlhs; i++)
 			mathomatic->tlhs[i].level++;
 		if (!simp_loop(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs))
 			return false;
-		if ((n_quotient + 1 + mathomatic->n_tlhs) > min(ARR_CNT(quotient), mathomatic->n_tokens))
+		if ((mathomatic->n_quotient + 1 + mathomatic->n_tlhs) > min(ARR_CNT(mathomatic->quotient), mathomatic->n_tokens))
 			return false;
 		for (i = 0; i < mathomatic->n_tlhs; i++)
 			mathomatic->tlhs[i].level++;
-		quotient[n_quotient].level = 1;
-		quotient[n_quotient].kind = OPERATOR;
-		quotient[n_quotient].token.operatr = sign;
-		n_quotient++;
-		blt(&quotient[n_quotient], mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-		n_quotient += mathomatic->n_tlhs;
-		if ((mathomatic->n_trhs + mathomatic->n_tlhs + n_divisor + 2) > mathomatic->n_tokens)
+		mathomatic->quotient[mathomatic->n_quotient].level = 1;
+		mathomatic->quotient[mathomatic->n_quotient].kind = OPERATOR;
+		mathomatic->quotient[mathomatic->n_quotient].token.operatr = sign;
+		mathomatic->n_quotient++;
+		blt(&mathomatic->quotient[mathomatic->n_quotient], mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+		mathomatic->n_quotient += mathomatic->n_tlhs;
+		if ((mathomatic->n_trhs + mathomatic->n_tlhs + mathomatic->n_divisor + 2) > mathomatic->n_tokens)
 			return false;
 		blt(&mathomatic->trhs[t1+1], &mathomatic->trhs[t1+len_t1], (mathomatic->n_trhs - (t1 + len_t1)) * sizeof(token_type));
 		mathomatic->n_trhs -= len_t1 - 1;
@@ -1531,12 +1531,12 @@ poly_div_sub(MathoMatic* mathomatic, token_type *d1, int len1, token_type *d2, i
 		mathomatic->trhs[mathomatic->n_trhs].token.operatr = TIMES;
 		mathomatic->n_trhs++;
 		i = mathomatic->n_trhs;
-		blt(&mathomatic->trhs[mathomatic->n_trhs], divisor, t2 * sizeof(token_type));
+		blt(&mathomatic->trhs[mathomatic->n_trhs], mathomatic->divisor, t2 * sizeof(token_type));
 		mathomatic->n_trhs += t2;
 		mathomatic->trhs[mathomatic->n_trhs] = mathomatic->zero_token;
 		mathomatic->n_trhs++;
-		blt(&mathomatic->trhs[mathomatic->n_trhs], &divisor[t2+len_t2], (n_divisor - (t2 + len_t2)) * sizeof(token_type));
-		mathomatic->n_trhs += (n_divisor - (t2 + len_t2));
+		blt(&mathomatic->trhs[mathomatic->n_trhs], &mathomatic->divisor[t2+len_t2], (mathomatic->n_divisor - (t2 + len_t2)) * sizeof(token_type));
+		mathomatic->n_trhs += (mathomatic->n_divisor - (t2 + len_t2));
 		for (; i < mathomatic->n_trhs; i++)
 			mathomatic->trhs[i].level += 2;
 		side_debug(mathomatic, 3, mathomatic->trhs, mathomatic->n_trhs);
@@ -1547,16 +1547,16 @@ poly_div_sub(MathoMatic* mathomatic, token_type *d1, int len1, token_type *d2, i
 		if (d < divisor_power) {
 			/* Success!  Polynomial division ends here. */
 			debug_string(mathomatic, 3, "Successful polynomial division!");
-			blt(mathomatic->tlhs, quotient, n_quotient * sizeof(token_type));
-			mathomatic->n_tlhs = n_quotient;
+			blt(mathomatic->tlhs, mathomatic->quotient, mathomatic->n_quotient * sizeof(token_type));
+			mathomatic->n_tlhs = mathomatic->n_quotient;
 			debug_string(mathomatic, 3, "Quotient:");
 			side_debug(mathomatic, 3, mathomatic->tlhs, mathomatic->n_tlhs);
 			debug_string(mathomatic, 3, "Remainder:");
 			side_debug(mathomatic, 3, mathomatic->trhs, mathomatic->n_trhs);
 			if (REMAINDER_IS_ZERO())
 				return 2;
-			if ((mathomatic->n_trhs + n_quotient) >= (sum_size /* - (sum_size / 10) */)) {
-				if ((mathomatic->n_trhs + 1) > sum_size && mathomatic->n_trhs > n_divisor)
+			if ((mathomatic->n_trhs + mathomatic->n_quotient) >= (sum_size /* - (sum_size / 10) */)) {
+				if ((mathomatic->n_trhs + 1) > sum_size && mathomatic->n_trhs > mathomatic->n_divisor)
 					return -2;
 				else
 					return -1;
@@ -1650,16 +1650,16 @@ smart_div(MathoMatic* mathomatic, token_type *d1, int len1, token_type *d2, int 
 	if (len_t2 <= 0)
 		return false;
 	/* Initialize the quotient. */
-	n_quotient = 1;
-	quotient[0] = mathomatic->zero_token;
-	if (mathomatic->n_tlhs > ARR_CNT(divisor))
+	mathomatic->n_quotient = 1;
+	mathomatic->quotient[0] = mathomatic->zero_token;
+	if (mathomatic->n_tlhs > ARR_CNT(mathomatic->divisor))
 		return false;
-	blt(divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-	n_divisor = mathomatic->n_tlhs;
+	blt(mathomatic->divisor, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+	mathomatic->n_divisor = mathomatic->n_tlhs;
 try_one:
 	trhs_size = mathomatic->n_trhs;
 	for (skip_count = 0, count = 0;;) {
-		sum_size = mathomatic->n_trhs + n_quotient;
+		sum_size = mathomatic->n_trhs + mathomatic->n_quotient;
 		for (term_count = 1, q_size = 0;; term_count++) {
 			if (!get_term(mathomatic->trhs, mathomatic->n_trhs, term_count, &t1, &len_t1))
 				break;
@@ -1682,7 +1682,7 @@ try_one:
 			mathomatic->tlhs[mathomatic->n_tlhs].kind = OPERATOR;
 			mathomatic->tlhs[mathomatic->n_tlhs].token.operatr = DIVIDE;
 			mathomatic->n_tlhs++;
-			blt(&mathomatic->tlhs[mathomatic->n_tlhs], &divisor[t2], len_t2 * sizeof(token_type));
+			blt(&mathomatic->tlhs[mathomatic->n_tlhs], &mathomatic->divisor[t2], len_t2 * sizeof(token_type));
 			i = mathomatic->n_tlhs;
 			mathomatic->n_tlhs += len_t2;
 			for (; i < mathomatic->n_tlhs; i++)
@@ -1701,20 +1701,20 @@ try_one:
 				if (dcount > 1) {
 					dcount = 1;
 					t2 = 0;
-					len_t2 = n_divisor;
+					len_t2 = mathomatic->n_divisor;
 					goto try_one;	/* Try using the whole divisor as the divisor term. */
 				}
 				return false;
 			}
 end_div:
 			if (dcount > 1) {
-				if (n_quotient + mathomatic->n_trhs >= trhs_size + 1) {
+				if (mathomatic->n_quotient + mathomatic->n_trhs >= trhs_size + 1) {
 					return false;
 				}
 			}
 end_div2:
-			blt(mathomatic->tlhs, quotient, n_quotient * sizeof(token_type));
-			mathomatic->n_tlhs = n_quotient;
+			blt(mathomatic->tlhs, mathomatic->quotient, mathomatic->n_quotient * sizeof(token_type));
+			mathomatic->n_tlhs = mathomatic->n_quotient;
 			side_debug(mathomatic, 3, mathomatic->tlhs, mathomatic->n_tlhs);
 			side_debug(mathomatic, 3, mathomatic->trhs, mathomatic->n_trhs);
 			return true;	/* Success! */
@@ -1725,7 +1725,7 @@ end_div2:
 			sign = MINUS;
 		else
 			sign = PLUS;
-		if (t2 > 0 && divisor[t2-1].token.operatr == MINUS) {
+		if (t2 > 0 && mathomatic->divisor[t2-1].token.operatr == MINUS) {
 			if (sign == MINUS)
 				sign = PLUS;
 			else
@@ -1741,26 +1741,26 @@ end_div2:
 		mathomatic->tlhs[mathomatic->n_tlhs].kind = OPERATOR;
 		mathomatic->tlhs[mathomatic->n_tlhs].token.operatr = DIVIDE;
 		mathomatic->n_tlhs++;
-		blt(&mathomatic->tlhs[mathomatic->n_tlhs], &divisor[t2], len_t2 * sizeof(token_type));
+		blt(&mathomatic->tlhs[mathomatic->n_tlhs], &mathomatic->divisor[t2], len_t2 * sizeof(token_type));
 		i = mathomatic->n_tlhs;
 		mathomatic->n_tlhs += len_t2;
 		for (; i < mathomatic->n_tlhs; i++)
 			mathomatic->tlhs[i].level++;
 		simp_loop(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
-		if ((n_quotient + 1 + mathomatic->n_tlhs) > min(ARR_CNT(quotient), mathomatic->n_tokens))
+		if ((mathomatic->n_quotient + 1 + mathomatic->n_tlhs) > min(ARR_CNT(mathomatic->quotient), mathomatic->n_tokens))
 			return false;
 		for (i = 0; i < mathomatic->n_tlhs; i++)
 			mathomatic->tlhs[i].level++;
-		old_n_quotient = n_quotient;
-		quotient[n_quotient].level = 1;
-		quotient[n_quotient].kind = OPERATOR;
-		quotient[n_quotient].token.operatr = sign;
-		n_quotient++;
-		qp = &quotient[n_quotient];
+		old_n_quotient = mathomatic->n_quotient;
+		mathomatic->quotient[mathomatic->n_quotient].level = 1;
+		mathomatic->quotient[mathomatic->n_quotient].kind = OPERATOR;
+		mathomatic->quotient[mathomatic->n_quotient].token.operatr = sign;
+		mathomatic->n_quotient++;
+		qp = &mathomatic->quotient[mathomatic->n_quotient];
 		q_size = mathomatic->n_tlhs;
-		blt(&quotient[n_quotient], mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
-		n_quotient += mathomatic->n_tlhs;
-		if ((mathomatic->n_trhs + q_size + n_divisor + 2) > mathomatic->n_tokens)
+		blt(&mathomatic->quotient[mathomatic->n_quotient], mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
+		mathomatic->n_quotient += mathomatic->n_tlhs;
+		if ((mathomatic->n_trhs + q_size + mathomatic->n_divisor + 2) > mathomatic->n_tokens)
 			return false;
 		blt(mathomatic->tlhs, mathomatic->trhs, mathomatic->n_trhs * sizeof(token_type));
 		mathomatic->n_tlhs = mathomatic->n_trhs;
@@ -1786,12 +1786,12 @@ end_div2:
 		mathomatic->trhs[mathomatic->n_trhs].token.operatr = TIMES;
 		mathomatic->n_trhs++;
 		i = mathomatic->n_trhs;
-		blt(&mathomatic->trhs[mathomatic->n_trhs], divisor, t2 * sizeof(token_type));
+		blt(&mathomatic->trhs[mathomatic->n_trhs], mathomatic->divisor, t2 * sizeof(token_type));
 		mathomatic->n_trhs += t2;
 		mathomatic->trhs[mathomatic->n_trhs] = mathomatic->zero_token;
 		mathomatic->n_trhs++;
-		blt(&mathomatic->trhs[mathomatic->n_trhs], &divisor[t2+len_t2], (n_divisor - (t2 + len_t2)) * sizeof(token_type));
-		mathomatic->n_trhs += (n_divisor - (t2 + len_t2));
+		blt(&mathomatic->trhs[mathomatic->n_trhs], &mathomatic->divisor[t2+len_t2], (mathomatic->n_divisor - (t2 + len_t2)) * sizeof(token_type));
+		mathomatic->n_trhs += (mathomatic->n_divisor - (t2 + len_t2));
 		for (; i < mathomatic->n_trhs; i++)
 			mathomatic->trhs[i].level += 2;
 		side_debug(mathomatic, 3, mathomatic->trhs, mathomatic->n_trhs);
@@ -1800,12 +1800,12 @@ end_div2:
 		if (REMAINDER_IS_ZERO())
 			goto end_div2;
 		if (dcount > 1) {
-			if ((mathomatic->n_trhs + n_quotient) >= sum_size) {
+			if ((mathomatic->n_trhs + mathomatic->n_quotient) >= sum_size) {
 				if (skip_count >= ARR_CNT(skip_terms)) {
 					if (count == 0) {
 						return false;
 					} else {
-						n_quotient = old_n_quotient;
+						mathomatic->n_quotient = old_n_quotient;
 						blt(mathomatic->trhs, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
 						mathomatic->n_trhs = mathomatic->n_tlhs;
 						goto end_div;
@@ -1813,7 +1813,7 @@ end_div2:
 				}
 				skip_terms[skip_count] = term_pos;
 				skip_count++;
-				n_quotient = old_n_quotient;
+				mathomatic->n_quotient = old_n_quotient;
 				blt(mathomatic->trhs, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(token_type));
 				mathomatic->n_trhs = mathomatic->n_tlhs;
 				debug_string(mathomatic, 3, "Skipping last operation.");

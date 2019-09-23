@@ -170,6 +170,22 @@ typedef struct {
         int cur_line;	/* current line */
         int cur_pos;	/* current position in the current line on the screen */
 
+        /* from poly.c*/
+/*
+ * The following static expression storage areas are of non-standard size
+ * and must only be used for temporary storage.
+ * Most Mathomatic expression manipulation and simplification routines should not be used
+ * on non-standard or constant size expression storage areas.
+ * Standard size expression storage areas that may be
+ * manipulated or simplified are the equation spaces, tlhs[], trhs[], and tes[] only.
+ */
+        token_type	divisor[DIVISOR_SIZE];		/* static expression storage areas for polynomial and smart division */
+        int		n_divisor;			/* length of expression in divisor[] */
+        token_type	quotient[DIVISOR_SIZE];
+        int		n_quotient;			/* length of expression in quotient[] */
+        token_type	gcd_divisor[DIVISOR_SIZE];	/* static expression storage area for polynomial GCD routine */
+        int		len_d;				/* length of expression in gcd_divisor[] */
+
 } MathoMatic;
 
 //extern MathoMatic *mathomatic;

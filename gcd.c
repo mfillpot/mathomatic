@@ -42,8 +42,7 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
  * Returns 0 on failure, otherwise returns the positive GCD.
  */
 double
-gcd(d1, d2)
-double	d1, d2;
+gcd(MathoMatic* mathomatic, double d1, double d2)
 {
 	int	count;
 	double	larger, divisor, remainder1, lower_limit;
@@ -66,7 +65,7 @@ double	d1, d2;
 		larger = d2;
 		divisor = d1;
 	}
-	lower_limit = larger * epsilon;
+	lower_limit = larger * mathomatic->epsilon;
 	if (divisor <= lower_limit || larger >= MAX_K_INTEGER) {
 		return 0.0;	/* out of range, result would be too inaccurate */
 	}
@@ -92,18 +91,17 @@ double	d1, d2;
  * Result is not necessarily integer unless both d1 and d2 are integer.
  */
 double
-gcd_verified(d1, d2)
-double	d1, d2;
+gcd_verified(MathoMatic* mathomatic, double d1, double d2)
 {
 	double	divisor, d3, d4;
 
-	divisor = gcd(d1, d2);
+	divisor = gcd(mathomatic, d1, d2);
 	if (divisor != 0.0) {
 		d3 = d1 / divisor;
 		d4 = d2 / divisor;
 		if (fmod(d3, 1.0) != 0.0 || fmod(d4, 1.0) != 0.0)
 			return 0.0;
-		if (gcd(d3, d4) != 1.0)
+		if (gcd(mathomatic, d3, d4) != 1.0)
 			return 0.0;
 	}
 	return divisor;
@@ -141,10 +139,10 @@ double	d1;	/* value to round */
  * True return indicates d is rational and finite, otherwise d is probably irrational.
  */
 int
-f_to_fraction(d, numeratorp, denominatorp)
-double	d;		/* floating point number to convert */
-double	*numeratorp;	/* returned numerator */
-double	*denominatorp;	/* returned denominator */
+f_to_fraction(MathoMatic* mathomatic, double d, double *numeratorp, double *denominatorp)
+//double	d;		/* floating point number to convert */
+//double	*numeratorp;	/* returned numerator */
+//double	*denominatorp;	/* returned denominator */
 {
 	double	divisor;
 	double	numerator, denominator;
@@ -163,7 +161,7 @@ double	*denominatorp;	/* returned denominator */
 /* more than 15 digits in number means we do nothing (for better accuracy) */
 	if (fabs(d) >= MAX_K_INTEGER)
 		return false;
-	k3 = fabs(d) * small_epsilon;
+	k3 = fabs(d) * mathomatic->small_epsilon;
 	if (k3 >= .5)
 		return false;	/* fixes "factor number 17!" to give error instead of wrong answer */
 	k4 = my_round(d);
@@ -173,7 +171,7 @@ double	*denominatorp;	/* returned denominator */
 		return true;
 	}
 /* try to convert non-integer floating point value in "d" to a fraction: */
-	if ((divisor = gcd(1.0, d)) > epsilon) {
+	if ((divisor = gcd(mathomatic, 1.0, d)) > mathomatic->epsilon) {
 		numerator = my_round(d / divisor);
 		denominator = my_round(1.0 / divisor);
 /* don't allow more than 11 digits in the numerator or denominator: */
@@ -182,19 +180,19 @@ double	*denominatorp;	/* returned denominator */
 		if (denominator >= 1.0e12 || denominator < 2.0)
 			return false;
 /* make sure the result is a fully reduced fraction: */
-		divisor = gcd(numerator, denominator);
+		divisor = gcd(mathomatic, numerator, denominator);
 		if (divisor > 1.0) {	/* just in case result isn't already fully reduced */
 			numerator /= divisor;
 			denominator /= divisor;
 		}
 		k3 = (numerator / denominator);
-		if (fabs(k3 - d) > (small_epsilon * fabs(k3))) {
+		if (fabs(k3 - d) > (mathomatic->small_epsilon * fabs(k3))) {
 			return false;	/* result is too inaccurate */
 		}
 		if (fmod(numerator, 1.0) != 0.0 || fmod(denominator, 1.0) != 0.0) {
 			/* Shouldn't happen if everything works. */
 #if	DEBUG
-			error_bug("Fraction should have been fully reduced by gcd(), but was not.");
+			error_bug(mathomatic, "Fraction should have been fully reduced by gcd(), but was not.");
 #endif
 			return false;
 		}
@@ -213,16 +211,16 @@ double	*denominatorp;	/* returned denominator */
  * Returns true if any fractions were created.
  */
 int
-make_fractions(equation, np)
-token_type	*equation;	/* equation side pointer */
-int		*np;		/* pointer to length of equation side */
+make_fractions(MathoMatic* mathomatic, token_type *equation, int *np)
+//token_type	*equation;	/* equation side pointer */
+//int		*np;		/* pointer to length of equation side */
 {
-	switch (fractions_display) {
+	switch (mathomatic->fractions_display) {
 	case 2:
-		return make_mixed_fractions(equation, np);
+		return make_mixed_fractions(mathomatic, equation, np);
 		break;
 	default:
-		return make_simple_fractions(equation, np);
+		return make_simple_fractions(mathomatic, equation, np);
 		break;
 	}
 }
@@ -236,9 +234,9 @@ int		*np;		/* pointer to length of equation side */
  * Returns true if any fractions were created.
  */
 int
-make_simple_fractions(equation, np)
-token_type	*equation;	/* equation side pointer */
-int		*np;		/* pointer to length of equation side */
+make_simple_fractions(MathoMatic* mathomatic, token_type *equation, int *np)
+//token_type	*equation;	/* equation side pointer */
+//int		*np;		/* pointer to length of equation side */
 {
 	int	i, j, k;
 	int	level;
@@ -250,14 +248,14 @@ int		*np;		/* pointer to length of equation side */
 			level = equation[i].level;
 			if (i > 0 && equation[i-1].level == level && (equation[i-1].token.operatr == DIVIDE /* || equation[i-1].token.operatr == POWER */))
 				continue;
-			if (!f_to_fraction(equation[i].token.constant, &numerator, &denominator))
+			if (!f_to_fraction(mathomatic, equation[i].token.constant, &numerator, &denominator))
 				continue;
 			if (denominator == 1.0) {
 				equation[i].token.constant = numerator;
 				continue;
 			}
-			if ((*np + 2) > n_tokens) {
-				error_huge();
+			if ((*np + 2) > mathomatic->n_tokens) {
+				error_huge(mathomatic);
 			}
 			modified = true;
 			inc_level = (*np > 1);
@@ -324,9 +322,9 @@ int		*np;		/* pointer to length of equation side */
  * Returns true if any fractions were created.
  */
 int
-make_mixed_fractions(equation, np)
-token_type	*equation;	/* equation side pointer */
-int		*np;		/* pointer to length of equation side */
+make_mixed_fractions(MathoMatic* mathomatic, token_type *equation, int *np)
+//token_type	*equation;	/* equation side pointer */
+//int		*np;		/* pointer to length of equation side */
 {
 	int	i, j, k;
 	int	level;
@@ -338,7 +336,7 @@ int		*np;		/* pointer to length of equation side */
 			level = equation[i].level;
 			if (i > 0 && equation[i-1].level == level && (equation[i-1].token.operatr == DIVIDE /* || equation[i-1].token.operatr == POWER */))
 				continue;
-			if (!f_to_fraction(equation[i].token.constant, &numerator, &denominator))
+			if (!f_to_fraction(mathomatic, equation[i].token.constant, &numerator, &denominator))
 				continue;
 			if (denominator == 1.0) {
 				equation[i].token.constant = numerator;
@@ -349,8 +347,8 @@ int		*np;		/* pointer to length of equation side */
 				remainder1 = modf(fabs(numerator) / denominator, &quotient1);
 				remainder1 = my_round(remainder1 * denominator);
 				if (numerator < 0.0) {
-					if ((*np + 6) > n_tokens) {
-						error_huge();
+					if ((*np + 6) > mathomatic->n_tokens) {
+						error_huge(mathomatic);
 					}
 					blt(&equation[i+7], &equation[i+1], (*np - (i + 1)) * sizeof(token_type));
 					*np += 6;
@@ -381,8 +379,8 @@ int		*np;		/* pointer to length of equation side */
 					equation[i].kind = CONSTANT;
 					equation[i].token.constant = denominator;
 				} else {
-					if ((*np + 4) > n_tokens) {
-						error_huge();
+					if ((*np + 4) > mathomatic->n_tokens) {
+						error_huge(mathomatic);
 					}
 					blt(&equation[i+5], &equation[i+1], (*np - (i + 1)) * sizeof(token_type));
 					*np += 4;
@@ -406,8 +404,8 @@ int		*np;		/* pointer to length of equation side */
 					equation[i].token.constant = denominator;
 				}
 			} else {
-				if ((*np + 2) > n_tokens) {
-					error_huge();
+				if ((*np + 2) > mathomatic->n_tokens) {
+					error_huge(mathomatic);
 				}
 				inc_level = (*np > 1);
 				if ((i + 1) < *np && equation[i+1].level == level) {
@@ -462,7 +460,7 @@ int		*np;		/* pointer to length of equation side */
 		}
 	}
 	if (modified) {
-		organize(equation, np);
+		organize(mathomatic, equation, np);
 	}
 	return modified;
 }

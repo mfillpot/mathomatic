@@ -26,13 +26,13 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 
 #define	ALWAYS_FACTOR_POWER	1
 
-static int fplus_recurse(token_type *equation, int *np, int loc, int level, long v, double d, int whole_flag, int div_only);
-static int fplus_sub(token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level, long v, double d, int whole_flag, int div_only);
-static int big_fplus(token_type *equation, int level, int diff_sign, int sop1, int op1, int op2, int i1, int i2, int b1, int b2, int ai, int aj, int i, int j, int e1, int e2);
-static int ftimes_recurse(token_type *equation, int *np, int loc, int level);
-static int ftimes_sub(token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level);
-static int fpower_recurse(token_type *equation, int *np, int loc, int level);
-static int fpower_sub(token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level);
+static int fplus_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level, long v, double d, int whole_flag, int div_only);
+static int fplus_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level, long v, double d, int whole_flag, int div_only);
+static int big_fplus(MathoMatic* mathomatic, token_type *equation, int level, int diff_sign, int sop1, int op1, int op2, int i1, int i2, int b1, int b2, int ai, int aj, int i, int j, int e1, int e2);
+static int ftimes_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level);
+static int ftimes_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level);
+static int fpower_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level);
+static int fpower_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level);
 
 /*
  * Factor divides only: (a/c + b/c) -> ((a+b)/c).
@@ -40,13 +40,9 @@ static int fpower_sub(token_type *equation, int *np, int loc, int i1, int n1, in
  * Return true if equation side was modified.
  */
 int
-factor_divide(equation, np, v, d)
-token_type	*equation;
-int		*np;
-long		v;
-double		d;
+factor_divide(MathoMatic* mathomatic, token_type *equation, int *np, long v, double d)
 {
-	return fplus_recurse(equation, np, 0, 1, v, d, false, true);
+	return fplus_recurse(mathomatic, equation, np, 0, 1, v, d, false, true);
 }
 
 /*
@@ -56,11 +52,9 @@ double		d;
  * Return true if equation side was modified.
  */
 int
-subtract_itself(equation, np)
-token_type	*equation;
-int		*np;
+subtract_itself(MathoMatic* mathomatic, token_type *equation, int *np)
 {
-	return fplus_recurse(equation, np, 0, 1, 0L, 0.0, true, false);
+	return fplus_recurse(mathomatic, equation, np, 0, 1, 0L, 0.0, true, false);
 }
 
 /*
@@ -84,13 +78,13 @@ int		*np;
  * Return true if equation side was modified.
  */
 int
-factor_plus(equation, np, v, d)
-token_type	*equation;	/* pointer to beginning of equation side */
-int		*np;		/* pointer to length of equation side */
-long		v;		/* Mathomatic variable */
-double		d;		/* control exponent */
+factor_plus(MathoMatic* mathomatic, token_type *equation, int *np, long v, double d)
+//token_type	*equation;	/* pointer to beginning of equation side */
+//int		*np;		/* pointer to length of equation side */
+//long		v;		/* Mathomatic variable */
+//double		d;		/* control exponent */
 {
-	return fplus_recurse(equation, np, 0, 1, v, d, false, false);
+	return fplus_recurse(mathomatic, equation, np, 0, 1, v, d, false, false);
 }
 
 /*
@@ -100,13 +94,9 @@ double		d;		/* control exponent */
  * Return true if equation side was modified.
  */
 static int
-fplus_recurse(equation, np, loc, level, v, d, whole_flag, div_only)
-token_type	*equation;
-int		*np, loc, level;
-long		v;
-double		d;
-int		whole_flag;	/* factor only whole expressions multiplied by a constant */
-int		div_only;	/* factor only divides */
+fplus_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level, long v, double d, int whole_flag, int div_only)
+//int		whole_flag;	/* factor only whole expressions multiplied by a constant */
+//int		div_only;	/* factor only divides */
 {
 	int	modified = false;
 	int	i, j, k;
@@ -137,7 +127,7 @@ f_again:
 						break;
 				}
 				len2 = k - j;
-				if (fplus_sub(equation, np, loc, i, len1, j, len2, level + 1, v, d, whole_flag, div_only)) {
+				if (fplus_sub(mathomatic, equation, np, loc, i, len1, j, len2, level + 1, v, d, whole_flag, div_only)) {
 					modified = true;
 					goto f_again;
 				}
@@ -151,7 +141,7 @@ f_again:
 		return true;
 	for (i = loc; i < *np && equation[i].level >= level;) {
 		if (equation[i].level > level) {
-			modified |= fplus_recurse(equation, np, i, level + 1, v, d, whole_flag, div_only);
+			modified |= fplus_recurse(mathomatic, equation, np, i, level + 1, v, d, whole_flag, div_only);
 			i++;
 			for (; i < *np && equation[i].level > level; i += 2)
 				;
@@ -168,16 +158,12 @@ f_again:
  * Return true if a transformation was made.
  */
 static int
-fplus_sub(equation, np, loc, i1, n1, i2, n2, level, v, d, whole_flag, div_only)
-token_type	*equation;	/* the entire expression */
-int		*np;		/* pointer to length of the entire expression */
-int		loc;		/* index into the beginning of this additive sub-expression */
-int		i1, n1, i2, n2;
-int		level;
-long		v;
-double		d;
-int		whole_flag;	/* factor only whole expressions multiplied by a constant */
-int		div_only;	/* factor only divides */
+fplus_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level, long v, double d, int whole_flag, int div_only)
+//token_type	*equation;	/* the entire expression */
+//int		*np;		/* pointer to length of the entire expression */
+//int		loc;		/* index into the beginning of this additive sub-expression */
+//int		whole_flag;	/* factor only whole expressions multiplied by a constant */
+//int		div_only;	/* factor only divides */
 {
 	int	e1, e2;
 	int	op1, op2;
@@ -315,7 +301,7 @@ f_inner:
 		save_k2 = equation[b2].token.constant;
 		equation[b2].token.constant = 1.0;
 	}
-	same_flag = se_compare(&equation[b1], i - b1, &equation[b2], j - b2, &diff_sign);
+	same_flag = se_compare(mathomatic, &equation[b1], i - b1, &equation[b2], j - b2, &diff_sign);
 	if (flag1) {
 		equation[i1].token.constant = save_k1;
 		b1 += 2;
@@ -329,131 +315,131 @@ f_inner:
 		power = 1.0;	/* not doing Horner factoring */
 horner_factor:
 		if (sop1 == DIVIDE) {
-			scratch[0].level = level;
-			scratch[0].kind = CONSTANT;
-			scratch[0].token.constant = 1.0;
-			scratch[1].level = level;
-			scratch[1].kind = OPERATOR;
-			scratch[1].token.operatr = DIVIDE;
+			mathomatic->scratch[0].level = level;
+			mathomatic->scratch[0].kind = CONSTANT;
+			mathomatic->scratch[0].token.constant = 1.0;
+			mathomatic->scratch[1].level = level;
+			mathomatic->scratch[1].kind = OPERATOR;
+			mathomatic->scratch[1].token.operatr = DIVIDE;
 			len = 2;
 		} else {
 			len = 0;
 		}
 		k = len;
-		blt(&scratch[len], &equation[b1], (ai - b1) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[b1], (ai - b1) * sizeof(token_type));
 		len += ai - b1;
 		if (power != 1.0) {
 			for (; k < len; k++)
-				scratch[k].level += 2;
-			scratch[len].level = level + 1;
-			scratch[len].kind = OPERATOR;
-			scratch[len].token.operatr = POWER;
+				mathomatic->scratch[k].level += 2;
+			mathomatic->scratch[len].level = level + 1;
+			mathomatic->scratch[len].kind = OPERATOR;
+			mathomatic->scratch[len].token.operatr = POWER;
 			len++;
-			scratch[len].level = level + 1;
-			scratch[len].kind = CONSTANT;
-			scratch[len].token.constant = power;
+			mathomatic->scratch[len].level = level + 1;
+			mathomatic->scratch[len].kind = CONSTANT;
+			mathomatic->scratch[len].token.constant = power;
 			len++;
 			if (always_positive(power))
 				diff_sign = false;
 		} else if (b1 == i1 && ai == e1) {
 			for (; k < len; k++)
-				scratch[k].level++;
+				mathomatic->scratch[k].level++;
 		}
-		scratch[len].level = level;
-		scratch[len].kind = OPERATOR;
-		scratch[len].token.operatr = TIMES;
+		mathomatic->scratch[len].level = level;
+		mathomatic->scratch[len].kind = OPERATOR;
+		mathomatic->scratch[len].token.operatr = TIMES;
 		len++;
 		k = len;
-		blt(&scratch[len], &equation[i1], (b1 - i1) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[i1], (b1 - i1) * sizeof(token_type));
 		len += b1 - i1;
 		if (ai != i) {
 			l = len;
 			m = len + ai - b1;
-			blt(&scratch[len], &equation[b1], (i - b1) * sizeof(token_type));
+			blt(&mathomatic->scratch[len], &equation[b1], (i - b1) * sizeof(token_type));
 			len += i - b1;
 			if (b1 == i1 && i == e1) {
 				for (; l < len; l++)
-					scratch[l].level++;
+					mathomatic->scratch[l].level++;
 			}
 			l = m;
 			m++;
 			for (; m < len; m++)
-				scratch[m].level++;
-			scratch[len].level = scratch[l].level + 1;
-			scratch[len].kind = OPERATOR;
-			scratch[len].token.operatr = MINUS;
+				mathomatic->scratch[m].level++;
+			mathomatic->scratch[len].level = mathomatic->scratch[l].level + 1;
+			mathomatic->scratch[len].kind = OPERATOR;
+			mathomatic->scratch[len].token.operatr = MINUS;
 			len++;
-			scratch[len].level = scratch[l].level + 1;
-			scratch[len].kind = CONSTANT;
-			scratch[len].token.constant = power;
+			mathomatic->scratch[len].level = mathomatic->scratch[l].level + 1;
+			mathomatic->scratch[len].kind = CONSTANT;
+			mathomatic->scratch[len].token.constant = power;
 			len++;
-			scratch[len].level = level;
-			scratch[len].kind = OPERATOR;
-			scratch[len].token.operatr = TIMES;
+			mathomatic->scratch[len].level = level;
+			mathomatic->scratch[len].kind = OPERATOR;
+			mathomatic->scratch[len].token.operatr = TIMES;
 			len++;
 		}
-		scratch[len].level = level;
-		scratch[len].kind = CONSTANT;
+		mathomatic->scratch[len].level = level;
+		mathomatic->scratch[len].kind = CONSTANT;
 		if (op1 == MINUS) {
-			scratch[len].token.constant = -1.0;
+			mathomatic->scratch[len].token.constant = -1.0;
 		} else {
-			scratch[len].token.constant = 1.0;
+			mathomatic->scratch[len].token.constant = 1.0;
 		}
 		len++;
-		blt(&scratch[len], &equation[i], (e1 - i) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[i], (e1 - i) * sizeof(token_type));
 		len += e1 - i;
 		for (; k < len; k++)
-			scratch[k].level += 2;
-		scratch[len].level = level + 1;
-		scratch[len].kind = OPERATOR;
+			mathomatic->scratch[k].level += 2;
+		mathomatic->scratch[len].level = level + 1;
+		mathomatic->scratch[len].kind = OPERATOR;
 		diff_sign ^= (op2 == MINUS);
 		if (diff_sign) {
-			scratch[len].token.operatr = MINUS;
+			mathomatic->scratch[len].token.operatr = MINUS;
 		} else {
-			scratch[len].token.operatr = PLUS;
+			mathomatic->scratch[len].token.operatr = PLUS;
 		}
 		len++;
 		k = len;
 		if (aj != j) {
-			if (len + n2 + 2 > n_tokens) {
-				error_huge();
+			if (len + n2 + 2 > mathomatic->n_tokens) {
+				error_huge(mathomatic);
 			}
 		} else {
-			if (len + (b2 - i2) + (e2 - j) + 1 > n_tokens) {
-				error_huge();
+			if (len + (b2 - i2) + (e2 - j) + 1 > mathomatic->n_tokens) {
+				error_huge(mathomatic);
 			}
 		}
-		blt(&scratch[len], &equation[i2], (b2 - i2) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[i2], (b2 - i2) * sizeof(token_type));
 		len += b2 - i2;
 		if (aj != j) {
 			m = len + aj - b2;
-			blt(&scratch[len], &equation[b2], (j - b2) * sizeof(token_type));
+			blt(&mathomatic->scratch[len], &equation[b2], (j - b2) * sizeof(token_type));
 			len += j - b2;
 			l = m;
 			m++;
 			for (; m < len; m++)
-				scratch[m].level++;
-			scratch[len].level = scratch[l].level + 1;
-			scratch[len].kind = OPERATOR;
-			scratch[len].token.operatr = MINUS;
+				mathomatic->scratch[m].level++;
+			mathomatic->scratch[len].level = mathomatic->scratch[l].level + 1;
+			mathomatic->scratch[len].kind = OPERATOR;
+			mathomatic->scratch[len].token.operatr = MINUS;
 			len++;
-			scratch[len].level = scratch[l].level + 1;
-			scratch[len].kind = CONSTANT;
-			scratch[len].token.constant = power;
+			mathomatic->scratch[len].level = mathomatic->scratch[l].level + 1;
+			mathomatic->scratch[len].kind = CONSTANT;
+			mathomatic->scratch[len].token.constant = power;
 			len++;
 		} else {
-			scratch[len].level = level;
-			scratch[len].kind = CONSTANT;
-			scratch[len].token.constant = 1.0;
+			mathomatic->scratch[len].level = level;
+			mathomatic->scratch[len].kind = CONSTANT;
+			mathomatic->scratch[len].token.constant = 1.0;
 			len++;
 		}
-		blt(&scratch[len], &equation[j], (e2 - j) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[j], (e2 - j) * sizeof(token_type));
 		len += e2 - j;
 		for (; k < len; k++)
-			scratch[k].level += 2;
+			mathomatic->scratch[k].level += 2;
 end_mess:
-		if (*np + len - n1 - (n2 + 1) > n_tokens) {
-			error_huge();
+		if (*np + len - n1 - (n2 + 1) > mathomatic->n_tokens) {
+			error_huge(mathomatic);
 		}
 		if (op1 == MINUS) {
 			equation[i1-1].token.operatr = PLUS;
@@ -462,7 +448,7 @@ end_mess:
 		*np -= n2 + 1;
 		blt(&equation[i1+len], &equation[e1], (*np - e1) * sizeof(token_type));
 		*np += len - n1;
-		blt(&equation[i1], scratch, len * sizeof(token_type));
+		blt(&equation[i1], mathomatic->scratch, len * sizeof(token_type));
 		return true;
 	}
 	if (whole_flag)
@@ -517,7 +503,7 @@ end_mess:
 		goto f_inner;
 	if (d == 1.0 && (save_d1 < 0.0 || save_d2 < 0.0))
 		goto f_inner;
-	if (se_compare(&equation[b1], ai - b1, &equation[b2], aj - b2, &diff_sign)) {
+	if (se_compare(mathomatic, &equation[b1], ai - b1, &equation[b2], aj - b2, &diff_sign)) {
 		if (save_d1 > 0.0 || save_d2 > 0.0) {
 			if (save_d1 < 0.0) {
 				power = save_d2;
@@ -563,10 +549,10 @@ end_mess:
 			}
 		}
 		if (d1 <= d2) {
-			len = big_fplus(equation, level, diff_sign, sop1,
+			len = big_fplus(mathomatic, equation, level, diff_sign, sop1,
 			    op1, op2, i1, i2, b1, b2, ai, aj, i, j, e1, e2);
 		} else {
-			len = big_fplus(equation, level, diff_sign, sop1,
+			len = big_fplus(mathomatic, equation, level, diff_sign, sop1,
 			    op2, op1, i2, i1, b2, b1, aj, ai, j, i, e2, e1);
 		}
 		goto end_mess;
@@ -579,111 +565,101 @@ end_mess:
  * with a common base and any exponent.
  */
 static int
-big_fplus(equation, level, diff_sign, sop1, op1, op2, i1, i2, b1, b2, ai, aj, i, j, e1, e2)
-token_type	*equation;
-int		level;
-int		diff_sign;
-int		sop1;
-int		op1, op2;
-int		i1, i2;
-int		b1, b2;
-int		ai, aj;
-int		i, j;
-int		e1, e2;
+big_fplus(MathoMatic* mathomatic, token_type *equation, int level, int diff_sign, int sop1, int op1, int op2, int i1, int i2, int b1, int b2, int ai, int aj, int i, int j, int e1, int e2)
 {
 	int	k, l, m, n, o;
 	int	len;
 
 	if (sop1 == DIVIDE) {
-		scratch[0].level = level;
-		scratch[0].kind = CONSTANT;
-		scratch[0].token.constant = 1.0;
-		scratch[1].level = level;
-		scratch[1].kind = OPERATOR;
-		scratch[1].token.operatr = DIVIDE;
+		mathomatic->scratch[0].level = level;
+		mathomatic->scratch[0].kind = CONSTANT;
+		mathomatic->scratch[0].token.constant = 1.0;
+		mathomatic->scratch[1].level = level;
+		mathomatic->scratch[1].kind = OPERATOR;
+		mathomatic->scratch[1].token.operatr = DIVIDE;
 		len = 2;
 	} else {
 		len = 0;
 	}
 	k = len;
 	o = len + ai - b1;
-	blt(&scratch[len], &equation[b1], (i - b1) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[b1], (i - b1) * sizeof(token_type));
 	len += i - b1;
 	if (b1 == i1 && i == e1) {
 		for (; k < len; k++)
-			scratch[k].level++;
+			mathomatic->scratch[k].level++;
 	}
-	scratch[len].level = level;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = TIMES;
+	mathomatic->scratch[len].level = level;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = TIMES;
 	len++;
 	k = len;
-	blt(&scratch[len], &equation[i1], (b1 - i1) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[i1], (b1 - i1) * sizeof(token_type));
 	len += b1 - i1;
-	scratch[len].level = level;
-	scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].level = level;
+	mathomatic->scratch[len].kind = CONSTANT;
 	if (op1 == MINUS) {
-		scratch[len].token.constant = -1.0;
+		mathomatic->scratch[len].token.constant = -1.0;
 	} else {
-		scratch[len].token.constant = 1.0;
+		mathomatic->scratch[len].token.constant = 1.0;
 	}
 	len++;
-	blt(&scratch[len], &equation[i], (e1 - i) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[i], (e1 - i) * sizeof(token_type));
 	len += e1 - i;
 	for (; k < len; k++)
-		scratch[k].level += 2;
-	scratch[len].level = level + 1;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = op2;
+		mathomatic->scratch[k].level += 2;
+	mathomatic->scratch[len].level = level + 1;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = op2;
 	len++;
 	k = len;
-	blt(&scratch[len], &equation[i2], (b2 - i2) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[i2], (b2 - i2) * sizeof(token_type));
 	len += b2 - i2;
-	if (len + (e2 - b2) + 2 * (i - ai) + 2 > n_tokens) {
-		error_huge();
+	if (len + (e2 - b2) + 2 * (i - ai) + 2 > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 	n = len;
 	m = len + aj - b2;
-	blt(&scratch[len], &equation[b2], (j - b2) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[b2], (j - b2) * sizeof(token_type));
 	len += j - b2;
 	l = m;
 	m++;
 	for (; m < len; m++)
-		scratch[m].level++;
+		mathomatic->scratch[m].level++;
 	if (diff_sign && b2 == i2 && j == e2) {
 		for (; n < len; n++)
-			scratch[n].level++;
+			mathomatic->scratch[n].level++;
 	}
-	scratch[len].level = scratch[l].level + 1;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = MINUS;
+	mathomatic->scratch[len].level = mathomatic->scratch[l].level + 1;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = MINUS;
 	len++;
 	m = len;
-	blt(&scratch[len], &equation[ai+1], (i - (ai + 1)) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[ai+1], (i - (ai + 1)) * sizeof(token_type));
 	len += i - (ai + 1);
-	n = min_level(&equation[ai+1], i - (ai + 1));
-	n = scratch[l].level + 2 - n;
+	n = min_level(mathomatic, &equation[ai+1], i - (ai + 1));
+	n = mathomatic->scratch[l].level + 2 - n;
 	for (; m < len; m++)
-		scratch[m].level += n;
+		mathomatic->scratch[m].level += n;
 	if (diff_sign) {
-		scratch[len].level = level;
-		scratch[len].kind = OPERATOR;
+		mathomatic->scratch[len].level = level;
+		mathomatic->scratch[len].kind = OPERATOR;
 		if (sop1 == DIVIDE)
-			scratch[len].token.operatr = TIMES;
+			mathomatic->scratch[len].token.operatr = TIMES;
 		else
-			scratch[len].token.operatr = DIVIDE;
+			mathomatic->scratch[len].token.operatr = DIVIDE;
 		len++;
-		scratch[len].level = level + 1;
-		scratch[len].kind = CONSTANT;
-		scratch[len].token.constant = -1.0;
+		mathomatic->scratch[len].level = level + 1;
+		mathomatic->scratch[len].kind = CONSTANT;
+		mathomatic->scratch[len].token.constant = -1.0;
 		len++;
-		blt(&scratch[len], &scratch[o], (i - ai) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &mathomatic->scratch[o], (i - ai) * sizeof(token_type));
 		len += i - ai;
 	}
-	blt(&scratch[len], &equation[j], (e2 - j) * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &equation[j], (e2 - j) * sizeof(token_type));
 	len += e2 - j;
 	for (; k < len; k++)
-		scratch[k].level += 2;
+		mathomatic->scratch[k].level += 2;
 	return len;
 }
 
@@ -693,17 +669,13 @@ int		e1, e2;
  * Return true if equation side was modified.
  */
 int
-factor_times(equation, np)
-token_type	*equation;
-int		*np;
+factor_times(MathoMatic* mathomatic, token_type *equation, int *np)
 {
-	return ftimes_recurse(equation, np, 0, 1);
+	return ftimes_recurse(mathomatic, equation, np, 0, 1);
 }
 
 static int
-ftimes_recurse(equation, np, loc, level)
-token_type	*equation;
-int		*np, loc, level;
+ftimes_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level)
 {
 	int	modified = false;
 	int	i, j, k;
@@ -734,7 +706,7 @@ f_again:
 						break;
 				}
 				len2 = k - j;
-				if (ftimes_sub(equation, np, loc, i, len1, j, len2, level + 1)) {
+				if (ftimes_sub(mathomatic, equation, np, loc, i, len1, j, len2, level + 1)) {
 					modified = true;
 					goto f_again;
 				}
@@ -748,7 +720,7 @@ f_again:
 		return true;
 	for (i = loc; i < *np && equation[i].level >= level;) {
 		if (equation[i].level > level) {
-			modified |= ftimes_recurse(equation, np, i, level + 1);
+			modified |= ftimes_recurse(mathomatic, equation, np, i, level + 1);
 			i++;
 			for (; i < *np && equation[i].level > level; i += 2)
 				;
@@ -760,9 +732,7 @@ f_again:
 }
 
 static int
-ftimes_sub(equation, np, loc, i1, n1, i2, n2, level)
-token_type	*equation;
-int		*np, loc, i1, n1, i2, n2, level;
+ftimes_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level)
 {
 	int	e1, e2;
 	int	op1, op2;
@@ -789,7 +759,7 @@ int		*np, loc, i1, n1, i2, n2, level;
 	}
 #endif
 	both_divide = (op1 == DIVIDE && op2 == DIVIDE);
-	if (se_compare(&equation[i1], n1, &equation[i2], n2, &diff_sign)) {
+	if (se_compare(mathomatic, &equation[i1], n1, &equation[i2], n2, &diff_sign)) {
 		i = e1;
 		j = e2;
 		goto common_base;
@@ -807,15 +777,15 @@ int		*np, loc, i1, n1, i2, n2, level;
 	if (i >= e1 && j >= e2) {
 		return false;
 	}
-	if (se_compare(&equation[i1], i - i1, &equation[i2], j - i2, &diff_sign)) {
+	if (se_compare(mathomatic, &equation[i1], i - i1, &equation[i2], j - i2, &diff_sign)) {
 		goto common_base;
 	}
 	if (i < e1 && j < e2) {
-		if (se_compare(&equation[i1], n1, &equation[i2], j - i2, &diff_sign)) {
+		if (se_compare(mathomatic, &equation[i1], n1, &equation[i2], j - i2, &diff_sign)) {
 			i = e1;
 			goto common_base;
 		}
-		if (se_compare(&equation[i1], i - i1, &equation[i2], n2, &diff_sign)) {
+		if (se_compare(mathomatic, &equation[i1], i - i1, &equation[i2], n2, &diff_sign)) {
 			j = e2;
 			goto common_base;
 		}
@@ -833,8 +803,8 @@ common_base:
 		if (j - i2 == 1 && equation[i2].kind == CONSTANT)
 			return false;
 		len2 = 2 + e2 - j;
-		if (*np + len2 + len > n_tokens) {
-			error_huge();
+		if (*np + len2 + len > mathomatic->n_tokens) {
+			error_huge(mathomatic);
 		}
 		blt(&equation[e2+len2], &equation[e2], (*np - e2) * sizeof(token_type));
 		*np += len2;
@@ -846,8 +816,8 @@ common_base:
 		equation[e2+1].token.constant = -1.0;
 		blt(&equation[e2+2], &equation[j], (e2 - j) * sizeof(token_type));
 	}
-	if (*np + len > n_tokens) {
-		error_huge();
+	if (*np + len > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 	blt(&equation[e1+len], &equation[e1], (*np - e1) * sizeof(token_type));
 	*np += len;
@@ -901,17 +871,13 @@ common_base:
  * Return true if equation side was modified.
  */
 int
-factor_power(equation, np)
-token_type	*equation;
-int		*np;
+factor_power(MathoMatic* mathomatic, token_type *equation, int *np)
 {
-	return fpower_recurse(equation, np, 0, 1);
+	return fpower_recurse(mathomatic, equation, np, 0, 1);
 }
 
 static int
-fpower_recurse(equation, np, loc, level)
-token_type	*equation;
-int		*np, loc, level;
+fpower_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level)
 {
 	int	modified = false;
 	int	i, j, k;
@@ -942,7 +908,7 @@ f_again:
 						break;
 				}
 				len2 = k - j;
-				if (fpower_sub(equation, np, loc, i, len1, j, len2, level + 1)) {
+				if (fpower_sub(mathomatic, equation, np, loc, i, len1, j, len2, level + 1)) {
 					modified = true;
 					goto f_again;
 				}
@@ -955,7 +921,7 @@ f_again:
 
 	for (i = loc; i < *np && equation[i].level >= level;) {
 		if (equation[i].level > level) {
-			modified |= fpower_recurse(equation, np, i, level + 1);
+			modified |= fpower_recurse(mathomatic, equation, np, i, level + 1);
 			i++;
 			for (; i < *np && equation[i].level > level; i += 2)
 				;
@@ -967,9 +933,7 @@ f_again:
 }
 
 static int
-fpower_sub(equation, np, loc, i1, n1, i2, n2, level)
-token_type	*equation;
-int		*np, loc, i1, n1, i2, n2, level;
+fpower_sub(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int i1, int n1, int i2, int n2, int level)
 {
 	int		e1, e2;
 	int		op1, op2;
@@ -1048,10 +1012,10 @@ int		*np, loc, i1, n1, i2, n2, level;
 #endif
 	start2 = j;
 #if	1
-	if (se_compare(&equation[i+1], e1 - (i + 1), &one_token, 1, &diff_sign)) {
+	if (se_compare(mathomatic, &equation[i+1], e1 - (i + 1), &mathomatic->one_token, 1, &diff_sign)) {
 		return false;
 	}
-	if (se_compare(&equation[i+1], e1 - (i + 1), &equation[j+1], e2 - (j + 1), &diff_sign)) {
+	if (se_compare(mathomatic, &equation[i+1], e1 - (i + 1), &equation[j+1], e2 - (j + 1), &diff_sign)) {
 		b1 = i + 1;
 		b2 = j + 1;
 		i = e1;
@@ -1075,7 +1039,7 @@ fp_outer:
 			break;
 		}
 	}
-	if (se_compare(&equation[b1], i - b1, &one_token, 1, &diff_sign)) {
+	if (se_compare(mathomatic, &equation[b1], i - b1, &mathomatic->one_token, 1, &diff_sign)) {
 		goto fp_outer;
 	}
 	j = start2;
@@ -1097,66 +1061,66 @@ fp_inner:
 	} else if (equation[b2-1].token.operatr != pop1) {
 		goto fp_inner;
 	}
-	if (se_compare(&equation[b1], i - b1, &equation[b2], j - b2, &diff_sign)) {
+	if (se_compare(mathomatic, &equation[b1], i - b1, &equation[b2], j - b2, &diff_sign)) {
 common_exponent:
 		if (op2 == DIVIDE)
 			diff_sign = !diff_sign;
 		all_divide = (op1 == DIVIDE && diff_sign);
 		len = 0;
-		blt(&scratch[len], &equation[i1], (b1 - i1) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[i1], (b1 - i1) * sizeof(token_type));
 		len += b1 - i1;
-		scratch[len].level = level + 1;
-		scratch[len].kind = CONSTANT;
+		mathomatic->scratch[len].level = level + 1;
+		mathomatic->scratch[len].kind = CONSTANT;
 		if (!all_divide && op1 == DIVIDE) {
-			scratch[len].token.constant = -1.0;
+			mathomatic->scratch[len].token.constant = -1.0;
 		} else {
-			scratch[len].token.constant = 1.0;
+			mathomatic->scratch[len].token.constant = 1.0;
 		}
 		len++;
-		blt(&scratch[len], &equation[i], (e1 - i) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[i], (e1 - i) * sizeof(token_type));
 		len += e1 - i;
 		for (k = 0; k < len; k++)
-			scratch[k].level += 2;
-		scratch[len].level = level + 1;
-		scratch[len].kind = OPERATOR;
-		scratch[len].token.operatr = TIMES;
+			mathomatic->scratch[k].level += 2;
+		mathomatic->scratch[len].level = level + 1;
+		mathomatic->scratch[len].kind = OPERATOR;
+		mathomatic->scratch[len].token.operatr = TIMES;
 		len++;
 		k = len;
-		blt(&scratch[len], &equation[i2], (b2 - i2) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[i2], (b2 - i2) * sizeof(token_type));
 		len += b2 - i2;
-		scratch[len].level = level + 1;
-		scratch[len].kind = CONSTANT;
+		mathomatic->scratch[len].level = level + 1;
+		mathomatic->scratch[len].kind = CONSTANT;
 		if (!all_divide && diff_sign) {
-			scratch[len].token.constant = -1.0;
+			mathomatic->scratch[len].token.constant = -1.0;
 		} else {
-			scratch[len].token.constant = 1.0;
+			mathomatic->scratch[len].token.constant = 1.0;
 		}
 		len++;
-		blt(&scratch[len], &equation[j], (e2 - j) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[j], (e2 - j) * sizeof(token_type));
 		len += e2 - j;
 		for (; k < len; k++)
-			scratch[k].level += 2;
-		scratch[len].level = level;
-		scratch[len].kind = OPERATOR;
-		scratch[len].token.operatr = POWER;
+			mathomatic->scratch[k].level += 2;
+		mathomatic->scratch[len].level = level;
+		mathomatic->scratch[len].kind = OPERATOR;
+		mathomatic->scratch[len].token.operatr = POWER;
 		len++;
 		if (pop1 == DIVIDE) {
-			scratch[len].level = level + 1;
-			scratch[len].kind = CONSTANT;
-			scratch[len].token.constant = 1.0;
+			mathomatic->scratch[len].level = level + 1;
+			mathomatic->scratch[len].kind = CONSTANT;
+			mathomatic->scratch[len].token.constant = 1.0;
 			len++;
-			scratch[len].level = level + 1;
-			scratch[len].kind = OPERATOR;
-			scratch[len].token.operatr = DIVIDE;
+			mathomatic->scratch[len].level = level + 1;
+			mathomatic->scratch[len].kind = OPERATOR;
+			mathomatic->scratch[len].token.operatr = DIVIDE;
 			len++;
 		}
 		k = len;
-		blt(&scratch[len], &equation[b1], (i - b1) * sizeof(token_type));
+		blt(&mathomatic->scratch[len], &equation[b1], (i - b1) * sizeof(token_type));
 		len += i - b1;
 		for (; k < len; k++)
-			scratch[k].level++;
-		if (*np + len - n1 - (n2 + 1) > n_tokens) {
-			error_huge();
+			mathomatic->scratch[k].level++;
+		if (*np + len - n1 - (n2 + 1) > mathomatic->n_tokens) {
+			error_huge(mathomatic);
 		}
 		if (!all_divide && op1 == DIVIDE) {
 			equation[i1-1].token.operatr = TIMES;
@@ -1165,7 +1129,7 @@ common_exponent:
 		*np -= n2 + 1;
 		blt(&equation[i1+len], &equation[e1], (*np - e1) * sizeof(token_type));
 		*np += len - n1;
-		blt(&equation[i1], scratch, len * sizeof(token_type));
+		blt(&equation[i1], mathomatic->scratch, len * sizeof(token_type));
 		return true;
 	}
 	goto fp_inner;

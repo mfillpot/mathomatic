@@ -45,35 +45,34 @@ char	*cp;
  * followed by the error message, which must be a constant string.
  */
 void
-put_up_arrow(cnt, cp)
-int	cnt;	/* position of error, relative to "input_column" */
-char	*cp;	/* error message (constant ASCII string) */
+put_up_arrow(MathoMatic* mathomatic, int cnt, char *cp)
+//int	cnt;	/* position of error, relative to "input_column" */
+//char	*cp;	/* error message (constant ASCII string) */
 {
 #if	!SILENT && !LIBRARY
 	int	 i;
 
-	cnt += input_column;
-	if (!quiet_mode && point_flag && (screen_columns == 0 || cnt < screen_columns)) {
+	cnt += mathomatic->input_column;
+	if (!mathomatic->quiet_mode && mathomatic->point_flag && (mathomatic->screen_columns == 0 || cnt < mathomatic->screen_columns)) {
 		for (i = 0; i < cnt; i++) {
 			printf(" ");
 		}
 		printf("^ ");
 	}
 #endif
-	error(cp);
+	error(mathomatic, cp);
 }
 
 /*
  * Return true if character is a valid starting variable character.
  */
 int
-isvarchar(ch)
-int	ch;
+isvarchar(MathoMatic* mathomatic, int ch)
 {
 	if (isdigit(ch)) {	/* variable names can never start with a digit */
 		return false;
 	}
-	return(ch == '_' || (ch && strchr(special_variable_characters, ch)) || isalpha(ch));
+	return(ch == '_' || (ch && strchr(mathomatic->special_variable_characters, ch)) || isalpha(ch));
 }
 
 /*
@@ -130,7 +129,7 @@ int		i;	/* location of operator to parenthesize in expression */
 
 #if	DEBUG
 	if (i >= (n - 1) || (n & 1) != 1 || (i & 1) != 1 || p1[i].kind != OPERATOR) {
-		error_bug("Internal error in arguments to binary_parenthesize().");
+		error_bug(mathomatic, "Internal error in arguments to binary_parenthesize().");
 	}
 #endif
 	skip_negate = (p1[i].token.operatr != NEGATE);
@@ -186,9 +185,9 @@ int		*np;
  * organize() should be called after this to remove unneeded parentheses.
  */
 void
-give_priority(equation, np)
-token_type	*equation;	/* pointer to expression */
-int		*np;		/* pointer to expression length */
+give_priority(MathoMatic* mathomatic, token_type *equation, int *np)
+//token_type	*equation;	/* pointer to expression */
+//int		*np;		/* pointer to expression length */
 {
 	int	i;
 
@@ -199,7 +198,7 @@ int		*np;		/* pointer to expression length */
 		}
 	}
 
-	if (right_associative_power) {
+	if (mathomatic->right_associative_power) {
 		for (i = *np - 2; i >= 1; i -= 2) {	/* count down (for right to left evaluation) */
 			if (equation[i].token.operatr == POWER) {
 				binary_parenthesize(equation, *np, i);
@@ -236,11 +235,11 @@ int		*np;		/* pointer to expression length */
  * Returns the new string position, or NULL if error.
  */
 char *
-parse_section(equation, np, cp, allow_space)
-token_type	*equation;	/* where the parsed expression is stored (equation side) */
-int		*np;		/* pointer to the returned parsed expression length */
-char		*cp;		/* string to parse */
-int		allow_space;	/* if false, any space characters terminate parsing */
+parse_section(MathoMatic* mathomatic, token_type *equation, int *np, char *cp, int allow_space)
+//token_type	*equation;	/* where the parsed expression is stored (equation side) */
+//int		*np;		/* pointer to the returned parsed expression length */
+//char		*cp;		/* string to parse */
+//int		allow_space;	/* if false, any space characters terminate parsing */
 {
 	int		i;
 	int		n = 0, old_n;		/* position in equation[] */
@@ -255,8 +254,8 @@ int		allow_space;	/* if false, any space characters terminate parsing */
 		return(NULL);
 	cp_start = cp;
 	for (;; cp++) {
-		if (n > (n_tokens - 10)) {
-			error_huge();
+		if (n > (mathomatic->n_tokens - 10)) {
+			error_huge(mathomatic);
 		}
 		switch (*cp) {
 		case '(':
@@ -279,7 +278,7 @@ int		allow_space;	/* if false, any space characters terminate parsing */
 		case '}':
 			cur_level--;
 			if (cur_level <= 0 || (abs_count > 0 && cur_level < abs_array[abs_count-1])) {
-				put_up_arrow(cp - cp_start, _("Unmatched parenthesis: too many )"));
+				put_up_arrow(mathomatic, cp - cp_start, _("Unmatched parenthesis: too many )"));
 				return(NULL);
 			}
 			if (!operand) {
@@ -301,7 +300,7 @@ int		allow_space;	/* if false, any space characters terminate parsing */
 			continue;
 		case '\033':
 			if (cp[1] == '[' || cp[1] == 'O') {
-				error(_("Cursor or function key string encountered, unable to interpret."));
+				error(mathomatic, _("Cursor or function key string encountered, unable to interpret."));
 				return(NULL);
 			}
 			continue;
@@ -311,7 +310,7 @@ int		allow_space;	/* if false, any space characters terminate parsing */
 		case '|':
 			if (operand) {
 				if (abs_count >= ARR_CNT(abs_array)) {
-					error(_("Too many nested absolute values."));
+					error(mathomatic, _("Too many nested absolute values."));
 					return(NULL);
 				}
 				cur_level += 3;
@@ -347,7 +346,7 @@ int		allow_space;	/* if false, any space characters terminate parsing */
 				goto syntax_error;
 			}
 			if (cp[1] == '!' && cp[2] != '!') {
-				warning(_("Multifactorial not implemented, using x!! = (x!)!"));
+				warning(mathomatic, _("Multifactorial not implemented, using x!! = (x!)!"));
 			}
 			equation[n].level = cur_level;
 			equation[n].kind = OPERATOR;
@@ -425,7 +424,7 @@ parse_power:
 			if (strncmp(cp, "+/-", 3) == 0) {
 				equation[n].level = cur_level;
 				equation[n].kind = VARIABLE;
-				next_sign(&equation[n].token.variable);
+				next_sign(mathomatic, &equation[n].token.variable);
 				n++;
 				equation[n].level = cur_level;
 				equation[n].kind = OPERATOR;
@@ -475,7 +474,7 @@ parse_power:
 				goto syntax_error;
 			}
 			if (errno) {
-				put_up_arrow(cp1 - cp_start, _("Constant out of range."));
+				put_up_arrow(mathomatic, cp1 - cp_start, _("Constant out of range."));
 				return(NULL);
 			}
 			equation[n].kind = CONSTANT;
@@ -494,42 +493,42 @@ parse_power:
 			case '+':
 			case '-':
 				i = strtol(cp, &cp1, 10);
-				i = cur_equation + i;
+				i = mathomatic->cur_equation + i;
 				break;
 			default:
 				i = strtol(cp, &cp1, 10) - 1;
 				break;
 			}
 			if (cp1 == NULL || cp == cp1) {
-				put_up_arrow(cp - cp_start, _("Error parsing equation space number after #."));
+				put_up_arrow(mathomatic, cp - cp_start, _("Error parsing equation space number after #."));
 				return NULL;
 			}
-			if (empty_equation_space(i)) {
-				put_up_arrow(cp - cp_start, _("No expression available in # specified equation space."));
+			if (empty_equation_space(mathomatic, i)) {
+				put_up_arrow(mathomatic, cp - cp_start, _("No expression available in # specified equation space."));
 				return NULL;
 			}
 			cp = cp1 - 1;
 			old_n = n;
-			if (n_rhs[i]) {
-				n += n_rhs[i];
-				if (n > n_tokens) {
-					error_huge();
+			if (mathomatic->n_rhs[i]) {
+				n += mathomatic->n_rhs[i];
+				if (n > mathomatic->n_tokens) {
+					error_huge(mathomatic);
 				}
-				blt(&equation[old_n], rhs[i], n_rhs[i] * sizeof(token_type));
+				blt(&equation[old_n], mathomatic->rhs[i], mathomatic->n_rhs[i] * sizeof(token_type));
 			} else {
-				n += n_lhs[i];
-				if (n > n_tokens) {
-					error_huge();
+				n += mathomatic->n_lhs[i];
+				if (n > mathomatic->n_tokens) {
+					error_huge(mathomatic);
 				}
-				blt(&equation[old_n], lhs[i], n_lhs[i] * sizeof(token_type));
+				blt(&equation[old_n], mathomatic->lhs[i], mathomatic->n_lhs[i] * sizeof(token_type));
 			}
 			for (; old_n < n; old_n++) {
 				equation[old_n].level += cur_level;
 			}
 			break;
 		default:
-			if (!isvarchar(*cp)) {
-				put_up_arrow(cp - cp_start, _("Unrecognized character."));
+			if (!isvarchar(mathomatic, *cp)) {
+				put_up_arrow(mathomatic, cp - cp_start, _("Unrecognized character."));
 				return(NULL);
 			}
 			if (!operand) {
@@ -541,18 +540,18 @@ parse_power:
 			}
 			cp1 = cp;
 			if (strncasecmp(cp, "inf", strlen("inf")) == 0
-			    && !isvarchar(cp[strlen("inf")])) {
+			    && !isvarchar(mathomatic, cp[strlen("inf")])) {
 				equation[n].kind = CONSTANT;
 				equation[n].token.constant = INFINITY;	/* the infinity constant */
 				cp += strlen("inf");
 			} else if (strncasecmp(cp, INFINITY_NAME, strlen(INFINITY_NAME)) == 0
-			    && !isvarchar(cp[strlen(INFINITY_NAME)])) {
+			    && !isvarchar(mathomatic, cp[strlen(INFINITY_NAME)])) {
 				equation[n].kind = CONSTANT;
 				equation[n].token.constant = INFINITY;	/* the infinity constant */
 				cp += strlen(INFINITY_NAME);
 			} else {
 				equation[n].kind = VARIABLE;
-				cp = parse_var(&equation[n].token.variable, cp);
+				cp = parse_var(mathomatic, &equation[n].token.variable, cp);
 				if (cp == NULL) {
 					return(NULL);
 				}
@@ -560,9 +559,9 @@ parse_power:
 			if (*cp == '(') {
 /* Named functions currently not implemented, except when using m4. */
 #if	LIBRARY
-				put_up_arrow(cp1 - cp_start, _("Unknown function."));
+				put_up_arrow(mathomatic, cp1 - cp_start, _("Unknown function."));
 #else
-				put_up_arrow(cp1 - cp_start, _("Unknown function; try using rmath, which allows basic functions."));
+				put_up_arrow(mathomatic, cp1 - cp_start, _("Unknown function; try using rmath, which allows basic functions."));
 #endif
 				return(NULL);
 			}
@@ -577,21 +576,21 @@ p_out:
 		goto syntax_error;
 	}
 	if (cur_level != 1) {
-		put_up_arrow(cp - cp_start, _("Unmatched parenthesis: missing )"));
+		put_up_arrow(mathomatic, cp - cp_start, _("Unmatched parenthesis: missing )"));
 		return(NULL);
 	}
 	while (*cp == '=')
 		cp++;
 	*np = n;
 	if (n) {
-		give_priority(equation, np);
-		organize(equation, np);
+		give_priority(mathomatic, equation, np);
+		organize(mathomatic, equation, np);
 	}
-	input_column += (cp - cp_start);
+	mathomatic->input_column += (cp - cp_start);
 	return cp;
 
 syntax_error:
-	put_up_arrow(cp - cp_start, _("Syntax error."));
+	put_up_arrow(mathomatic, cp - cp_start, _("Syntax error."));
 	return(NULL);
 }
 
@@ -604,18 +603,18 @@ syntax_error:
  * Currently, there can be no more to parse in the string when this returns.
  */
 char *
-parse_equation(n, cp)
-int	n;	/* equation space number */
-char	*cp;	/* pointer to the beginning of the equation character string */
+parse_equation(MathoMatic* mathomatic, int n, char *cp)
+//int	n;	/* equation space number */
+//char	*cp;	/* pointer to the beginning of the equation character string */
 {
-	if ((cp = parse_expr(lhs[n], &n_lhs[n], cp, true)) != NULL) {
-		if ((cp = parse_expr(rhs[n], &n_rhs[n], cp, true)) != NULL) {
-			if (!extra_characters(cp))
+	if ((cp = parse_expr(mathomatic, mathomatic->lhs[n], &mathomatic->n_lhs[n], cp, true)) != NULL) {
+		if ((cp = parse_expr(mathomatic, mathomatic->rhs[n], &mathomatic->n_rhs[n], cp, true)) != NULL) {
+			if (!extra_characters(mathomatic, cp))
 				return cp;
 		}
 	}
-	n_lhs[n] = 0;
-	n_rhs[n] = 0;
+	mathomatic->n_lhs[n] = 0;
+	mathomatic->n_rhs[n] = 0;
 	return NULL;
 }
 
@@ -626,18 +625,18 @@ char	*cp;	/* pointer to the beginning of the equation character string */
  * Returns the new string position, or NULL if error.
  */
 char *
-parse_expr(equation, np, cp, allow_space)
-token_type	*equation;	/* where the parsed expression is stored (equation side) */
-int		*np;		/* pointer to the returned parsed expression length */
-char		*cp;		/* string to parse */
-int		allow_space;	/* if true, allow and ignore space characters; if false, space means terminate parsing */
+parse_expr(MathoMatic* mathomatic, token_type *equation, int *np, char *cp, int allow_space)
+//token_type	*equation;	/* where the parsed expression is stored (equation side) */
+//int		*np;		/* pointer to the returned parsed expression length */
+//char		*cp;		/* string to parse */
+//int		allow_space;	/* if true, allow and ignore space characters; if false, space means terminate parsing */
 {
 	if (cp == NULL)
 		return NULL;
-	if (!case_sensitive_flag) {
+	if (!mathomatic->case_sensitive_flag) {
 		str_tolower(cp);
 	}
-	cp = parse_section(equation, np, cp, allow_space);
+	cp = parse_section(mathomatic, equation, np, cp, allow_space);
 	return cp;
 }
 
@@ -651,9 +650,7 @@ int		allow_space;	/* if true, allow and ignore space characters; if false, space
  * Display error message and return NULL on failure.
  */
 char *
-parse_var(vp, cp)
-long	*vp;
-char	*cp;
+parse_var(MathoMatic* mathomatic, long *vp, char *cp)
 {
 	int	i, j;
 	long	vtmp;
@@ -663,17 +660,17 @@ char	*cp;
 	int	level;		/* parentheses level */
 	int	(*strcmpfunc)();
 
-	if (case_sensitive_flag) {
+	if (mathomatic->case_sensitive_flag) {
 		strcmpfunc = strcmp;
 	} else {
 		strcmpfunc = strcasecmp;
 	}
-	if (!isvarchar(*cp) || paren_increment(*cp) < 0) {
-		error(_("Invalid variable."));
+	if (!isvarchar(mathomatic, *cp) || paren_increment(*cp) < 0) {
+		error(mathomatic, _("Invalid variable."));
 		return(NULL);	/* variable name must start with a valid variable character */
 	}
 	for (level = 0, cp1 = cp, i = 0; *cp1;) {
-		if (level <= 0 && !isvarchar(*cp1)) {
+		if (level <= 0 && !isvarchar(mathomatic, *cp1)) {
 			break;
 		}
 		j = paren_increment(*cp1);
@@ -681,7 +678,7 @@ char	*cp;
 		if (level < 0)
 			break;
 		if (i >= MAX_VAR_LEN) {
-			error(_("Variable name too long."));
+			error(mathomatic, _("Variable name too long."));
 			return(NULL);
 		}
 		buf[i++] = *cp1++;
@@ -690,15 +687,15 @@ char	*cp;
 	}
 	buf[i] = '\0';
 	if (level > 0) {
-		error(_("Unmatched parenthesis: missing )"));
+		error(mathomatic, _("Unmatched parenthesis: missing )"));
 		return(NULL);
 	}
 
 	if (strcasecmp(buf, NAN_NAME) == 0) {
-		warning(_("Attempt to enter NaN (Not a Number); Converted to variable."));
+		warning(mathomatic, _("Attempt to enter NaN (Not a Number); Converted to variable."));
 	}
 	if (strcasecmp(buf, "inf") == 0 || strcasecmp(buf, INFINITY_NAME) == 0) {
-		error(_("Infinity cannot be used as a variable."));
+		error(mathomatic, _("Infinity cannot be used as a variable."));
 		return(NULL);
 	} else if ((*strcmpfunc)(buf, "sign") == 0) {
 		vtmp = SIGN;
@@ -716,7 +713,7 @@ char	*cp;
 			return(cp + 3);
 		}
 		for (level = 0, cp1 = cp, i = 0; *cp1;) {
-			if (level <= 0 && !isvarchar(*cp1) && !isdigit(*cp1)) {
+			if (level <= 0 && !isvarchar(mathomatic, *cp1) && !isdigit(*cp1)) {
 				break;
 			}
 			j = paren_increment(*cp1);
@@ -724,7 +721,7 @@ char	*cp;
 			if (level < 0)
 				break;
 			if (i >= MAX_VAR_LEN) {
-				error(_("Variable name too long."));
+				error(mathomatic, _("Variable name too long."));
 				return(NULL);
 			}
 			buf[i++] = *cp1++;
@@ -732,12 +729,12 @@ char	*cp;
 				break;
 		}
 		if (i <= 0) {
-			error(_("Empty variable name parsed!"));
+			error(mathomatic, _("Empty variable name parsed!"));
 			return(NULL);
 		}
 		buf[i] = '\0';
 		if (level > 0) {
-			error(_("Unmatched parenthesis: missing )"));
+			error(mathomatic, _("Unmatched parenthesis: missing )"));
 			return(NULL);
 		}
 		if ((*strcmpfunc)(buf, "i") == 0) {
@@ -753,33 +750,33 @@ char	*cp;
 			return(cp1);
 		}
 		if (is_all(buf)) {
-			error(_("\"all\" is a reserved word and may not be used as a variable name."));
+			error(mathomatic, _("\"all\" is a reserved word and may not be used as a variable name."));
 			return(NULL);
 		}
 		vtmp = 0;
-		for (i = 0; var_names[i]; i++) {
-			if ((*strcmpfunc)(buf, var_names[i]) == 0) {
+		for (i = 0; mathomatic->var_names[i]; i++) {
+			if ((*strcmpfunc)(buf, mathomatic->var_names[i]) == 0) {
 				vtmp = i + VAR_OFFSET;
 				break;
 			}
 		}
 		if (vtmp == 0) {
 			if (i >= (MAX_VAR_NAMES - 1)) {
-				error(_("Maximum number of variable names reached."));
+				error(mathomatic, _("Maximum number of variable names reached."));
 #if	!SILENT
 				printf(_("Please restart or use \"clear all\".\n"));
 #endif
 				return(NULL);
 			}
 			len = strlen(buf) + 1;
-			var_names[i] = (char *) malloc(len);
-			if (var_names[i] == NULL) {
-				error(_("Out of memory (can't malloc(3) variable name)."));
+			mathomatic->var_names[i] = (char *) malloc(len);
+			if (mathomatic->var_names[i] == NULL) {
+				error(mathomatic, _("Out of memory (can't malloc(3) variable name)."));
 				return(NULL);
 			}
-			blt(var_names[i], buf, len);
+			blt(mathomatic->var_names[i], buf, len);
 			vtmp = i + VAR_OFFSET;
-			var_names[i+1] = NULL;
+			mathomatic->var_names[i+1] = NULL;
 		}
 		*vp = vtmp;
 		return cp1;
@@ -788,15 +785,15 @@ char	*cp;
 	if (isdigit(*cp1)) {
 		j = strtol(cp1, &cp1, 10);
 		if (j < 0 || j > MAX_SUBSCRIPT) {
-			error(_("Maximum subscript exceeded in special variable name."));
+			error(mathomatic, _("Maximum subscript exceeded in special variable name."));
 			return(NULL);
 		}
 		if (vtmp == SIGN) {
-			sign_array[j+1] = true;
+			mathomatic->sign_array[j+1] = true;
 		}
 		vtmp += ((long) (j + 1)) << VAR_SHIFT;
 	} else if (vtmp == SIGN) {
-		sign_array[0] = true;
+		mathomatic->sign_array[0] = true;
 	}
 	*vp = vtmp;
 	return cp1;
@@ -806,8 +803,7 @@ char	*cp;
  * Remove trailing spaces from a string.
  */
 void
-remove_trailing_spaces(cp)
-char	*cp;
+remove_trailing_spaces(char *cp)
 {
 	int	i;
 
@@ -824,20 +820,20 @@ char	*cp;
  * Truncate string to the actual content.
  */
 void
-set_error_level(cp)
-char	*cp;	/* input string */
+set_error_level(MathoMatic* mathomatic, char *cp)
+//char	*cp;	/* input string */
 {
 	char	*cp1;
 	int	len;
 
-	point_flag = true;
+	mathomatic->point_flag = true;
 /* handle comments, line breaks, and the DOS EOF character (control-Z) by truncating the string where found */
 	cp1 = cp;
 	while ((cp1 = strpbrk(cp1, ";\n\r\032"))) {
 		if (cp1 > cp && *(cp1 - 1) == '\\') {
 			if (*cp1 == ';') {
 /* skip backslash escaped semicolon */
-				point_flag = false;
+				mathomatic->point_flag = false;
 				len = strlen(cp1);
 				blt(cp1 - 1, cp1, len + 1);
 				continue;
@@ -852,7 +848,7 @@ char	*cp;	/* input string */
 /* set point_flag to false if non-printable characters encountered */
 	for (cp1 = cp; *cp1; cp1++) {
 		if (!isprint(*cp1)) {
-			point_flag = false;
+			mathomatic->point_flag = false;
 		}
 	}
 }

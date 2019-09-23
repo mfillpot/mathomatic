@@ -26,15 +26,11 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 
 #define	MAX_RAISE_POWER	20	/* Maximum number of times to increase power in solve function. */
 
-static int increase(double d, long v);
-static int poly_solve(long v);
-static int g_of_f(int op, token_type *operandp, token_type *side1p, int *side1np, token_type *side2p, int *side2np);
-static int flip(token_type *side1p, int *side1np, token_type *side2p, int *side2np);
+static int increase(MathoMatic* mathomatic, double d, long v);
+static int poly_solve(MathoMatic* mathomatic, long v);
+static int g_of_f(MathoMatic* mathomatic, int op, token_type *operandp, token_type *side1p, int *side1np, token_type *side2p, int *side2np);
+static int flip(MathoMatic* mathomatic, token_type *side1p, int *side1np, token_type *side2p, int *side2np);
 
-static int	repeat_count;
-static int	prev_n1, prev_n2;
-
-static int	last_int_var = 0;
 
 /*
  * Solve using equation spaces.  Almost always displays a message.
@@ -44,50 +40,50 @@ static int	last_int_var = 0;
  * preferably with "simplify quick".  Just plain "simplify" expands too much sometimes.
  */
 int
-solve_espace(want, have)
-int	want;	/* equation number containing what to solve for */
-int	have;	/* equation number to solve */
+solve_espace(MathoMatic* mathomatic, int want, int have)
+//int	want;	/* equation number containing what to solve for */
+//int	have;	/* equation number to solve */
 {
 	int	i;
 	jmp_buf	save_save;
 	int	rv = 0;		/* solve_sub() return value */
 
-	if (want == have || !equation_space_is_equation(have)) {
+	if (want == have || !equation_space_is_equation(mathomatic, have)) {
 #if	LIBRARY || !HELP
-		error(_("Solving requires an equation."));
+		error(mathomatic, _("Solving requires an equation."));
 #else
-		error(_("Please enter an equation to solve, or a command like \"help\"."));
+		error(mathomatic, _("Please enter an equation to solve, or a command like \"help\"."));
 #endif
 		printf(_("Solve failed for equation space #%d.\n"), have + 1);
 		return false;
 	}
-	blt(save_save, jmp_save, sizeof(jmp_save));
-	if ((i = setjmp(jmp_save)) != 0) {	/* trap errors */
-		clean_up();
+	blt(save_save, mathomatic->jmp_save, sizeof(mathomatic->jmp_save));
+	if ((i = setjmp(mathomatic->jmp_save)) != 0) {	/* trap errors */
+		clean_up(mathomatic);
 		if (i == 14) {
-			error(_("Expression too large."));
+			error(mathomatic, _("Expression too large."));
 		}
 		rv = 0;
 	} else {
-		if (n_lhs[want]) {
-			if (n_rhs[want]) {
+		if (mathomatic->n_lhs[want]) {
+			if (mathomatic->n_rhs[want]) {
 				/* Something in the LHS and RHS of equation number "want". */
-				error(_("Can only solve for a single variable or for 0, possibly raised to a power."));
+				error(mathomatic, _("Can only solve for a single variable or for 0, possibly raised to a power."));
 				rv = 0;
 			} else {
 				/* Normal solve: */
-				rv = solve_sub(lhs[want], n_lhs[want], lhs[have], &n_lhs[have], rhs[have], &n_rhs[have]);
+				rv = solve_sub(mathomatic, mathomatic->lhs[want], mathomatic->n_lhs[want], mathomatic->lhs[have], &mathomatic->n_lhs[have], mathomatic->rhs[have], &mathomatic->n_rhs[have]);
 			}
 		} else {
 			/* Solve variable was preceded by an equals sign, solve using reversed equation sides: */
-			rv = solve_sub(rhs[want], n_rhs[want], rhs[have], &n_rhs[have], lhs[have], &n_lhs[have]);
+			rv = solve_sub(mathomatic, mathomatic->rhs[want], mathomatic->n_rhs[want], mathomatic->rhs[have], &mathomatic->n_rhs[have], mathomatic->lhs[have], &mathomatic->n_lhs[have]);
 		}
 	}
-	blt(jmp_save, save_save, sizeof(jmp_save));
+	blt(mathomatic->jmp_save, save_save, sizeof(mathomatic->jmp_save));
 	if (rv <= 0) {
 		printf(_("Solve failed for equation space #%d.\n"), have + 1);
 	} else {
-		debug_string(0, _("Solve successful:"));
+		debug_string(mathomatic, 0, _("Solve successful:"));
 	}
 	return(rv > 0);
 }
@@ -109,13 +105,13 @@ int	have;	/* equation number to solve */
  * Returns -2 if unsolvable in all realms.
  */
 int
-solve_sub(wantp, wantn, leftp, leftnp, rightp, rightnp)
-token_type	*wantp;		/* expression to solve for */
-int		wantn;		/* length of expression to solve for */
-token_type	*leftp;		/* LHS of equation */
-int		*leftnp;	/* pointer to length of LHS */
-token_type	*rightp;	/* RHS of equation */
-int		*rightnp;	/* pointer to length of RHS */
+solve_sub(MathoMatic* mathomatic, token_type *wantp, int wantn, token_type *leftp, int *leftnp, token_type *rightp, int *rightnp)
+//token_type	*wantp;		/* expression to solve for */
+//int		wantn;		/* length of expression to solve for */
+//token_type	*leftp;		/* LHS of equation */
+//int		*leftnp;	/* pointer to length of LHS */
+//token_type	*rightp;	/* RHS of equation */
+//int		*rightnp;	/* pointer to length of RHS */
 {
 	int		i, j;
 	int		found, found_count;
@@ -134,14 +130,14 @@ int		*rightnp;	/* pointer to length of RHS */
 	double		numerator, denominator;
 	int		success = 1;
 
-	repeat_count = 0;
-	prev_n1 = 0;
-	prev_n2 = 0;
+	mathomatic->repeat_count = 0;
+	mathomatic->prev_n1 = 0;
+	mathomatic->prev_n2 = 0;
 	if (*leftnp <= 0 || *rightnp <= 0) {
 #if	LIBRARY || !HELP
-		error(_("Solving requires an equation."));
+		error(mathomatic, _("Solving requires an equation."));
 #else
-		error(_("Please enter an equation to solve, or a command like \"help\"."));
+		error(mathomatic, _("Please enter an equation to solve, or a command like \"help\"."));
 #endif
 		return false;
 	}
@@ -156,87 +152,87 @@ int		*rightnp;	/* pointer to length of RHS */
 			if (wantp[0].kind == VARIABLE) {
 				v = wantp[0].token.variable;
 			}
-			if (solve_sub(&zero_token, 1, rightp, rightnp, leftp, leftnp) <= 0)
+			if (solve_sub(mathomatic, &mathomatic->zero_token, 1, rightp, rightnp, leftp, leftnp) <= 0)
 				return false;
-			n_tlhs = *leftnp;
-			blt(tlhs, leftp, n_tlhs * sizeof(*leftp));
-			n_trhs = *rightnp;
-			blt(trhs, rightp, n_trhs * sizeof(*rightp));
-			uf_simp(tlhs, &n_tlhs);
-			if (increase(1 / wantp[2].token.constant, v) != true) {
-				error(_("Unable to isolate root."));
+			mathomatic->n_tlhs = *leftnp;
+			blt(mathomatic->tlhs, leftp, mathomatic->n_tlhs * sizeof(*leftp));
+			mathomatic->n_trhs = *rightnp;
+			blt(mathomatic->trhs, rightp, mathomatic->n_trhs * sizeof(*rightp));
+			uf_simp(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+			if (increase(mathomatic, 1 / wantp[2].token.constant, v) != true) {
+				error(mathomatic, _("Unable to isolate root."));
 				return false;
 			}
-			list_tdebug(2);
-			mid_simp_side(tlhs, &n_tlhs);
-			simp_loop(trhs, &n_trhs);
-			uf_simp(trhs, &n_trhs);
-			list_tdebug(1);
+			list_tdebug(mathomatic, 2);
+			mid_simp_side(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+			simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+			uf_simp(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+			list_tdebug(mathomatic, 1);
 
-			blt(leftp, tlhs, n_tlhs * sizeof(*leftp));
-			*leftnp = n_tlhs;
-			blt(rightp, trhs, n_trhs * sizeof(*rightp));
-			*rightnp = n_trhs;
+			blt(leftp, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(*leftp));
+			*leftnp = mathomatic->n_tlhs;
+			blt(rightp, mathomatic->trhs, mathomatic->n_trhs * sizeof(*rightp));
+			*rightnp = mathomatic->n_trhs;
 			return true;
 		}
-		error(_("Can only solve for a single variable or for 0, possibly raised to a power."));
+		error(mathomatic, _("Can only solve for a single variable or for 0, possibly raised to a power."));
 		return false;
 	}
 	/* copy the equation to temporary storage where it will be manipulated */
-	n_tlhs = *leftnp;
-	blt(tlhs, leftp, n_tlhs * sizeof(*leftp));
-	n_trhs = *rightnp;
-	blt(trhs, rightp, n_trhs * sizeof(*rightp));
+	mathomatic->n_tlhs = *leftnp;
+	blt(mathomatic->tlhs, leftp, mathomatic->n_tlhs * sizeof(*leftp));
+	mathomatic->n_trhs = *rightnp;
+	blt(mathomatic->trhs, rightp, mathomatic->n_trhs * sizeof(*rightp));
 
 	if (wantp->kind == VARIABLE) {
 		v = wantp->token.variable;
-		if (!found_var(trhs, n_trhs, v) && !found_var(tlhs, n_tlhs, v)) {
+		if (!found_var(mathomatic->trhs, mathomatic->n_trhs, v) && !found_var(mathomatic->tlhs, mathomatic->n_tlhs, v)) {
 			/* variable v is 0 or not found */
-			error(_("Solve variable not found."));
+			error(mathomatic, _("Solve variable not found."));
 			return false;
 		}
 		zsolve = false;
 	} else {
 		v = 0;
 		if (wantp->kind != CONSTANT || wantp->token.constant != 0.0) {
-			error(_("Can only solve for a single variable or for 0, possibly raised to a power."));
+			error(mathomatic, _("Can only solve for a single variable or for 0, possibly raised to a power."));
 			return false;
 		}
-		debug_string(1, _("Solving for zero..."));
+		debug_string(mathomatic, 1, _("Solving for zero..."));
 		zsolve = true;
 	}
-	uf_power(tlhs, &n_tlhs);
-	uf_power(trhs, &n_trhs);
+	uf_power(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+	uf_power(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
 simp_again:
 	/* Make sure equation is a bit simplified. */
-	list_tdebug(2);
-	simps_side(tlhs, &n_tlhs, zsolve);
+	list_tdebug(mathomatic, 2);
+	simps_side(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, zsolve);
 	if (uf_flag) {
-		simp_loop(trhs, &n_trhs);
-		uf_simp(trhs, &n_trhs);
-		factorv(trhs, &n_trhs, v);
+		simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+		uf_simp(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+		factorv(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, v);
 	} else {
-		simps_side(trhs, &n_trhs, zsolve);
+		simps_side(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, zsolve);
 	}
-	list_tdebug(1);
+	list_tdebug(mathomatic, 1);
 no_simp:
 	/* First selectively move sub-expressions from the RHS to the LHS. */
 	op = 0;
-	ep = &trhs[n_trhs];
+	ep = &mathomatic->trhs[mathomatic->n_trhs];
 	if (zsolve) {
-		for (b1 = p1 = trhs; p1 < ep; p1++) {
+		for (b1 = p1 = mathomatic->trhs; p1 < ep; p1++) {
 			if (p1->level == 1 && p1->kind == OPERATOR) {
 				op = p1->token.operatr;
 				b1 = p1 + 1;
 				if (op == DIVIDE) {
-					if (!g_of_f(op, b1, trhs, &n_trhs, tlhs, &n_tlhs))
+					if (!g_of_f(mathomatic, op, b1, mathomatic->trhs, &mathomatic->n_trhs, mathomatic->tlhs, &mathomatic->n_tlhs))
 						return false;
 					goto simp_again;
 				}
 			}
 		}
 	} else {
-		for (b1 = p1 = trhs; p1 < ep; p1++) {
+		for (b1 = p1 = mathomatic->trhs; p1 < ep; p1++) {
 			if (p1->kind == VARIABLE && v == p1->token.variable) {
 				if (op == 0) {
 					for (p1++;; p1++) {
@@ -266,13 +262,13 @@ no_simp:
 				case TIMES:
 				case DIVIDE:
 				case POWER:
-					b1 = trhs;
+					b1 = mathomatic->trhs;
 					op = PLUS;
 					for (p1 = b1; p1 < ep; p1++)
 						p1->level++;
 					break;
 				}
-				if (!g_of_f(op, b1, trhs, &n_trhs, tlhs, &n_tlhs))
+				if (!g_of_f(mathomatic, op, b1, mathomatic->trhs, &mathomatic->n_trhs, mathomatic->tlhs, &mathomatic->n_tlhs))
 					return false;
 				goto simp_again;
 			} else if (p1->level == 1 && p1->kind == OPERATOR) {
@@ -282,33 +278,33 @@ no_simp:
 		}
 	}
 	if (uf_flag) {
-		simps_side(trhs, &n_trhs, zsolve);
+		simps_side(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, zsolve);
 	}
 left_again:
 	worked = true;
 	uf_flag = false;
 see_work:
-	if (found_var(trhs, n_trhs, v)) {
+	if (found_var(mathomatic->trhs, mathomatic->n_trhs, v)) {
 		/* solve variable in RHS */
-		debug_string(1, _("Solve variable moved back to RHS, quitting solve routine."));
+		debug_string(mathomatic, 1, _("Solve variable moved back to RHS, quitting solve routine."));
 		return false;
 	}
 	/* See if we have solved the equation. */
-	if (se_compare(wantp, wantn, tlhs, n_tlhs, &diff_sign) && !diff_sign) {
+	if (se_compare(mathomatic, wantp, wantn, mathomatic->tlhs, mathomatic->n_tlhs, &diff_sign) && !diff_sign) {
 		if (zsolve) {
-			debug_string(1, "Simplifying the zero solve until there are no more divides:");
+			debug_string(mathomatic, 1, "Simplifying the zero solve until there are no more divides:");
 zero_simp:
-			list_tdebug(2);
-			uf_power(trhs, &n_trhs);
+			list_tdebug(mathomatic, 2);
+			uf_power(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
 			do {
 				do {
-					simp_ssub(trhs, &n_trhs, 0L, 0.0, false, true, 4);
-				} while (uf_power(trhs, &n_trhs));
-			} while (super_factor(trhs, &n_trhs, 1));
-			list_tdebug(1);
-			ep = &trhs[n_trhs];
+					simp_ssub(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, 0L, 0.0, false, true, 4);
+				} while (uf_power(mathomatic, mathomatic->trhs, &mathomatic->n_trhs));
+			} while (super_factor(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, 1));
+			list_tdebug(mathomatic, 1);
+			ep = &mathomatic->trhs[mathomatic->n_trhs];
 			op = 0;
-			for (p1 = trhs + 1; p1 < ep; p1 += 2) {
+			for (p1 = mathomatic->trhs + 1; p1 < ep; p1 += 2) {
 				if (p1->level == 1) {
 					op = p1->token.operatr;
 					if (op == DIVIDE) {
@@ -321,13 +317,13 @@ zero_simp:
 			}
 			switch (op) {
 			case TIMES:
-				for (p1 = trhs; p1 < ep;) {
+				for (p1 = mathomatic->trhs; p1 < ep;) {
 					b1 = p1;
 					for (;; p1++) {
 						if (p1 >= ep || (p1->kind == OPERATOR && p1->level == 1)) {
 							blt(b1 + 1, p1, (char *) ep - (char *) p1);
-							n_trhs -= p1 - (b1 + 1);
-							*b1 = one_token;
+							mathomatic->n_trhs -= p1 - (b1 + 1);
+							*b1 = mathomatic->one_token;
 							goto zero_simp;
 						}
 						if (p1->kind != CONSTANT && p1->kind != OPERATOR
@@ -340,7 +336,7 @@ zero_simp:
 						;
 #if	DEBUG
 					if (p1 != ep && (p1->kind != OPERATOR || p1->token.operatr != TIMES)) {
-						error_bug("Operator mix up in zero_simp.");
+						error_bug(mathomatic, "Operator mix up in zero_simp.");
 					}
 #endif
 					if ((p1 - 2) > b1) {
@@ -363,21 +359,21 @@ zero_simp:
 /*				if ((p1 - 2) <= trhs || (p1 - 2)->token.operatr != POWER || (p1 - 2)->level != 2) { */
 					p1++;
 					if (p1->level == 1 && p1->kind == CONSTANT && p1->token.constant > 0.0) {
-						n_trhs -= 2;
+						mathomatic->n_trhs -= 2;
 						goto zero_simp;
 					}
 /*				} */
 				break;
 			}
-			debug_string(1, _("Solve for zero completed:"));
+			debug_string(mathomatic, 1, _("Solve for zero completed:"));
 		} else {
-			debug_string(1, _("Solve completed:"));
+			debug_string(mathomatic, 1, _("Solve completed:"));
 		}
-		list_tdebug(1);
-		blt(leftp, tlhs, n_tlhs * sizeof(*leftp));
-		*leftnp = n_tlhs;
-		blt(rightp, trhs, n_trhs * sizeof(*rightp));
-		*rightnp = n_trhs;
+		list_tdebug(mathomatic, 1);
+		blt(leftp, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(*leftp));
+		*leftnp = mathomatic->n_tlhs;
+		blt(rightp, mathomatic->trhs, mathomatic->n_trhs * sizeof(*rightp));
+		*rightnp = mathomatic->n_trhs;
 		return success;
 	}
 	/* Move what we don't want in the LHS to the RHS. */
@@ -385,11 +381,11 @@ zero_simp:
 	need_flip = 0;
 	found = 0;
 	op = 0;
-	ep = &tlhs[n_tlhs];
-	for (b1 = p1 = tlhs;; p1++) {
+	ep = &mathomatic->tlhs[mathomatic->n_tlhs];
+	for (b1 = p1 = mathomatic->tlhs;; p1++) {
 		if (p1 >= ep || (p1->level == 1 && p1->kind == OPERATOR)) {
 			if (!found) {
-				if ((p1 < ep || found_count || zsolve || n_tlhs > 1 || tlhs[0].kind != CONSTANT)
+				if ((p1 < ep || found_count || zsolve || mathomatic->n_tlhs > 1 || mathomatic->tlhs[0].kind != CONSTANT)
 				    && (p1 - b1 != 1 || b1->kind != CONSTANT || b1->token.constant != 1.0
 				    || p1 >= ep || p1->token.operatr != DIVIDE)) {
 					if (op == 0) {
@@ -428,23 +424,23 @@ zero_simp:
 							}
 						} else {
 							if (op != DIVIDE) {
-								b1 = tlhs;
+								b1 = mathomatic->tlhs;
 								op = PLUS;
 								for (p1 = b1; p1 < ep; p1++)
 									p1->level++;
 							}
 						}
 					}
-					if (!g_of_f(op, b1, tlhs, &n_tlhs, trhs, &n_trhs))
+					if (!g_of_f(mathomatic, op, b1, mathomatic->tlhs, &mathomatic->n_tlhs, mathomatic->trhs, &mathomatic->n_trhs))
 						return false;
-					list_tdebug(2);
+					list_tdebug(mathomatic, 2);
 					if (uf_flag) {
-						simp_loop(tlhs, &n_tlhs);
+						simp_loop(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
 					} else {
-						simps_side(tlhs, &n_tlhs, zsolve);
+						simps_side(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, zsolve);
 					}
-					simps_side(trhs, &n_trhs, zsolve);
-					list_tdebug(1);
+					simps_side(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, zsolve);
+					list_tdebug(mathomatic, 1);
 					goto see_work;
 				}
 			} else if (op == DIVIDE) {
@@ -452,74 +448,74 @@ zero_simp:
 			}
 			if (p1 >= ep) {
 				if (found_count == 0) { /* if solve variable no longer in LHS */
-					if (found_var(trhs, n_trhs, v)) {
+					if (found_var(mathomatic->trhs, mathomatic->n_trhs, v)) {
 						/* solve variable in RHS */
-						debug_string(1, _("Solve variable moved back to RHS, quitting solve routine."));
+						debug_string(mathomatic, 1, _("Solve variable moved back to RHS, quitting solve routine."));
 						return false;
 					}
 					/* The following code determines if we have an identity: */
-					calc_simp(tlhs, &n_tlhs);
-					calc_simp(trhs, &n_trhs);
-					if (se_compare(tlhs, n_tlhs, trhs, n_trhs, &diff_sign) && !diff_sign) {
-						error(_("This equation is an identity."));
-						debug_string(0, _("That is, the LHS is identical to the RHS."));
+					calc_simp(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+					calc_simp(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+					if (se_compare(mathomatic, mathomatic->tlhs, mathomatic->n_tlhs, mathomatic->trhs, mathomatic->n_trhs, &diff_sign) && !diff_sign) {
+						error(mathomatic, _("This equation is an identity."));
+						debug_string(mathomatic, 0, _("That is, the LHS is identical to the RHS."));
 						return -1;
 					}
 					found = false;
-					for (i = 0; i < n_tlhs; i += 2) {
-						if (tlhs[i].kind == VARIABLE && tlhs[i].token.variable > IMAGINARY) {
+					for (i = 0; i < mathomatic->n_tlhs; i += 2) {
+						if (mathomatic->tlhs[i].kind == VARIABLE && mathomatic->tlhs[i].token.variable > IMAGINARY) {
 							found = true;
 							break;
 						}
 					}
-					for (i = 0; i < n_trhs; i += 2) {
-						if (trhs[i].kind == VARIABLE && trhs[i].token.variable > IMAGINARY) {
+					for (i = 0; i < mathomatic->n_trhs; i += 2) {
+						if (mathomatic->trhs[i].kind == VARIABLE && mathomatic->trhs[i].token.variable > IMAGINARY) {
 							found = true;
 							break;
 						}
 					}
 					if (found) {
-						error(_("This equation is independent of the solve variable."));
+						error(mathomatic, _("This equation is independent of the solve variable."));
 					} else {
-						error(_("There are no possible values for the solve variable."));
+						error(mathomatic, _("There are no possible values for the solve variable."));
 					}
 					return -2;
 				}
-				zflag = (n_trhs == 1 && trhs[0].kind == CONSTANT && trhs[0].token.constant == 0.0);
+				zflag = (mathomatic->n_trhs == 1 && mathomatic->trhs[0].kind == CONSTANT && mathomatic->trhs[0].token.constant == 0.0);
 				if (zflag) {
 					/* overwrite -0.0 */
-					trhs[0].token.constant = 0.0;
+					mathomatic->trhs[0].token.constant = 0.0;
 				}
 				if (need_flip >= found_count) {
-					if (!flip(tlhs, &n_tlhs, trhs, &n_trhs))
+					if (!flip(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, mathomatic->trhs, &mathomatic->n_trhs))
 						return false;
-					list_tdebug(2);
-					simps_side(tlhs, &n_tlhs, zsolve);
-					simps_side(trhs, &n_trhs, zsolve);
-					list_tdebug(1);
+					list_tdebug(mathomatic, 2);
+					simps_side(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, zsolve);
+					simps_side(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, zsolve);
+					list_tdebug(mathomatic, 1);
 					goto left_again;
 				}
 				if (worked && !uf_flag) {
 					worked = false;
-					debug_string(1, _("Unfactoring..."));
-					partial_flag = false;
-					uf_simp(tlhs, &n_tlhs);
-					partial_flag = true;
-					factorv(tlhs, &n_tlhs, v);
-					list_tdebug(1);
+					debug_string(mathomatic, 1, _("Unfactoring..."));
+					mathomatic->partial_flag = false;
+					uf_simp(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+					mathomatic->partial_flag = true;
+					factorv(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, v);
+					list_tdebug(mathomatic, 1);
 					uf_flag = true;
 					goto see_work;
 				}
 				if (uf_flag) {
-					simps_side(tlhs, &n_tlhs, zsolve);
+					simps_side(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, zsolve);
 					uf_flag = false;
 					goto see_work;
 				}
 				op = 0;
-				b1 = tlhs;
-				for (i = 1; i < n_tlhs; i += 2) {
-					if (tlhs[i].level == 1) {
-						op_kind = tlhs[i].token.operatr;
+				b1 = mathomatic->tlhs;
+				for (i = 1; i < mathomatic->n_tlhs; i += 2) {
+					if (mathomatic->tlhs[i].level == 1) {
+						op_kind = mathomatic->tlhs[i].token.operatr;
 						if (op_kind == TIMES || op_kind == DIVIDE) {
 							if (op == 0) {
 								op = TIMES;
@@ -530,23 +526,23 @@ zero_simp:
 						}
 						if (zflag) {
 							if (op_kind == DIVIDE
-							    || (tlhs[i+1].kind == VARIABLE && tlhs[i+1].token.variable == v
-							    && (tlhs[i+1].level == 1
-							    || (tlhs[i+1].level == 2 && tlhs[i+2].token.operatr == POWER
-							    && tlhs[i+3].level == 2 && tlhs[i+3].kind == CONSTANT && tlhs[i+3].token.constant > 0.0)))) {
+							    || (mathomatic->tlhs[i+1].kind == VARIABLE && mathomatic->tlhs[i+1].token.variable == v
+							    && (mathomatic->tlhs[i+1].level == 1
+							    || (mathomatic->tlhs[i+1].level == 2 && mathomatic->tlhs[i+2].token.operatr == POWER
+							    && mathomatic->tlhs[i+3].level == 2 && mathomatic->tlhs[i+3].kind == CONSTANT && mathomatic->tlhs[i+3].token.constant > 0.0)))) {
 								op = op_kind;
-								b1 = &tlhs[i+1];
+								b1 = &mathomatic->tlhs[i+1];
 								if (op_kind == DIVIDE)
 									break;
 							}
 						} else {
 							if (op_kind == DIVIDE) {
-								for (j = i + 2; j < n_tlhs && tlhs[j].level > 1; j += 2) {
-									if (tlhs[j].level == 2) {
-										op_kind = tlhs[j].token.operatr;
+								for (j = i + 2; j < mathomatic->n_tlhs && mathomatic->tlhs[j].level > 1; j += 2) {
+									if (mathomatic->tlhs[j].level == 2) {
+										op_kind = mathomatic->tlhs[j].token.operatr;
 										if (op_kind == PLUS || op_kind == MINUS) {
 											op = DIVIDE;
-											b1 = &tlhs[i+1];
+											b1 = &mathomatic->tlhs[i+1];
 										}
 										break;
 									}
@@ -564,36 +560,36 @@ zero_simp:
 						qtries = 0;	/* might be quadratic after removing solution */
 						success = 2;
 #if	!SILENT
-						fprintf(gfp, _("Removing possible solution: \""));
-						list_proc(b1, 1, false);
-						fprintf(gfp, " = 0\".\n");
+						fprintf(mathomatic->gfp, _("Removing possible solution: \""));
+						list_proc(mathomatic, b1, 1, false);
+						fprintf(mathomatic->gfp, " = 0\".\n");
 #endif
 					} else {
-						debug_string(1, _("Juggling..."));
+						debug_string(mathomatic, 1, _("Juggling..."));
 						uf_flag = true;
 					}
-					if (!g_of_f(op, b1, tlhs, &n_tlhs, trhs, &n_trhs))
+					if (!g_of_f(mathomatic, op, b1, mathomatic->tlhs, &mathomatic->n_tlhs, mathomatic->trhs, &mathomatic->n_trhs))
 						return false;
 					goto simp_again;
 				}
 				b1 = NULL;
-				for (i = 1; i < n_tlhs; i += 2) {
-					if (tlhs[i].token.operatr == POWER
-					    && tlhs[i+1].level == tlhs[i].level
-					    && tlhs[i+1].kind == CONSTANT
-					    && fabs(tlhs[i+1].token.constant) < 1.0) {
-						if (!f_to_fraction(tlhs[i+1].token.constant, &numerator, &denominator)
+				for (i = 1; i < mathomatic->n_tlhs; i += 2) {
+					if (mathomatic->tlhs[i].token.operatr == POWER
+					    && mathomatic->tlhs[i+1].level == mathomatic->tlhs[i].level
+					    && mathomatic->tlhs[i+1].kind == CONSTANT
+					    && fabs(mathomatic->tlhs[i+1].token.constant) < 1.0) {
+						if (!f_to_fraction(mathomatic, mathomatic->tlhs[i+1].token.constant, &numerator, &denominator)
 						    || fabs(numerator) != 1.0 || denominator < 2.0) {
 							continue;
 						}
-						for (j = i - 1; j >= 0 && tlhs[j].level >= tlhs[i].level; j--) {
-							if (tlhs[j].kind == VARIABLE && tlhs[j].token.variable == v) {
+						for (j = i - 1; j >= 0 && mathomatic->tlhs[j].level >= mathomatic->tlhs[i].level; j--) {
+							if (mathomatic->tlhs[j].kind == VARIABLE && mathomatic->tlhs[j].token.variable == v) {
 								if (b1) {
-									if (fabs(b1->token.constant) < fabs(tlhs[i+1].token.constant)) {
-										b1 = &tlhs[i+1];
+									if (fabs(b1->token.constant) < fabs(mathomatic->tlhs[i+1].token.constant)) {
+										b1 = &mathomatic->tlhs[i+1];
 									}
 								} else {
-									b1 = &tlhs[i+1];
+									b1 = &mathomatic->tlhs[i+1];
 								}
 								break;
 							}
@@ -606,7 +602,7 @@ zero_simp:
 						return false;
 					zero_solved = false;
 					qtries = 0;
-					if (!increase(b1->token.constant, v)) {
+					if (!increase(mathomatic, b1->token.constant, v)) {
 						return false;
 					}
 					uf_flag = true;
@@ -615,17 +611,17 @@ zero_simp:
 				if (qtries) {
 					return false;
 				}
-				*leftnp = n_tlhs;
-				blt(leftp, tlhs, n_tlhs * sizeof(*leftp));
-				*rightnp = n_trhs;
-				blt(rightp, trhs, n_trhs * sizeof(*rightp));
-				if (solve_sub(&zero_token, 1, leftp, leftnp, rightp, rightnp) <= 0)
+				*leftnp = mathomatic->n_tlhs;
+				blt(leftp, mathomatic->tlhs, mathomatic->n_tlhs * sizeof(*leftp));
+				*rightnp = mathomatic->n_trhs;
+				blt(rightp, mathomatic->trhs, mathomatic->n_trhs * sizeof(*rightp));
+				if (solve_sub(mathomatic, &mathomatic->zero_token, 1, leftp, leftnp, rightp, rightnp) <= 0)
 					return false;
 				if (zero_solved) {
 					qtries++;
 				}
 				zero_solved = true;
-				if (poly_solve(v)) {
+				if (poly_solve(mathomatic, v)) {
 					goto left_again;
 				} else {
 					goto simp_again;
@@ -652,9 +648,7 @@ fin1:
  * Return true if successful.
  */
 static int
-increase(d, v)
-double	d;
-long	v;
+increase(MathoMatic* mathomatic, double d, long v)
 {
 	int		flag, foundp, found2;
 	int		len1, len2;
@@ -663,25 +657,25 @@ long	v;
 	token_type	*ep;
 
 #if	!SILENT
-	if (debug_level >= 0) {
-		fprintf(gfp, _("Raising both equation sides to the power of %.*g and expanding...\n"), precision, 1.0 / d);
+	if (mathomatic->debug_level >= 0) {
+		fprintf(mathomatic->gfp, _("Raising both equation sides to the power of %.*g and expanding...\n"), mathomatic->precision, 1.0 / d);
 	}
 #endif
-	list_tdebug(2);
-	partial_flag = false;
-	ufactor(tlhs, &n_tlhs);
-	partial_flag = true;
+	list_tdebug(mathomatic, 2);
+	mathomatic->partial_flag = false;
+	ufactor(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+	mathomatic->partial_flag = true;
 /*	symb_flag = symblify; */
-	simp_ssub(tlhs, &n_tlhs, v, d, true, false, 2);
-	simp_ssub(tlhs, &n_tlhs, 0L, 1.0, true, true, 2);
+	simp_ssub(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, v, d, true, false, 2);
+	simp_ssub(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, 0L, 1.0, true, true, 2);
 /*	symb_flag = false; */
-	list_tdebug(1);
+	list_tdebug(mathomatic, 1);
 
 isolate:
-	ep = &tlhs[n_tlhs];
+	ep = &mathomatic->tlhs[mathomatic->n_tlhs];
 	len2 = len1 = 0;
 	foundp = false;
-	for (p1 = tlhs + 1;; p1 += 2) {
+	for (p1 = mathomatic->tlhs + 1;; p1 += 2) {
 		if (p1 >= ep) {
 			return 2;	/* power not found */
 		}
@@ -701,7 +695,7 @@ isolate:
 				if (b1->kind == VARIABLE && b1->token.variable == v) {
 					flag = true;
 				}
-				if (b1 == tlhs)
+				if (b1 == mathomatic->tlhs)
 					break;
 			}
 			if (flag || v == 0) {
@@ -728,7 +722,7 @@ isolate:
 				if (b1->kind == VARIABLE && b1->token.variable == v) {
 					flag = true;
 				}
-				if (b1 == tlhs)
+				if (b1 == mathomatic->tlhs)
 					break;
 			}
 			if (flag || v == 0) {
@@ -744,13 +738,13 @@ isolate:
 	b1 = p1 + 1;
 	op = p1->token.operatr;
 	if (op == POWER && b1->level == 1 && b1->kind == CONSTANT && b1->token.constant == d) {
-		return(g_of_f(POWER, b1, tlhs, &n_tlhs, trhs, &n_trhs));
+		return(g_of_f(mathomatic, POWER, b1, mathomatic->tlhs, &mathomatic->n_tlhs, mathomatic->trhs, &mathomatic->n_trhs));
 	}
 	if (!foundp) {
-		b1 = tlhs;
+		b1 = mathomatic->tlhs;
 		if (p1 - b1 == 1 && p1->token.operatr == DIVIDE
 		    && b1->kind == CONSTANT && b1->token.constant == 1.0) {
-			if (!flip(tlhs, &n_tlhs, trhs, &n_trhs))
+			if (!flip(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs, mathomatic->trhs, &mathomatic->n_trhs))
 				return false;
 			goto end;
 		}
@@ -768,13 +762,13 @@ isolate:
 			break;
 		}
 	}
-	if (!g_of_f(op, b1, tlhs, &n_tlhs, trhs, &n_trhs))
+	if (!g_of_f(mathomatic, op, b1, mathomatic->tlhs, &mathomatic->n_tlhs, mathomatic->trhs, &mathomatic->n_trhs))
 		return false;
 end:
-	list_tdebug(2);
-	simp_loop(tlhs, &n_tlhs);
-	simp_loop(trhs, &n_trhs);
-	list_tdebug(1);
+	list_tdebug(mathomatic, 2);
+	simp_loop(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+	simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+	list_tdebug(mathomatic, 1);
 	goto isolate;
 }
 
@@ -789,8 +783,8 @@ end:
  * Return true if successful, with solved equation in tlhs and trhs.
  */
 static int
-poly_solve(v)
-long	v;	/* solve variable */
+poly_solve(MathoMatic* mathomatic, long v)
+//long	v;	/* solve variable */
 {
 	int		i, j, k;
 	token_type	*p1, *p2, *ep;
@@ -804,22 +798,22 @@ long	v;	/* solve variable */
 	int		len, alen, blen, aloc, nx1;
 	double		high_power = 0.0;
 
-	debug_string(1, _("Checking if equation is a polynomial equation:"));
+	debug_string(mathomatic, 1, _("Checking if equation is a polynomial equation:"));
 #if	DEBUG
-	if (n_tlhs != 1 || tlhs[0].kind != CONSTANT || tlhs[0].token.constant != 0.0) {
-		error_bug("poly_solve() called without a zero-solved equation!");
+	if (mathomatic->n_tlhs != 1 || mathomatic->tlhs[0].kind != CONSTANT || mathomatic->tlhs[0].token.constant != 0.0) {
+		error_bug(mathomatic, "poly_solve() called without a zero-solved equation!");
 	}
 #endif
-	uf_simp(trhs, &n_trhs);
-	while (factor_plus(trhs, &n_trhs, v, 0.0)) {
-		simp_loop(trhs, &n_trhs);
+	uf_simp(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+	while (factor_plus(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, v, 0.0)) {
+		simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
 	}
-	list_tdebug(1);
+	list_tdebug(mathomatic, 1);
 
 	found = false;
 	op = 0;
-	ep = &trhs[n_trhs];
-	for (x1tp = p1 = trhs;; p1++) {
+	ep = &mathomatic->trhs[mathomatic->n_trhs];
+	for (x1tp = p1 = mathomatic->trhs;; p1++) {
 		if (p1 >= ep || (p1->level == 1 && p1->kind == OPERATOR)) {
 			if (p1 < ep) {
 				switch (p1->token.operatr) {
@@ -891,12 +885,12 @@ long	v;	/* solve variable */
 	if (high_power == 0.0)
 		return false;
 #if	!SILENT
-	if (debug_level >= 0) {
-		list_var(v, 0);
-		fprintf(gfp, _("Equation is a degree %.*g polynomial equation in %s.\n"), precision, high_power, var_str);
+	if (mathomatic->debug_level >= 0) {
+		list_var(mathomatic, v, 0);
+		fprintf(mathomatic->gfp, _("Equation is a degree %.*g polynomial equation in %s.\n"), mathomatic->precision, high_power, mathomatic->var_str);
 	}
 #endif
-	if (a1p > trhs && (a1p - 1)->token.operatr == MINUS)
+	if (a1p > mathomatic->trhs && (a1p - 1)->token.operatr == MINUS)
 		opx1 = MINUS;
 	else
 		opx1 = PLUS;
@@ -914,9 +908,9 @@ long	v;	/* solve variable */
 	}
 	opx2 = 0;
 	op = 0;
-	for (x2p = p1 = trhs;; p1++) {
+	for (x2p = p1 = mathomatic->trhs;; p1++) {
 		if (p1 >= ep || (p1->level == 1 && p1->kind == OPERATOR)) {
-			if (se_compare(x1_storage, nx1, x2p, p1 - x2p, &diff_sign)) {
+			if (se_compare(mathomatic, x1_storage, nx1, x2p, p1 - x2p, &diff_sign)) {
 				b1p = x2p;
 				b2p = p1;
 				b2ep = b2p;
@@ -927,7 +921,7 @@ long	v;	/* solve variable */
 				for (b1p = p2 = x2p;; p2++) {
 					if (p2 >= p1 || (p2->level == 2 && p2->kind == OPERATOR)) {
 						if (op2 == 0 || op2 == TIMES) {
-							if (se_compare(x1_storage, nx1, x2p, p2 - x2p, &diff_sign)) {
+							if (se_compare(mathomatic, x1_storage, nx1, x2p, p2 - x2p, &diff_sign)) {
 								b2p = p2;
 								b2ep = p1;
 								goto big_bbreak;
@@ -972,76 +966,76 @@ big_bbreak:
 	default:
 		return false;
 	}
-	blt(scratch, b1p, (char *) x2p - (char *) b1p);
+	blt(mathomatic->scratch, b1p, (char *) x2p - (char *) b1p);
 	len = x2p - b1p;
-	scratch[len].level = 7;
-	scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].level = 7;
+	mathomatic->scratch[len].kind = CONSTANT;
 	if (opx2 == MINUS)
-		scratch[len].token.constant = -1.0;
+		mathomatic->scratch[len].token.constant = -1.0;
 	else
-		scratch[len].token.constant = 1.0;
+		mathomatic->scratch[len].token.constant = 1.0;
 	len++;
-	blt(&scratch[len], b2p, (char *) b2ep - (char *) b2p);
+	blt(&mathomatic->scratch[len], b2p, (char *) b2ep - (char *) b2p);
 	len += (b2ep - b2p);
 	blen = len;
-	j = min_level(scratch, len);
+	j = min_level(mathomatic, mathomatic->scratch, len);
 	j = 7 - j;
 	for (i = 0; i < len; i++)
-		scratch[i].level += j;
-	scratch[len].level = 6;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = POWER;
+		mathomatic->scratch[i].level += j;
+	mathomatic->scratch[len].level = 6;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = POWER;
 	len++;
-	scratch[len].level = 6;
-	scratch[len].kind = CONSTANT;
-	scratch[len].token.constant = 2.0;
+	mathomatic->scratch[len].level = 6;
+	mathomatic->scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].token.constant = 2.0;
 	len++;
-	scratch[len].level = 5;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = MINUS;
+	mathomatic->scratch[len].level = 5;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = MINUS;
 	len++;
-	scratch[len].level = 6;
-	scratch[len].kind = CONSTANT;
-	scratch[len].token.constant = 4.0;
+	mathomatic->scratch[len].level = 6;
+	mathomatic->scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].token.constant = 4.0;
 	len++;
-	scratch[len].level = 6;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = TIMES;
+	mathomatic->scratch[len].level = 6;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = TIMES;
 	len++;
 	aloc = len;
-	blt(&scratch[len], a1p, (char *) x1p - (char *) a1p);
+	blt(&mathomatic->scratch[len], a1p, (char *) x1p - (char *) a1p);
 	len += (x1p - a1p);
-	scratch[len].level = 7;
-	scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].level = 7;
+	mathomatic->scratch[len].kind = CONSTANT;
 	if (opx1 == MINUS)
-		scratch[len].token.constant = -1.0;
+		mathomatic->scratch[len].token.constant = -1.0;
 	else
-		scratch[len].token.constant = 1.0;
+		mathomatic->scratch[len].token.constant = 1.0;
 	len++;
-	blt(&scratch[len], a2p, (char *) a2ep - (char *) a2p);
+	blt(&mathomatic->scratch[len], a2p, (char *) a2ep - (char *) a2p);
 	len += (a2ep - a2p);
 	alen = len - aloc;
-	j = min_level(&scratch[aloc], len - aloc);
+	j = min_level(mathomatic, &mathomatic->scratch[aloc], len - aloc);
 	j = 7 - j;
 	for (i = aloc; i < len; i++)
-		scratch[i].level += j;
-	scratch[len].level = 6;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = TIMES;
+		mathomatic->scratch[i].level += j;
+	mathomatic->scratch[len].level = 6;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = TIMES;
 	len++;
 	k = len;
-	scratch[len] = zero_token;
+	mathomatic->scratch[len] = mathomatic->zero_token;
 	len++;
-	for (p2 = p1 = trhs;; p1++) {
+	for (p2 = p1 = mathomatic->trhs;; p1++) {
 		if (p1 >= ep || (p1->level == 1 && p1->kind == OPERATOR)) {
 			if (!((p2 <= x1p && p1 > x1p) || (p2 <= x2p && p1 > x2p))) {
-				if (p2 == trhs) {
-					scratch[len].level = 1;
-					scratch[len].kind = OPERATOR;
-					scratch[len].token.operatr = PLUS;
+				if (p2 == mathomatic->trhs) {
+					mathomatic->scratch[len].level = 1;
+					mathomatic->scratch[len].kind = OPERATOR;
+					mathomatic->scratch[len].token.operatr = PLUS;
 					len++;
 				}
-				blt(&scratch[len], p2, (char *) p1 - (char *) p2);
+				blt(&mathomatic->scratch[len], p2, (char *) p1 - (char *) p2);
 				len += (p1 - p2);
 			}
 			if (p1 >= ep)
@@ -1051,59 +1045,59 @@ big_bbreak:
 		}
 	}
 	for (i = k; i < len; i++)
-		scratch[i].level += 6;
-	scratch[len].level = 4;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = POWER;
+		mathomatic->scratch[i].level += 6;
+	mathomatic->scratch[len].level = 4;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = POWER;
 	len++;
-	scratch[len].level = 4;
-	scratch[len].kind = CONSTANT;
-	scratch[len].token.constant = 0.5;
+	mathomatic->scratch[len].level = 4;
+	mathomatic->scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].token.constant = 0.5;
 	len++;
-	scratch[len].level = 3;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = TIMES;
+	mathomatic->scratch[len].level = 3;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = TIMES;
 	len++;
-	scratch[len].level = 3;
-	scratch[len].kind = VARIABLE;
-	next_sign(&scratch[len].token.variable);
+	mathomatic->scratch[len].level = 3;
+	mathomatic->scratch[len].kind = VARIABLE;
+	next_sign(mathomatic, &mathomatic->scratch[len].token.variable);
 	len++;
-	scratch[len].level = 2;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = MINUS;
+	mathomatic->scratch[len].level = 2;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = MINUS;
 	len++;
-	if (len + blen + 3 + alen > n_tokens) {
-		error_huge();
+	if (len + blen + 3 + alen > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
-	blt(&scratch[len], scratch, blen * sizeof(token_type));
+	blt(&mathomatic->scratch[len], mathomatic->scratch, blen * sizeof(token_type));
 	len += blen;
-	scratch[len].level = 1;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = DIVIDE;
+	mathomatic->scratch[len].level = 1;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = DIVIDE;
 	len++;
-	scratch[len].level = 2;
-	scratch[len].kind = CONSTANT;
-	scratch[len].token.constant = 2.0;
+	mathomatic->scratch[len].level = 2;
+	mathomatic->scratch[len].kind = CONSTANT;
+	mathomatic->scratch[len].token.constant = 2.0;
 	len++;
-	scratch[len].level = 2;
-	scratch[len].kind = OPERATOR;
-	scratch[len].token.operatr = TIMES;
+	mathomatic->scratch[len].level = 2;
+	mathomatic->scratch[len].kind = OPERATOR;
+	mathomatic->scratch[len].token.operatr = TIMES;
 	len++;
-	blt(&scratch[len], &scratch[aloc], alen * sizeof(token_type));
+	blt(&mathomatic->scratch[len], &mathomatic->scratch[aloc], alen * sizeof(token_type));
 	len += alen;
-	if (found_var(scratch, len, v))
+	if (found_var(mathomatic->scratch, len, v))
 		return false;
-	blt(tlhs, x1_storage, nx1 * sizeof(token_type));
-	n_tlhs = nx1;
-	simp_loop(tlhs, &n_tlhs);
-	blt(trhs, scratch, len * sizeof(token_type));
-	n_trhs = len;
-	simp_loop(trhs, &n_trhs);
-	list_tdebug(2);
-	uf_tsimp(trhs, &n_trhs);	/* don't unfactor result so much, just unfactor what will be unfactored anyway */
-	simps_side(trhs, &n_trhs, false);
-	list_tdebug(1);
-	debug_string(0, _("Equation was solved with the quadratic formula."));
+	blt(mathomatic->tlhs, x1_storage, nx1 * sizeof(token_type));
+	mathomatic->n_tlhs = nx1;
+	simp_loop(mathomatic, mathomatic->tlhs, &mathomatic->n_tlhs);
+	blt(mathomatic->trhs, mathomatic->scratch, len * sizeof(token_type));
+	mathomatic->n_trhs = len;
+	simp_loop(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);
+	list_tdebug(mathomatic, 2);
+	uf_tsimp(mathomatic, mathomatic->trhs, &mathomatic->n_trhs);	/* don't unfactor result so much, just unfactor what will be unfactored anyway */
+	simps_side(mathomatic, mathomatic->trhs, &mathomatic->n_trhs, false);
+	list_tdebug(mathomatic, 1);
+	debug_string(mathomatic, 0, _("Equation was solved with the quadratic formula."));
 	return true;
 }
 
@@ -1129,13 +1123,13 @@ big_bbreak:
  * Return true unless something is wrong.
  */
 static int
-g_of_f(op, operandp, side1p, side1np, side2p, side2np)
-int		op;		/* current operator */
-token_type	*operandp;	/* operand pointer */
-token_type	*side1p;	/* equation side pointer */
-int		*side1np;	/* pointer to the length of "side1p" */
-token_type	*side2p;	/* equation side pointer */
-int		*side2np;	/* pointer to the length of "side2p" */
+g_of_f(MathoMatic* mathomatic, int op, token_type *operandp, token_type *side1p, int *side1np, token_type *side2p, int *side2np)
+//int		op;		/* current operator */
+//token_type	*operandp;	/* operand pointer */
+//token_type	*side1p;	/* equation side pointer */
+//int		*side1np;	/* pointer to the length of "side1p" */
+//token_type	*side2p;	/* equation side pointer */
+//int		*side2np;	/* pointer to the length of "side2p" */
 {
 	token_type	*p1, *p2, *ep;
 	int		oldn, operandn;
@@ -1147,17 +1141,17 @@ int		*side2np;	/* pointer to the length of "side2p" */
 	oldn = *side1np;
 	ep = &side1p[oldn];
 	if (operandp < side1p || operandp >= ep) {
-		error_bug("g_of_f() called with invalid operandp.");
+		error_bug(mathomatic, "g_of_f() called with invalid operandp.");
 	}
-	if (*side1np == prev_n1 && *side2np == prev_n2) {
-		if (++repeat_count >= 4) {
-			debug_string(1, _("Infinite loop aborted in solve routine."));
+	if (*side1np == mathomatic->prev_n1 && *side2np == mathomatic->prev_n2) {
+		if (++mathomatic->repeat_count >= 4) {
+			debug_string(mathomatic, 1, _("Infinite loop aborted in solve routine."));
 			return false;
 		}
 	} else {
-		prev_n1 = *side1np;
-		prev_n2 = *side2np;
-		repeat_count = 0;
+		mathomatic->prev_n1 = *side1np;
+		mathomatic->prev_n2 = *side2np;
+		mathomatic->repeat_count = 0;
 	}
 	switch (op) {
 	case PLUS:
@@ -1185,14 +1179,14 @@ int		*side2np;	/* pointer to the length of "side2p" */
 	}
 	operandn = p1 - operandp;
 	if (op == POWER && operandp == side1p) {
-		if (!parse_complex(side2p, *side2np, &c1))
+		if (!parse_complex(mathomatic, side2p, *side2np, &c1))
 			return false;
-		if (!parse_complex(operandp, operandn, &c2))
+		if (!parse_complex(mathomatic, operandp, operandn, &c2))
 			return false;
-		debug_string(1, _("Taking logarithm of both equation sides:"));
+		debug_string(mathomatic, 1, _("Taking logarithm of both equation sides:"));
 		errno = 0;
 		c1 = complex_div(complex_log(c1), complex_log(c2));
-		check_err();
+		check_err(mathomatic);
 		*side2np = 0;
 		side2p[*side2np].level = 1;
 		side2p[*side2np].kind = CONSTANT;
@@ -1220,68 +1214,68 @@ int		*side2np;	/* pointer to the length of "side2p" */
 		return true;
 	}
 	if (op == MODULUS) {
-		if (get_constant(side2p, *side2np, &d1) && get_constant(operandp, operandn, &d2)) {
+		if (get_constant(mathomatic, side2p, *side2np, &d1) && get_constant(mathomatic, operandp, operandn, &d2)) {
 			if (fabs(d1) >= fabs(d2)) {
-				error(_("There are no possible solutions."));
+				error(mathomatic, _("There are no possible solutions."));
 				return false;
 			}
 		}
 	}
 #if	!SILENT
-	if (debug_level > 0) {
+	if (mathomatic->debug_level > 0) {
 		switch (op) {
 		case PLUS:
-			fprintf(gfp, _("Subtracting"));
+			fprintf(mathomatic->gfp, _("Subtracting"));
 			break;
 		case MINUS:
-			fprintf(gfp, _("Adding"));
+			fprintf(mathomatic->gfp, _("Adding"));
 			break;
 		case TIMES:
-			fprintf(gfp, _("Dividing both sides of the equation by"));
+			fprintf(mathomatic->gfp, _("Dividing both sides of the equation by"));
 			break;
 		case DIVIDE:
-			fprintf(gfp, _("Multiplying both sides of the equation by"));
+			fprintf(mathomatic->gfp, _("Multiplying both sides of the equation by"));
 			break;
 		case POWER:
-			fprintf(gfp, _("Raising both sides of the equation to the power of"));
+			fprintf(mathomatic->gfp, _("Raising both sides of the equation to the power of"));
 			break;
 		case MODULUS:
-			fprintf(gfp, _("Applying inverse modulus of"));
+			fprintf(mathomatic->gfp, _("Applying inverse modulus of"));
 			break;
 		}
 		if (op == POWER && operandn == 1 && operandp->kind == CONSTANT) {
-			fprintf(gfp, " %.*g:\n", precision, 1.0 / operandp->token.constant);
+			fprintf(mathomatic->gfp, " %.*g:\n", mathomatic->precision, 1.0 / operandp->token.constant);
 		} else {
-			fprintf(gfp, " \"");
+			fprintf(mathomatic->gfp, " \"");
 			if (op == POWER)
-				fprintf(gfp, "1/(");
-			list_proc(operandp, operandn, false);
+				fprintf(mathomatic->gfp, "1/(");
+			list_proc(mathomatic, operandp, operandn, false);
 			switch (op) {
 			case PLUS:
-				fprintf(gfp, _("\" from both sides of the equation:\n"));
+				fprintf(mathomatic->gfp, _("\" from both sides of the equation:\n"));
 				break;
 			case MINUS:
 			case MODULUS:
-				fprintf(gfp, _("\" to both sides of the equation:\n"));
+				fprintf(mathomatic->gfp, _("\" to both sides of the equation:\n"));
 				break;
 			case POWER:
-				fprintf(gfp, ")");
+				fprintf(mathomatic->gfp, ")");
 			default:
-				fprintf(gfp, "\":\n");
+				fprintf(mathomatic->gfp, "\":\n");
 				break;
 			}
 		}
 	}
 #endif
-	if (*side1np + operandn + 3 > n_tokens || *side2np + operandn + 5 > n_tokens) {
-		error_huge();
+	if (*side1np + operandn + 3 > mathomatic->n_tokens || *side2np + operandn + 5 > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
-	if (min_level(side1p, oldn) <= 1) {
+	if (min_level(mathomatic, side1p, oldn) <= 1) {
 		for (p2 = side1p; p2 < ep; p2++)
 			p2->level++;
 	}
 	ep = &side2p[*side2np];
-	if (min_level(side2p, *side2np) <= 1) {
+	if (min_level(mathomatic, side2p, *side2np) <= 1) {
 		for (p2 = side2p; p2 < ep; p2++)
 			p2->level++;
 	}
@@ -1294,12 +1288,12 @@ int		*side2np;	/* pointer to the length of "side2p" */
 		p2++;
 		p2->level = 2;
 		p2->kind = VARIABLE;
-		snprintf(var_name_buf, sizeof(var_name_buf), "%s_any%.0d", V_INTEGER_PREFIX, last_int_var);
-		if (parse_var(&p2->token.variable, var_name_buf) == NULL)
+		snprintf(var_name_buf, sizeof(var_name_buf), "%s_any%.0d", V_INTEGER_PREFIX, mathomatic->last_int_var);
+		if (parse_var(mathomatic, &p2->token.variable, var_name_buf) == NULL)
 			return false;
-		last_int_var++;
-		if (last_int_var < 0) {
-			last_int_var = 0;
+		mathomatic->last_int_var++;
+		if (mathomatic->last_int_var < 0) {
+			mathomatic->last_int_var = 0;
 		}
 		p2++;
 		p2->level = 2;
@@ -1361,7 +1355,7 @@ int		*side2np;	/* pointer to the length of "side2p" */
 	blt(&side2p[*side2np], &side1p[oldn], (*side1np - oldn) * sizeof(*side1p));
 	*side2np += *side1np - oldn;
 	if (op == POWER && operandn == 1 && operandp->kind == CONSTANT) {
-		f_to_fraction(operandp->token.constant, &numerator, &denominator);
+		f_to_fraction(mathomatic, operandp->token.constant, &numerator, &denominator);
 		if (always_positive(numerator)) {
 			ep = &side2p[*side2np];
 			for (p2 = side2p; p2 < ep; p2++)
@@ -1372,7 +1366,7 @@ int		*side2np;	/* pointer to the length of "side2p" */
 			p2++;
 			p2->level = 1;
 			p2->kind = VARIABLE;
-			next_sign(&p2->token.variable);
+			next_sign(mathomatic, &p2->token.variable);
 			*side2np += 2;
 		}
 	}
@@ -1388,17 +1382,17 @@ int		*side2np;	/* pointer to the length of "side2p" */
  * Return true if successful.
  */
 static int
-flip(side1p, side1np, side2p, side2np)
-token_type	*side1p;	/* equation side pointer */
-int		*side1np;	/* pointer to equation side length */
-token_type	*side2p;
-int		*side2np;
+flip(MathoMatic* mathomatic, token_type *side1p, int *side1np, token_type *side2p, int *side2np)
+//token_type	*side1p;	/* equation side pointer */
+//int		*side1np;	/* pointer to equation side length */
+//token_type	*side2p;
+//int		*side2np;
 {
 	token_type	*p1, *ep;
 
-	debug_string(1, _("Taking the reciprocal of both sides of the equation..."));
-	if (*side1np + 2 > n_tokens || *side2np + 2 > n_tokens) {
-		error_huge();
+	debug_string(mathomatic, 1, _("Taking the reciprocal of both sides of the equation..."));
+	if (*side1np + 2 > mathomatic->n_tokens || *side2np + 2 > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 	ep = &side1p[*side1np];
 	for (p1 = side1p; p1 < ep; p1++)
@@ -1411,13 +1405,13 @@ int		*side2np;
 	blt(side2p + 2, side2p, *side2np * sizeof(*side2p));
 	*side2np += 2;
 
-	*side1p = one_token;
+	*side1p = mathomatic->one_token;
 	side1p++;
 	side1p->level = 1;
 	side1p->kind = OPERATOR;
 	side1p->token.operatr = DIVIDE;
 
-	*side2p = one_token;
+	*side2p = mathomatic->one_token;
 	side2p++;
 	side2p->level = 1;
 	side2p->kind = OPERATOR;

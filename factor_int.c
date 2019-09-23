@@ -24,12 +24,11 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 
 #include "includes.h"
 
-static void try_factor(double arg);
-static int fc_recurse(token_type *equation, int *np, int loc, int level, int level_code);
+static void try_factor(MathoMatic* mathomatic, double arg);
+static int fc_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level, int level_code);
 
 /* The following data is used to factor integers: */
-static double nn, sqrt_value;
-static double skip_multiples[] = {	/* Additive array that skips over multiples of 2, 3, 5, and 7. */
+static const double skip_multiples[] = {	/* Additive array that skips over multiples of 2, 3, 5, and 7. */
 	10, 2, 4, 2, 4, 6, 2, 6,
 	 4, 2, 4, 6, 6, 2, 6, 4,
 	 2, 6, 4, 6, 8, 4, 2, 4,
@@ -45,53 +44,52 @@ static double skip_multiples[] = {	/* Additive array that skips over multiples o
  * Return true if successful.
  */
 int
-factor_one(value)
-double	value;
+factor_one(MathoMatic* mathomatic, double value)
 {
 	int	i;
 	double	d;
 
-	uno = 0;
-	nn = value;
-	if (nn == 0.0 || !isfinite(nn)) {
+	mathomatic->uno = 0;
+	mathomatic->nn = value;
+	if (mathomatic->nn == 0.0 || !isfinite(mathomatic->nn)) {
 		/* zero or not finite */
 		return false;
 	}
-	if (fabs(nn) >= MAX_K_INTEGER) {
+	if (fabs(mathomatic->nn) >= MAX_K_INTEGER) {
 		/* too large to factor */
 		return false;
 	}
-	if (fmod(nn, 1.0) != 0.0) {
+	if (fmod(mathomatic->nn, 1.0) != 0.0) {
 		/* not an integer */
 		return false;
 	}
-	sqrt_value = 1.0 + sqrt(fabs(nn));
-	try_factor(2.0);
-	try_factor(3.0);
-	try_factor(5.0);
-	try_factor(7.0);
+	mathomatic->sqrt_value = 1.0 + sqrt(fabs(mathomatic->nn));
+	try_factor(mathomatic, 2.0);
+	try_factor(mathomatic, 3.0);
+	try_factor(mathomatic, 5.0);
+	try_factor(mathomatic, 7.0);
 	d = 1.0;
-	while (d <= sqrt_value) {
+	while (d <= mathomatic->sqrt_value) {
 		for (i = 0; i < ARR_CNT(skip_multiples); i++) {
 			d += skip_multiples[i];
-			try_factor(d);
+			try_factor(mathomatic, d);
 		}
 	}
-	if (nn != 1.0) {
-		if (nn < 0 && nn != -1.0) {
-			try_factor(fabs(nn));
+	if (mathomatic->nn != 1.0) {
+		if (mathomatic->nn < 0 && mathomatic->nn != -1.0) {
+			try_factor(mathomatic, fabs(mathomatic->nn));
 		}
-		try_factor(nn);
+		try_factor(mathomatic, mathomatic->nn);
 	}
-	if (uno == 0) {
-		try_factor(1.0);
+	if (mathomatic->uno == 0) {
+		try_factor(mathomatic, 1.0);
 	}
 /* Do some floating point arithmetic self-checking.  If the following fails, it is due to a floating point bug. */
-	if (nn != 1.0) {
-		error_bug("Internal error factoring integers (final nn != 1.0).");
+	if (mathomatic->nn != 1.0) {
+		error_bug(mathomatic, "Internal error factoring integers (final nn != 1.0).");
 	}
-	if (value != multiply_out_unique()) {
-		error_bug("Internal error factoring integers (result array value is incorrect).");
+	if (value != multiply_out_unique(mathomatic)) {
+		error_bug(mathomatic, "Internal error factoring integers (result array value is incorrect).");
 	}
 	return true;
 }
@@ -101,31 +99,30 @@ double	value;
  * If so, save it and remove it from "nn".
  */
 static void
-try_factor(arg)
-double	arg;
+try_factor(MathoMatic* mathomatic, double arg)
 {
 #if	DEBUG
 	if (fmod(arg, 1.0) != 0.0) {
-		error_bug("Trying factor that is not an integer!");
+		error_bug(mathomatic, "Trying factor that is not an integer!");
 	}
 #endif
-	while (fmod(nn, arg) == 0.0) {
-		if (uno > 0 && ucnt[uno-1] > 0 && unique[uno-1] == arg) {
-			ucnt[uno-1]++;
+	while (fmod(mathomatic->nn, arg) == 0.0) {
+		if (mathomatic->uno > 0 && mathomatic->ucnt[mathomatic->uno-1] > 0 && mathomatic->unique[mathomatic->uno-1] == arg) {
+			mathomatic->ucnt[mathomatic->uno-1]++;
 		} else {
-			while (uno > 0 && ucnt[uno-1] <= 0)
-				uno--;
-			unique[uno] = arg;
-			ucnt[uno++] = 1;
+			while (mathomatic->uno > 0 && mathomatic->ucnt[mathomatic->uno-1] <= 0)
+				mathomatic->uno--;
+			mathomatic->unique[mathomatic->uno] = arg;
+			mathomatic->ucnt[mathomatic->uno++] = 1;
 		}
-		nn /= arg;
+		mathomatic->nn /= arg;
 #if	DEBUG
-		if (fmod(nn, 1.0) != 0.0) {
-			error_bug("nn turned non-integer in try_factor().");
+		if (fmod(mathomatic->nn, 1.0) != 0.0) {
+			error_bug(mathomatic, "nn turned non-integer in try_factor().");
 		}
 #endif
-		sqrt_value = 1.0 + sqrt(fabs(nn));
-		if (fabs(nn) <= 1.5 || fabs(arg) <= 1.5)
+		mathomatic->sqrt_value = 1.0 + sqrt(fabs(mathomatic->nn));
+		if (fabs(mathomatic->nn) <= 1.5 || fabs(arg) <= 1.5)
 			break;
 	}
 }
@@ -136,20 +133,20 @@ double	arg;
  * Nothing is changed and the value is returned.
  */
 double
-multiply_out_unique(void)
+multiply_out_unique(MathoMatic* mathomatic)
 {
 	int	i, j;
 	double	d;
 
 	d = 1.0;
-	for (i = 0; i < uno; i++) {
+	for (i = 0; i < mathomatic->uno; i++) {
 #if	DEBUG
-		if (ucnt[i] < 0) {
-			error_bug("Error in ucnt[] being negative.");
+		if (mathomatic->ucnt[i] < 0) {
+			error_bug(mathomatic, "Error in ucnt[] being negative.");
 		}
 #endif
-		for (j = 0; j < ucnt[i]; j++) {
-			d *= unique[i];
+		for (j = 0; j < mathomatic->ucnt[i]; j++) {
+			d *= mathomatic->unique[i];
 		}
 	}
 	return d;
@@ -163,33 +160,33 @@ multiply_out_unique(void)
  * Return true if successful.
  */
 int
-display_unique(void)
+display_unique(MathoMatic* mathomatic)
 {
 	int	i;
 	double	value;
 
-	if (uno <= 0)
+	if (mathomatic->uno <= 0)
 		return false;
-	value = multiply_out_unique();
-	fprintf(gfp, "%.0f = ", value);
-	for (i = 0; i < uno;) {
-		if (ucnt[i] > 0) {
-			fprintf(gfp, "%.0f", unique[i]);
+	value = multiply_out_unique(mathomatic);
+	fprintf(mathomatic->gfp, "%.0f = ", value);
+	for (i = 0; i < mathomatic->uno;) {
+		if (mathomatic->ucnt[i] > 0) {
+			fprintf(mathomatic->gfp, "%.0f", mathomatic->unique[i]);
 		} else {
 			i++;
 			continue;
 		}
-		if (ucnt[i] > 1) {
-			fprintf(gfp, "^%d", ucnt[i]);
+		if (mathomatic->ucnt[i] > 1) {
+			fprintf(mathomatic->gfp, "^%d", mathomatic->ucnt[i]);
 		}
 		do {
 			i++;
-		} while (i < uno && ucnt[i] <= 0);
-		if (i < uno) {
-			fprintf(gfp, " * ");
+		} while (i < mathomatic->uno && mathomatic->ucnt[i] <= 0);
+		if (i < mathomatic->uno) {
+			fprintf(mathomatic->gfp, " * ");
 		}
 	}
-	fprintf(gfp, "\n");
+	fprintf(mathomatic->gfp, "\n");
 	return true;
 }
 
@@ -199,20 +196,20 @@ display_unique(void)
  * Return true if x is a prime number.
  */
 int
-is_prime(void)
+is_prime(MathoMatic* mathomatic)
 {
 	double	value;
 
-	if (uno <= 0) {
+	if (mathomatic->uno <= 0) {
 #if	DEBUG
-		error_bug("uno == 0 in is_prime().");
+		error_bug(mathomatic, "uno == 0 in is_prime().");
 #endif
 		return false;
 	}
-	value = multiply_out_unique();
+	value = multiply_out_unique(mathomatic);
 	if (value < 2.0)
 		return false;
-	if (uno == 1 && ucnt[0] == 1)
+	if (mathomatic->uno == 1 && mathomatic->ucnt[0] == 1)
 		return true;
 	return false;
 }
@@ -223,9 +220,7 @@ is_prime(void)
  * Return true if the equation side was modified.
  */
 int
-factor_int(equation, np)
-token_type	*equation;
-int		*np;
+factor_int(MathoMatic* mathomatic, token_type *equation, int *np)
 {
 	int	i, j;
 	int	xsize;
@@ -233,24 +228,24 @@ int		*np;
 	int	modified = false;
 
 	for (i = 0; i < *np; i += 2) {
-		if (equation[i].kind == CONSTANT && factor_one(equation[i].token.constant) && uno > 0) {
-			if (uno == 1 && ucnt[0] <= 1)
+		if (equation[i].kind == CONSTANT && factor_one(mathomatic, equation[i].token.constant) && mathomatic->uno > 0) {
+			if (mathomatic->uno == 1 && mathomatic->ucnt[0] <= 1)
 				continue;	/* prime number */
 			level = equation[i].level;
-			if (uno > 1 && *np > 1)
+			if (mathomatic->uno > 1 && *np > 1)
 				level++;
 			xsize = -2;
-			for (j = 0; j < uno; j++) {
-				if (ucnt[j] > 1)
+			for (j = 0; j < mathomatic->uno; j++) {
+				if (mathomatic->ucnt[j] > 1)
 					xsize += 4;
 				else
 					xsize += 2;
 			}
-			if (*np + xsize > n_tokens) {
-				error_huge();
+			if (*np + xsize > mathomatic->n_tokens) {
+				error_huge(mathomatic);
 			}
-			for (j = 0; j < uno; j++) {
-				if (ucnt[j] > 1)
+			for (j = 0; j < mathomatic->uno; j++) {
+				if (mathomatic->ucnt[j] > 1)
 					xsize = 4;
 				else
 					xsize = 2;
@@ -269,8 +264,8 @@ int		*np;
 				}
 				equation[i].kind = CONSTANT;
 				equation[i].level = level;
-				equation[i].token.constant = unique[j];
-				if (ucnt[j] > 1) {
+				equation[i].token.constant = mathomatic->unique[j];
+				if (mathomatic->ucnt[j] > 1) {
 					equation[i].level = level + 1;
 					i++;
 					equation[i].kind = OPERATOR;
@@ -279,7 +274,7 @@ int		*np;
 					i++;
 					equation[i].level = level + 1;
 					equation[i].kind = CONSTANT;
-					equation[i].token.constant = ucnt[j];
+					equation[i].token.constant = mathomatic->ucnt[j];
 				}
 			}
 			modified = true;
@@ -294,16 +289,16 @@ int		*np;
  * Return true if something was factored.
  */
 int
-factor_int_equation(n)
-int	n;	/* equation space number */
+factor_int_equation(MathoMatic* mathomatic, int n)
+//int	n;	/* equation space number */
 {
 	int	rv = false;
 
-	if (empty_equation_space(n))
+	if (empty_equation_space(mathomatic, n))
 		return rv;
-	if (factor_int(lhs[n], &n_lhs[n]))
+	if (factor_int(mathomatic, mathomatic->lhs[n], &mathomatic->n_lhs[n]))
 		rv = true;
-	if (factor_int(rhs[n], &n_rhs[n]))
+	if (factor_int(mathomatic, mathomatic->rhs[n], &mathomatic->n_rhs[n]))
 		rv = true;
 	return rv;
 }
@@ -312,15 +307,12 @@ int	n;	/* equation space number */
  * List an equation side with optional integer factoring.
  */
 int
-list_factor(equation, np, factor_flag)
-token_type	*equation;
-int		*np;
-int		factor_flag;
+list_factor(MathoMatic* mathomatic, token_type *equation, int *np, int factor_flag)
 {
-	if (factor_flag || factor_int_flag) {
-		factor_int(equation, np);
+	if (factor_flag || mathomatic->factor_int_flag) {
+		factor_int(mathomatic, equation, np);
 	}
-	return list_proc(equation, *np, false);
+	return list_proc(mathomatic, equation, *np, false);
 }
 
 /*
@@ -352,21 +344,18 @@ int		factor_flag;
  * Return true if equation side was modified.
  */
 int
-factor_constants(equation, np, level_code)
-token_type	*equation;	/* pointer to the beginning of equation side */
-int		*np;		/* pointer to length of equation side */
-int		level_code;	/* see above */
+factor_constants(MathoMatic* mathomatic, token_type *equation, int *np, int level_code)
+//token_type	*equation;	/* pointer to the beginning of equation side */
+//int		*np;		/* pointer to length of equation side */
+//int		level_code;	/* see above */
 {
 	if (level_code == 3)
 		return false;
-	return fc_recurse(equation, np, 0, 1, level_code);
+	return fc_recurse(mathomatic, equation, np, 0, 1, level_code);
 }
 
 static int
-fc_recurse(equation, np, loc, level, level_code)
-token_type	*equation;
-int		*np, loc, level;
-int		level_code;
+fc_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level, int level_code)
 {
 	int	i, j, k, eloc;
 	int	op;
@@ -376,7 +365,7 @@ int		level_code;
 
 	for (i = loc; i < *np && equation[i].level >= level;) {
 		if (equation[i].level > level) {
-			modified |= fc_recurse(equation, np, i, level + 1, level_code);
+			modified |= fc_recurse(mathomatic, equation, np, i, level + 1, level_code);
 			i++;
 			for (; i < *np && equation[i].level > level; i += 2)
 				;
@@ -387,7 +376,7 @@ int		level_code;
 	if (modified)
 		return true;
 	improve_readability = ((level_code & 3) > 1 || ((level_code & 3) && (level == 1)));
-	gcd_flag = ((improve_readability && factor_out_all_numeric_gcds) || (level_code & 4));
+	gcd_flag = ((improve_readability && mathomatic->factor_out_all_numeric_gcds) || (level_code & 4));
 	for (i = loc; i < *np && equation[i].level >= level;) {
 		if (equation[i].level == level) {
 			switch (equation[i].kind) {
@@ -422,14 +411,14 @@ int		level_code;
 				if (minimum > d)
 					minimum = d;
 				if (gcd_flag && cogcd != 0.0)
-					cogcd = gcd_verified(d, cogcd);
+					cogcd = gcd_verified(mathomatic, d, cogcd);
 			}
 		} else {
 			op = 0;
 			for (j = i + 1; j < *np && equation[j].level > level; j += 2) {
 #if	DEBUG
 				if (equation[j].kind != OPERATOR) {
-					error_bug("Bug in factor_constants().");
+					error_bug(mathomatic, "Bug in factor_constants().");
 				}
 #endif
 				if (equation[j].level == level + 1) {
@@ -455,7 +444,7 @@ int		level_code;
 							if (minimum > d)
 								minimum = d;
 							if (gcd_flag && cogcd != 0.0)
-								cogcd = gcd_verified(d, cogcd);
+								cogcd = gcd_verified(mathomatic, d, cogcd);
 						}
 						i = j;
 					}
@@ -473,7 +462,7 @@ int		level_code;
 				if (minimum > 1.0)
 					minimum = 1.0;
 				if (gcd_flag && cogcd != 0.0)
-					cogcd = gcd_verified(1.0, cogcd);
+					cogcd = gcd_verified(mathomatic, 1.0, cogcd);
 			}
 			i = j;
 			continue;
@@ -529,8 +518,8 @@ int		level_code;
 		minimum = -minimum;
 	if (minimum == 1.0)
 		return modified;
-	if (*np + ((op_count + 2) * 2) > n_tokens) {
-		error_huge();
+	if (*np + ((op_count + 2) * 2) > mathomatic->n_tokens) {
+		error_huge(mathomatic);
 	}
 	for (i = loc; i < *np && equation[i].level >= level; i++) {
 		if (equation[i].kind != OPERATOR) {

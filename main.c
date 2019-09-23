@@ -70,6 +70,8 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 #if	!LIBRARY	/* This comments out this whole file if compiling as the symbolic math library. */
 
 #include "includes.h"
+#include "lib/mathomatic.h"
+
 #if	!NO_GETOPT_H
 #include <getopt.h>
 #endif
@@ -81,15 +83,16 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 HANDLE	hOut;
 #endif
 
+MathoMatic *mathomatic;
+
 /*
  * Display invocation usage info.
  */
 void
-usage(fp)
-FILE	*fp;
+usage(FILE *fp)
 {
 	fprintf(fp, _("Mathomatic computer algebra system, version %s\n"), VERSION);
-	fprintf(fp, _("Usage: %s [ options ] [ input_files or input ]\n\n"), prog_name);
+	fprintf(fp, _("Usage: %s [ options ] [ input_files or input ]\n\n"), mathomatic->prog_name);
 	fprintf(fp, _("Options:\n"));
 	fprintf(fp, _("  -a             Enable alternative color mode.\n"));
 	fprintf(fp, _("  -b             Enable bold color mode.\n"));
@@ -134,45 +137,46 @@ char	**argv;
 #if	I18N
 	/* Initialize internationalization so that messages are in the right language. */
 	setlocale(LC_ALL, "");
-	bindtextdomain(prog_name, LOCALEDIR);
-	textdomain(prog_name);
+	bindtextdomain(mathomatic->prog_name, LOCALEDIR);
+	textdomain(mathomatic->prog_name);
 #endif
 
 #if	CYGWIN || MINGW
 	dir_path = strdup(dirname_win(argv[0]));	/* set dir_path to this executable's directory */
 #endif
+        mathomatic = newtMathoMatic();
 	/* initialize the global variables */
-	init_gvars();
-	default_out = stdout;	/* set default_out to any file you want to redirect output to */
-	gfp = default_out;
-	get_screen_size();
+	init_gvars(mathomatic);
+	mathomatic->default_out = stdout;	/* set default_out to any file you want to redirect output to */
+	mathomatic->gfp = mathomatic->default_out;
+	get_screen_size(mathomatic);
 
 	/* process command line options */
 	while ((i = getopt(argc, argv, "s:abqrtdchuvwxm:e")) >= 0) {
 		switch (i) {
 		case 's':
 			if (optarg) {
-				security_level = strtod(optarg, &cp);
+				mathomatic->security_level = strtod(optarg, &cp);
 #if	SECURE
-				if (security_level != 4) {
-					fprintf(stderr, _("%s: Already compiled for maximum security (level 4), therefore setting security level ignored.\n"), prog_name);
+				if (mathomatic->security_level != 4) {
+					fprintf(stderr, _("%s: Already compiled for maximum security (level 4), therefore setting security level ignored.\n"), mathomatic->prog_name);
 				}
 #endif
 			}
 			if (optarg == NULL || cp == NULL || (cp == optarg && *cp != ':') || (*cp != '\0' && *cp != ':')) {
-				fprintf(stderr, _("%s: Error in setting security level.\n"), prog_name);
+				fprintf(stderr, _("%s: Error in setting security level.\n"), mathomatic->prog_name);
 				exit(2);
 			}
 			if (*cp == ':') {
 				time_out_seconds = strtol(cp + 1, &cp, 10);
 				if (!(*cp == '\0' && time_out_seconds > 0)) {
-					fprintf(stderr, _("%s: Error in setting time out seconds.\n"), prog_name);
+					fprintf(stderr, _("%s: Error in setting time out seconds.\n"), mathomatic->prog_name);
 					exit(2);
 				}
 			}
 #if	!SECURE
 			if (time_out_seconds > 0) {
-				printf(_("Security level is %d, time out seconds is %d.\n"), security_level, time_out_seconds);
+				printf(_("Security level is %d, time out seconds is %d.\n"), mathomatic->security_level, time_out_seconds);
 			}
 #endif
 			break;
@@ -189,34 +193,34 @@ char	**argv;
 			coption++;
 			break;
 		case 'x':
-			html_flag = 1;
+			mathomatic->html_flag = 1;
 			wide_flag = true;
 			break;
 		case 'm':
 			if (optarg)
 				new_size = strtod(optarg, &cp) * DEFAULT_N_TOKENS;
 			if (optarg == NULL || cp == NULL || *cp || new_size <= 0 || new_size >= (INT_MAX / sizeof(token_type))) {
-				fprintf(stderr, _("%s: Invalid memory size multiplier specified.\n"), prog_name);
+				fprintf(stderr, _("%s: Invalid memory size multiplier specified.\n"), mathomatic->prog_name);
 				exit(2);
 			}
-			n_tokens = (int) new_size;
+			mathomatic->n_tokens = (int) new_size;
 			break;
 		case 'q':
-			quiet_mode = true;
+			mathomatic->quiet_mode = true;
 			break;
 		case 'r':
-			readline_enabled = false;
+			mathomatic->readline_enabled = false;
 			break;
 		case 't':
-			readline_enabled = false;
+			mathomatic->readline_enabled = false;
 			wide_flag = true;
-			test_mode = true;
+			mathomatic->test_mode = true;
 			break;
 		case 'd':
-			demo_mode = true;
+			mathomatic->demo_mode = true;
 			break;
 		case 'u':
-			echo_input = true;
+			mathomatic->echo_input = true;
 			setbuf(stdout, NULL);	/* make output unbuffered */
 			setbuf(stderr, NULL);
 			break;
@@ -228,30 +232,30 @@ char	**argv;
 			printf(_("Mathomatic version %s\n"), VERSION);
 			exit(0);
 		case 'e':
-			eoption = true;
-			autoselect = false;
+			mathomatic->eoption = true;
+			mathomatic->autoselect = false;
 			break;
 		default:
 			usage(stdout);
 			exit(2);
 		}
 	}
-	if (n_tokens < 100 || n_tokens >= (INT_MAX / sizeof(token_type))) {
-		fprintf(stderr, _("%s: Standard expression array size %d out of range!\n"), prog_name, n_tokens);
+	if (mathomatic->n_tokens < 100 || mathomatic->n_tokens >= (INT_MAX / sizeof(token_type))) {
+		fprintf(stderr, _("%s: Standard expression array size %d out of range!\n"), mathomatic->prog_name, mathomatic->n_tokens);
 	}
-	if (!init_mem()) {
-		fprintf(stderr, _("%s: Not enough memory.\n"), prog_name);
+	if (!init_mem(mathomatic)) {
+		fprintf(stderr, _("%s: Not enough memory.\n"), mathomatic->prog_name);
 		exit(2);
 	}
 #if	READLINE
-	if (readline_enabled) {	/* readline_enabled flag must not change after this */
+	if (mathomatic->readline_enabled) {	/* readline_enabled flag must not change after this */
 		if ((cp = getenv("HOME"))) {
 #if	MINGW
-			snprintf(history_filename_storage, sizeof(history_filename_storage), "%s/matho_history", cp);
+			snprintf(mathomatic->history_filename_storage, sizeof(mathomatic->history_filename_storage), "%s/matho_history", cp);
 #else
-			snprintf(history_filename_storage, sizeof(history_filename_storage), "%s/.matho_history", cp);
+			snprintf(mathomatic->history_filename_storage, sizeof(mathomatic->history_filename_storage), "%s/.matho_history", cp);
 #endif
-			history_filename = history_filename_storage;
+			mathomatic->history_filename = mathomatic->history_filename_storage;
 		}
 		using_history();		/* initialize readline history */
 		rl_initialize();		/* initialize readline */
@@ -259,58 +263,58 @@ char	**argv;
 		rl_inhibit_completion = true;	/* turn off readline file name completion */
 #if	0	/* not 100% tested and this might confuse the user with the -c toggle */
 #if	!WIN32_CONSOLE_COLORS
-		if (!html_flag) {		/* If doing ANSI color: */
-			color_flag = (tigetnum("colors") >= 8);	/* autoset color output mode.  Requires ncurses. */
+		if (!mathomatic->html_flag) {		/* If doing ANSI color: */
+			mathomatic->color_flag = (tigetnum("colors") >= 8);	/* autoset color output mode.  Requires ncurses. */
 		}
 #endif
 #endif
 #if	!SECURE
-		if (security_level <= 3) {
-			read_history(history_filename);	/* restore readline history of previous session */
+		if (mathomatic->security_level <= 3) {
+			read_history(mathomatic->history_filename);	/* restore readline history of previous session */
 		}
 #endif
 	}
 #endif
-	if (html_flag) {
+	if (mathomatic->html_flag) {
 		printf("<pre>\n");
 	}
-	if (!test_mode && !quiet_mode && !eoption) {
-		display_startup_message(stdout);
+	if (!mathomatic->test_mode && !mathomatic->quiet_mode && !mathomatic->eoption) {
+		display_startup_message(mathomatic, stdout);
 	}
 	fflush(stdout);
 #if	!SECURE
 	/* read the user options initialization file */
-	if (security_level <= 3 && !test_mode && !demo_mode && !load_rc(true, NULL)) {
-		fprintf(stderr, _("%s: Error loading startup set options from \"%s\".\n"), prog_name, rc_file);
+	if (mathomatic->security_level <= 3 && !mathomatic->test_mode && !mathomatic->demo_mode && !load_rc(mathomatic, true, NULL)) {
+		fprintf(stderr, _("%s: Error loading startup set options from \"%s\".\n"), mathomatic->prog_name, mathomatic->rc_file);
 		fprintf(stderr, _("Use the \"set no save\" command to startup with the program defaults every time.\n\n"));
 	}
 #endif
 	if (wide_flag) {
-		screen_columns = 0;
-		screen_rows = 0;
+		mathomatic->screen_columns = 0;
+		mathomatic->screen_rows = 0;
 	}
 	if (coption & 1) {
-		color_flag = !color_flag;
+		mathomatic->color_flag = !mathomatic->color_flag;
 	}
 	if (boption) {
-		color_flag = 1;
-		bold_colors = 1;
+		mathomatic->color_flag = 1;
+		mathomatic->bold_colors = 1;
 	}
-	if (color_flag && aoption) {
-		color_flag = 2;
+	if (mathomatic->color_flag && aoption) {
+		mathomatic->color_flag = 2;
 	}
-	if (test_mode) {
-		color_flag = 0;
-	} else if (!quiet_mode && !eoption) {
-		if (color_flag) {
+	if (mathomatic->test_mode) {
+		mathomatic->color_flag = 0;
+	} else if (!mathomatic->quiet_mode && !mathomatic->eoption) {
+		if (mathomatic->color_flag) {
 #if	WIN32_CONSOLE_COLORS
-			if (color_flag == 2) {
-				printf(_("%s%s color mode enabled"), html_flag ? "HTML" : "ANSI", bold_colors ? " bold" : "");
+			if (mathomatic->color_flag == 2) {
+				printf(_("%s%s color mode enabled"), mathomatic->html_flag ? "HTML" : "ANSI", mathomatic->bold_colors ? " bold" : "");
 			} else {
-				printf(_("%s%s color mode enabled"), html_flag ? "HTML" : "WIN32 CONSOLE", bold_colors ? " bold" : "");
+				printf(_("%s%s color mode enabled"), mathomatic->html_flag ? "HTML" : "WIN32 CONSOLE", mathomatic->bold_colors ? " bold" : "");
 			}
 #else
-			printf(_("%s%s color mode enabled"), html_flag ? "HTML" : "ANSI", bold_colors ? " bold" : "");
+			printf(_("%s%s color mode enabled"), mathomatic->html_flag ? "HTML" : "ANSI", mathomatic->bold_colors ? " bold" : "");
 #endif
 			printf(_("; manage by typing \"help color\".\n"));
 		} else {
@@ -318,18 +322,18 @@ char	**argv;
 		}
 	}
 	fflush(stdout);
-	if ((i = setjmp(jmp_save)) != 0) {
+	if ((i = setjmp(mathomatic->jmp_save)) != 0) {
 		/* for error handling */
-		clean_up();
+		clean_up(mathomatic);
 		switch (i) {
 		case 14:
-			error(_("Expression too large."));
+			error(mathomatic, _("Expression too large."));
 		default:
 			printf(_("Operation aborted.\n"));
 			break;
 		}
-		previous_return_value = 0;
-		if (eoption)
+		mathomatic->previous_return_value = 0;
+		if (mathomatic->eoption)
 			exit_value = 1;
 	} else {
 		if ((rv = set_signals(time_out_seconds))) {
@@ -339,38 +343,38 @@ char	**argv;
 #endif
 			exit_value = 2;
 		}
-		if (!f_to_fraction(0.5, &numerator, &denominator)
+		if (!f_to_fraction(mathomatic, 0.5, &numerator, &denominator)
 		    || numerator != 1.0 || denominator != 2.0
-		    || !f_to_fraction(1.0/3.0, &numerator, &denominator)
+		    || !f_to_fraction(mathomatic, 1.0/3.0, &numerator, &denominator)
 		    || numerator != 1.0 || denominator != 3.0) {
-			fprintf(stderr, _("%s: Cannot convert any floating point values to fractions!\n"), prog_name);
+			fprintf(stderr, _("%s: Cannot convert any floating point values to fractions!\n"), mathomatic->prog_name);
 			fprintf(stderr, _("Roots will not work properly.\n"));
 			exit_value = 2;
 		}
-		if (max_memory_usage() <= 0) {
-			fprintf(stderr, _("%s: Calculated maximum memory usage overflows a long integer!\n"), prog_name);
+		if (max_memory_usage(mathomatic) <= 0) {
+			fprintf(stderr, _("%s: Calculated maximum memory usage overflows a long integer!\n"), mathomatic->prog_name);
 			exit_value = 2;
 		}
-		if (eoption) {
+		if (mathomatic->eoption) {
 			/* process expressions and commands from the command line */
 			for (i = optind; i < argc && argv[i]; i++) {
-				if (!display_process(argv[i])) {
+				if (!display_process(mathomatic, argv[i])) {
 					exit_value = 1;
 				}
 			}
 		} else {
 #if	SECURE
-			if (!quiet_mode && !test_mode)
+			if (!mathomatic->quiet_mode && !mathomatic->test_mode)
 				printf(_("Anything done here is temporary.\n"));
 			if (optind < argc) {
-				warning(_("File arguments ignored in high security mode."));
+				warning(mathomatic, _("File arguments ignored in high security mode."));
 			}
 #else
-			if (!quiet_mode && !test_mode) {
+			if (!mathomatic->quiet_mode && !mathomatic->test_mode) {
 				if (optind < argc) {
 					printf(_("Reading in file%s specified on the command line...\n"), (optind == (argc - 1)) ? "" : "s");
 				} else {
-					if (security_level >= 2) {
+					if (mathomatic->security_level >= 2) {
 						printf(_("Anything done here is temporary.\n"));
 					} else {
 						printf(_("Anything done here is temporary, unless it is saved or redirected.\n"));
@@ -381,7 +385,7 @@ char	**argv;
 			for (i = optind; i < argc && argv[i]; i++) {
 				if (strcmp(argv[i], "-") == 0) {
 					main_io_loop();
-				} else if (!read_file(argv[i])) {
+				} else if (!read_file(mathomatic, argv[i])) {
 					fflush(NULL);	/* flush all output */
 					fprintf(stderr, _("Read of file \"%s\" failed.\n"), argv[i]);
 					exit_program(1);
@@ -390,7 +394,7 @@ char	**argv;
 #endif
 		}
 	}
-	if (!eoption)
+	if (!mathomatic->eoption)
 		main_io_loop();		/* main input/output loop */
 	exit_program(exit_value);	/* exit Mathomatic, doesn't return */
 	return(exit_value);		/* so the compiler doesn't complain */
@@ -405,13 +409,13 @@ main_io_loop(void)
 	char	*cp = NULL;
 
 	for (;;) {
-		error_str = NULL;
-		warning_str = NULL;
-		default_color(false);
-		snprintf(prompt_str, sizeof(prompt_str), "%d%s", cur_equation + 1, html_flag ? HTML_PROMPT_STR : PROMPT_STR);
-		if ((cp = get_string((char *) tlhs, n_tokens * sizeof(token_type))) == NULL)
+		matho_set_error_str(mathomatic, NULL);
+		matho_set_warning_str(mathomatic, NULL);
+		default_color(mathomatic, false);
+		snprintf(mathomatic->prompt_str, sizeof(mathomatic->prompt_str), "%d%s", mathomatic->cur_equation + 1, mathomatic->html_flag ? HTML_PROMPT_STR : PROMPT_STR);
+		if ((cp = get_string(mathomatic, (char *) mathomatic->tlhs, mathomatic->n_tokens * sizeof(token_type))) == NULL)
 			break;
-		process(cp);
+		process(mathomatic, cp);
 	}
 }
 
@@ -466,7 +470,7 @@ fphandler(sig)
 int	sig;
 {
 #if	DEBUG
-	warning("Floating point exception.");
+	warning(mathomatic, "Floating point exception.");
 #endif
 }
 
@@ -479,8 +483,8 @@ void
 inthandler(sig)
 int	sig;
 {
-	abort_flag++;
-	switch (abort_flag) {
+	matho_inc_abort_flag(mathomatic);
+	switch (matho_get_abort_flag(mathomatic)) {
 	case 0:
 	case 1:
 		/* wait for graceful abort */
@@ -505,7 +509,7 @@ alarmhandler(sig)
 int	sig;
 {
 	printf(_("\nTimeout, quitting...\n"));
-	exit_program(1);
+	exit_program(mathomatic, 1);
 }
 #endif
 
@@ -513,8 +517,7 @@ int	sig;
  * Signal handler for proper exiting to the operating system.
  */
 void
-exithandler(sig)
-int	sig;
+exithandler(int sig)
 {
 	exit_program(1);
 }
@@ -524,11 +527,10 @@ int	sig;
  * Window resize signal handler.
  */
 void
-resizehandler(sig)
-int	sig;
+resizehandler(int sig)
 {
-	if (screen_columns)
-		get_screen_size();
+	if (mathomatic->screen_columns)
+		get_screen_size(mathomatic);
 }
 #endif
 
@@ -536,19 +538,19 @@ int	sig;
  * Properly exit this program and return to the operating system.
  */
 void
-exit_program(exit_value)
-int	exit_value;	/* zero if OK, non-zero indicates error return */
+exit_program(int exit_value)
+//int	exit_value;	/* zero if OK, non-zero indicates error return */
 {
-	reset_attr();
-	if (html_flag) {
+	reset_attr(mathomatic);
+	if (mathomatic->html_flag) {
 		printf("</pre>\n");
 	}
 #if	READLINE && !SECURE
-	if (readline_enabled && security_level <= 3) {
-		write_history(history_filename);	/* save readline history */
+	if (mathomatic->readline_enabled && mathomatic->security_level <= 3) {
+		write_history(mathomatic->history_filename);	/* save readline history */
 	}
 #endif
-	if (exit_value == 0 && !quiet_mode && !eoption && !html_flag) {
+	if (exit_value == 0 && !mathomatic->quiet_mode && !mathomatic->eoption && !mathomatic->html_flag) {
 		printf(_("ByeBye!! from Mathomatic.\n"));
 	}
 #if	VALGRIND
@@ -556,6 +558,7 @@ int	exit_value;	/* zero if OK, non-zero indicates error return */
 	printf("If you are not using valgrind, please compile without -DVALGRIND.\n");
         free_mem();     /* Free all known memory buffers to check for memory leaks with something like valgrind(1). */
 #endif
+        closetMathoMatic(mathomatic);
 	exit(exit_value);
 }
 #endif

@@ -24,8 +24,10 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
  
  */
 
+#ifndef true
 #define	true	1
 #define	false	0
+#endif
 
 #if	0
 #define	_REENTRANT	1	/* Can be defined before including math.h for Mac OS X.  Mac OS X allows a few re-entrant functions with this.  iOS requires this commented out. */
@@ -113,7 +115,7 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 #include "standard.h"	/* a standard include file for any math program written in C */
 #include "am.h"		/* the main include file for Mathomatic, contains tunable parameters */
 #include "complex.h"	/* floating point complex number arithmetic function prototypes */
+#include "externs.h"	/* global variable extern definitions */
 #include "proto.h"	/* global function prototypes, made with cproto utility */
 #include "altproto.h"	/* backup global function prototypes, in case of no proto.h */
-#include "externs.h"	/* global variable extern definitions */
 #include "blt.h"	/* blt() function definition */

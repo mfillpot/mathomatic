@@ -27,8 +27,10 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 #include "complex.h"
 #include <math.h>
 
+#ifndef true
 #define	true	1
 #define	false	0
+#endif
 
 #define epsilon	0.00000000000005	/* a good value for doubles */
 
@@ -165,3 +167,5 @@ complexs	a, b;
 	complex_fixup(&r);
 	return(r);
 }
+
+#undef epsilon

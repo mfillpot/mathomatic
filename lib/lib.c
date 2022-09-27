@@ -25,12 +25,12 @@
  * and Mathomatic cannot be used.
  */
 int
-matho_init(void)
+matho_init(MathoMatic* mathomatic)
 {
-	init_gvars();
-	default_out = stdout;	/* if default_out is a file that is not stdout, output is logged to that file */
-	gfp = default_out;
-	if (!init_mem()) {
+	init_gvars(mathomatic);
+	mathomatic->default_out = stdout;	/* if default_out is a file that is not stdout, output is logged to that file */
+	mathomatic->gfp = mathomatic->default_out;
+	if (!init_mem(mathomatic)) {
 		return false;
 	}
 	signal(SIGFPE, fphandler);	/* handle floating point exceptions, currently ignored */
@@ -47,9 +47,9 @@ matho_init(void)
  * to initialize the Mathomatic symbolic math engine.
  */
 void
-matho_clear(void)
+matho_clear(MathoMatic* mathomatic)
 {
-	clear_all();
+	clear_all(mathomatic);
 }
 
 /** 3
@@ -85,57 +85,57 @@ matho_clear(void)
  * this function with "outputp" set to NULL.
  */
 int
-matho_process(char *input, char **outputp)
+matho_process(MathoMatic* mathomatic, char *input, char **outputp)
 {
 	int	i;
 	int	rv;
 
 	if (outputp)
 		*outputp = NULL;
-	result_str = NULL;
-	result_en = -1;
-	error_str = NULL;
-	warning_str = NULL;
+	mathomatic->result_str = NULL;
+	mathomatic->result_en = -1;
+	mathomatic->error_str = NULL;
+	mathomatic->warning_str = NULL;
 	if (input == NULL)
 		return false;
 	input = strdup(input);
-	if ((i = setjmp(jmp_save)) != 0) {
-		clean_up();	/* Mathomatic processing was interrupted, so do a clean up. */
+	if ((i = setjmp(mathomatic->jmp_save)) != 0) {
+		clean_up(mathomatic);	/* Mathomatic processing was interrupted, so do a clean up. */
 		if (i == 14) {
-			error(_("Expression too large."));
+			error(mathomatic, _("Expression too large."));
 		}
 		if (outputp) {
-			if (error_str) {
-				*outputp = (char *) error_str;
+			if (mathomatic->error_str) {
+				*outputp = (char *) mathomatic->error_str;
 			} else {
 				*outputp = _("Processing was interrupted.");
 			}
 		}
-		free_result_str();
+		free_result_str(mathomatic);
 		free(input);
-		previous_return_value = 0;
+		mathomatic->previous_return_value = 0;
 		return false;
 	}
-	set_error_level(input);
-	rv = process(input);
+	set_error_level(mathomatic, input);
+	rv = process(mathomatic, input);
 	if (rv) {
 		if (outputp) {
-			*outputp = result_str;
+			*outputp = mathomatic->result_str;
 		} else {
-			if (result_str) {
-				free(result_str);
-				result_str = NULL;
+			if (mathomatic->result_str) {
+				free(mathomatic->result_str);
+				mathomatic->result_str = NULL;
 			}
 		}
 	} else {
 		if (outputp) {
-			if (error_str) {
-				*outputp = (char *) error_str;
+			if (mathomatic->error_str) {
+				*outputp = (char *) mathomatic->error_str;
 			} else {
 				*outputp = _("Unknown error.");
 			}
 		}
-		free_result_str();
+		free_result_str(mathomatic);
 	}
 	free(input);
 	return rv;
@@ -167,61 +167,61 @@ matho_process(char *input, char **outputp)
  * Returns true (non-zero) if successful.
  */
 int
-matho_parse(char *input, char **outputp)
+matho_parse(MathoMatic* mathomatic, char *input, char **outputp)
 {
 	int	i;
 	int	rv;
 
 	if (outputp)
 		*outputp = NULL;
-	result_str = NULL;
-	result_en = -1;
-	error_str = NULL;
-	warning_str = NULL;
+	mathomatic->result_str = NULL;
+	mathomatic->result_en = -1;
+	mathomatic->error_str = NULL;
+	mathomatic->warning_str = NULL;
 	if (input == NULL)
 		return false;
 	input = strdup(input);
-	if ((i = setjmp(jmp_save)) != 0) {
-		clean_up();	/* Mathomatic processing was interrupted, so do a clean up. */
+	if ((i = setjmp(mathomatic->jmp_save)) != 0) {
+		clean_up(mathomatic);	/* Mathomatic processing was interrupted, so do a clean up. */
 		if (i == 14) {
-			error(_("Expression too large."));
+			error(mathomatic, _("Expression too large."));
 		}
 		if (outputp) {
-			if (error_str) {
-				*outputp = (char *) error_str;
+			if (mathomatic->error_str) {
+				*outputp = (char *) mathomatic->error_str;
 			} else {
 				*outputp = _("Processing was interrupted.");
 			}
 		}
-		free_result_str();
+		free_result_str(mathomatic);
 		free(input);
 		return false;
 	}
-	set_error_level(input);
-	i = next_espace();
+	set_error_level(mathomatic, input);
+	i = next_espace(mathomatic);
 #if	1	/* Leave this as 1 if you want to be able to enter single variable or constant expressions with no solving or selecting. */
-	rv = parse(i, input);	/* All set auto options ignored. */
+	rv = parse(mathomatic, i, input);	/* All set auto options ignored. */
 #else
-	rv = process_parse(i, input);	/* All set auto options respected. */
+	rv = process_parse(mathomatic, i, input);	/* All set auto options respected. */
 #endif
 	if (rv) {
 		if (outputp) {
-			*outputp = result_str;
+			*outputp = mathomatic->result_str;
 		} else {
-			if (result_str) {
-				free(result_str);
-				result_str = NULL;
+			if (mathomatic->result_str) {
+				free(mathomatic->result_str);
+				mathomatic->result_str = NULL;
 			}
 		}
 	} else {
 		if (outputp) {
-			if (error_str) {
-				*outputp = (char *) error_str;
+			if (mathomatic->error_str) {
+				*outputp = (char *) mathomatic->error_str;
 			} else {
 				*outputp = _("Unknown error.");
 			}
 		}
-		free_result_str();
+		free_result_str(mathomatic);
 	}
 	free(input);
 	return rv;

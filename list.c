@@ -37,7 +37,7 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
 #define  FOREGROUND_WHITE       (FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE)
 
 /* MS-Windows color array for coloring mathematical expressions, warnings, and errors. */
-static short windows_carray[] = {
+static const short windows_carray[] = {
     FOREGROUND_GREEN, 
     FOREGROUND_YELLOW,	/* warning text color */
     FOREGROUND_RED, 	/* error text color */
@@ -51,7 +51,7 @@ extern HANDLE hOut;
 
 /* ANSI terminal color code array for 8 color ANSI; we don't use black or white */
 /* because the background may be the same color, so there are only 6 colors here. */
-static int	carray[] = {
+static const int	carray[] = {
 	32,	/* must be green (default color) */
 	33,	/* must be yellow (for warnings) */
 	31,	/* must be red (for errors) */
@@ -63,13 +63,13 @@ static int	carray[] = {
 #define	EQUATE_STRING	" = "	/* string displayed between the LHS and RHS of equations */
 #define MODULUS_STRING	" % "	/* string displayed for the modulus operator */
 
-static int flist_sub(token_type *p1, int n, int out_flag, char *string, int sbuffer_size, int pos, int *highp, int *lowp);
-static int flist_recurse(token_type *p1, int n, int out_flag, char *string, int sbuffer_size, int line, int pos, int cur_level, int *highp, int *lowp);
+static int flist_sub(MathoMatic* mathomatic, token_type *p1, int n, int out_flag, char *string, int sbuffer_size, int pos, int *highp, int *lowp);
+static int flist_recurse(MathoMatic* mathomatic, token_type *p1, int n, int out_flag, char *string, int sbuffer_size, int line, int pos, int cur_level, int *highp, int *lowp);
 
 /* Bright HTML color array. */
 /* Used when HTML output and "set color" and "set bold" options are enabled. */
 /* Good looking with a dark background. */
-static char	*bright_html_carray[] = {
+static const char	*bright_html_carray[] = {
 	"#00FF00",	/* must be bright green (default color) */
 	"#FFFF00",	/* must be bright yellow (for warnings) */
 	"#FF0000",	/* must be bright red (for errors) */
@@ -82,7 +82,7 @@ static char	*bright_html_carray[] = {
 /* Dim HTML color array for color HTML output. */
 /* Used for HTML output with "set color" and "set no bold" options. */
 /* Good looking with a white background. */
-static char	*html_carray[] = {
+static const char	*html_carray[] = {
 	"green",
 	"olive",
 	"red",
@@ -98,24 +98,24 @@ static char	*html_carray[] = {
  * Subsequent output will have no color until the next call to set_color().
  */
 void
-reset_attr(void)
+reset_attr(MathoMatic* mathomatic)
 {
 	FILE	*fp;
 
-	if (html_flag == 2) {
-		fp = gfp;
+	if (mathomatic->html_flag == 2) {
+		fp = mathomatic->gfp;
 	} else {
 		fp = stdout;
 	}
 #if	!LIBRARY
 	fflush(NULL);	/* flush all output */
 #endif
-	if (color_flag && cur_color >= 0) {
-		if (html_flag) {
+	if (mathomatic->color_flag && mathomatic->cur_color >= 0) {
+		if (mathomatic->html_flag) {
 			fprintf(fp, "</font>");
 		} else {
 #if	WIN32_CONSOLE_COLORS
-			if (color_flag == 2) {
+			if (mathomatic->color_flag == 2) {
 	                        fprintf(fp, "\033[0m");
 			} else {
 	                        SetConsoleTextAttribute(hOut, FOREGROUND_WHITE);
@@ -126,7 +126,7 @@ reset_attr(void)
 		}
 		fflush(fp);
 	}
-	cur_color = -1;
+	mathomatic->cur_color = -1;
 }
 
 /*
@@ -138,41 +138,40 @@ reset_attr(void)
  * Return actual color number displayed or -1 if no color.
  */
 int
-set_color(color)
-int	color;
+set_color(MathoMatic* mathomatic, int color)
 {
 	int	rv = -1;
 
-	if (html_flag != 2 && gfp != stdout) {
+	if (mathomatic->html_flag != 2 && mathomatic->gfp != stdout) {
 		return rv;
 	}
-	if (color_flag) {
-		if (cur_color == color)	/* color already set */
+	if (mathomatic->color_flag) {
+		if (mathomatic->cur_color == color)	/* color already set */
 			return rv;
-		if (html_flag) {
-			if (cur_color >= 0) {
-				fprintf(gfp, "</font>");
+		if (mathomatic->html_flag) {
+			if (mathomatic->cur_color >= 0) {
+				fprintf(mathomatic->gfp, "</font>");
 			}
-			if (bold_colors) {
-				fprintf(gfp, "<font color=\"%s\">", bright_html_carray[rv = (color % ARR_CNT(bright_html_carray))]);
+			if (mathomatic->bold_colors) {
+				fprintf(mathomatic->gfp, "<font color=\"%s\">", bright_html_carray[rv = (color % ARR_CNT(bright_html_carray))]);
 			} else {
-				fprintf(gfp, "<font color=\"%s\">", html_carray[rv = (color % ARR_CNT(html_carray))]);
+				fprintf(mathomatic->gfp, "<font color=\"%s\">", html_carray[rv = (color % ARR_CNT(html_carray))]);
 			}
 		} else {
 #if	WIN32_CONSOLE_COLORS
-			if (color_flag == 2) {
-	                        fprintf(gfp, "\033[%d;%dm", bold_colors, carray[rv = (color % ARR_CNT(carray))]);
+			if (mathomatic->color_flag == 2) {
+	                        fprintf(mathomatic->gfp, "\033[%d;%dm", mathomatic->bold_colors, carray[rv = (color % ARR_CNT(carray))]);
 			} else {
 	                        short attr = windows_carray[rv = (color % ARR_CNT(windows_carray))];
-        	                if (bold_colors)
+        	                if (mathomatic->bold_colors)
                 	                 attr |= FOREGROUND_INTENSITY;
 				SetConsoleTextAttribute(hOut, attr);
 			}
 #else
-                        fprintf(gfp, "\033[%d;%dm", bold_colors, carray[rv = (color % ARR_CNT(carray))]);
+                        fprintf(mathomatic->gfp, "\033[%d;%dm", mathomatic->bold_colors, carray[rv = (color % ARR_CNT(carray))]);
 #endif
 		}
-		cur_color = color;
+		mathomatic->cur_color = color;
 	}
 	return rv;
 }
@@ -181,32 +180,32 @@ int	color;
  * Set normal text color for subsequent output.
  */
 void
-default_color(set_no_color_flag)
-int	set_no_color_flag;	/* If true, set no color even if text_color is set.  Normally this would be false. */
+default_color(MathoMatic* mathomatic, int set_no_color_flag)
+//int	set_no_color_flag;	/* If true, set no color even if text_color is set.  Normally this would be false. */
 {
-	if (html_flag != 2 && gfp != stdout) {
+	if (mathomatic->html_flag != 2 && mathomatic->gfp != stdout) {
 		return;
 	}
-	if (color_flag && cur_color >= 0) {
-		if (html_flag) {
-			fprintf(gfp, "</font>");
+	if (mathomatic->color_flag && mathomatic->cur_color >= 0) {
+		if (mathomatic->html_flag) {
+			fprintf(mathomatic->gfp, "</font>");
 		} else {
 #if	WIN32_CONSOLE_COLORS
-			if (color_flag == 2) {
-				fprintf(gfp, "\033[0m");
+			if (mathomatic->color_flag == 2) {
+				fprintf(mathomatic->gfp, "\033[0m");
 			} else {
 				SetConsoleTextAttribute(hOut, FOREGROUND_WHITE);
 			}
 #else
-			fprintf(gfp, "\033[0m");
+			fprintf(mathomatic->gfp, "\033[0m");
 #endif
 		}
 	}
-	cur_color = -1;
-	if (text_color >= 0 && !set_no_color_flag) {
-		set_color(text_color);
+	mathomatic->cur_color = -1;
+	if (mathomatic->text_color >= 0 && !set_no_color_flag) {
+		set_color(mathomatic, mathomatic->text_color);
 	}
-	fflush(gfp);
+	fflush(mathomatic->gfp);
 }
 
 /*
@@ -215,22 +214,22 @@ int	set_no_color_flag;	/* If true, set no color even if text_color is set.  Norm
  * Return true if successful.
  */
 int
-display_all_colors(void)
+display_all_colors(MathoMatic* mathomatic)
 {
 	int	i, j;
 
 	i = 0;
-	default_color(true);
-	if (set_color(i) < 0) {
-		default_color(false);
+	default_color(mathomatic, true);
+	if (set_color(mathomatic, i) < 0) {
+		default_color(mathomatic, false);
 		return false;
 	}
 	do {
 		printf("#");
 		i++;
-		j = set_color(i);
+		j = set_color(mathomatic, i);
 	} while (j > 0);
-	default_color(false);
+	default_color(mathomatic, false);
 	return(j >= 0);
 }
 
@@ -262,30 +261,30 @@ char	*buf;
  * Return length (number of screen columns) of output line.
  */
 int
-list1_sub(n, export_flag)
-int	n;		/* equation space number */
-int	export_flag;	/* non-zero for exportable format (readable by other math programs) */
+list1_sub(MathoMatic* mathomatic, int n, int export_flag)
+//int	n;		/* equation space number */
+//int	export_flag;	/* non-zero for exportable format (readable by other math programs) */
 			/* 1 for Maxima, 2 for other, 3 for gnuplot, 4 for hexadecimal */
 {
 	int	len = 0;
 
-	if (empty_equation_space(n))
+	if (empty_equation_space(mathomatic, n))
 		return 0;
-	if ((export_flag == 0 || export_flag == 4) && !high_prec) {
-		len += fprintf(gfp, "#%d: ", n + 1);
+	if ((export_flag == 0 || export_flag == 4) && !mathomatic->high_prec) {
+		len += fprintf(mathomatic->gfp, "#%d: ", n + 1);
 	}
-	len += list_proc(lhs[n], n_lhs[n], export_flag);
-	if (n_rhs[n]) {
-		len += fprintf(gfp, EQUATE_STRING);
-		len += list_proc(rhs[n], n_rhs[n], export_flag);
+	len += list_proc(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], export_flag);
+	if (mathomatic->n_rhs[n]) {
+		len += fprintf(mathomatic->gfp, EQUATE_STRING);
+		len += list_proc(mathomatic, mathomatic->rhs[n], mathomatic->n_rhs[n], export_flag);
 	}
 	if (export_flag == 1) {
-		len += fprintf(gfp, ";");
+		len += fprintf(mathomatic->gfp, ";");
 	}
 #if	CYGWIN
-	fprintf(gfp, "\r\n");	/* might be redirecting to a Microsoft text file */
+	fprintf(mathomatic->gfp, "\r\n");	/* might be redirecting to a Microsoft text file */
 #else
-	fprintf(gfp, "\n");
+	fprintf(mathomatic->gfp, "\n");
 #endif
 	return len;
 }
@@ -297,43 +296,38 @@ int	export_flag;	/* non-zero for exportable format (readable by other math progr
  * or zero on failure.
  */
 int
-list_sub(n)
-int	n;	/* equation space number */
+list_sub(MathoMatic* mathomatic, int n)
+//int	n;	/* equation space number */
 {
-	if (empty_equation_space(n))
+	if (empty_equation_space(mathomatic, n))
 		return 0;
-	make_fractions_and_group(n);
-	if (factor_int_flag) {
-		factor_int_equation(n);
+	make_fractions_and_group(mathomatic, n);
+	if (mathomatic->factor_int_flag) {
+		factor_int_equation(mathomatic, n);
 	}
-	if (display2d) {
+	if (mathomatic->display2d) {
 		/* display in fraction format */
-		return flist_equation(n);
+		return flist_equation(mathomatic, n);
 	} else {
 		/* display in single-line format */
-		return list1_sub(n, false);
+		return list1_sub(mathomatic, n, false);
 	}
 }
 
 #if	!SILENT
 void
-list_debug(level, p1, n1, p2, n2)
-int		level;
-token_type	*p1;
-int		n1;
-token_type	*p2;
-int		n2;
+list_debug(MathoMatic* mathomatic, int level, token_type *p1, int n1, token_type *p2, int n2)
 {
-	if (debug_level >= level) {
+	if (mathomatic->debug_level >= level) {
 		if (level >= -2) {
-			fprintf(gfp, _("level %d: "), level);
+			fprintf(mathomatic->gfp, _("level %d: "), level);
 		}
-		list_proc(p1, n1, false);
+		list_proc(mathomatic, p1, n1, false);
 		if (p2 && n2 > 0) {
-			fprintf(gfp, EQUATE_STRING);
-			list_proc(p2, n2, false);
+			fprintf(mathomatic->gfp, EQUATE_STRING);
+			list_proc(mathomatic, p2, n2, false);
 		}
-		fprintf(gfp, "\n");
+		fprintf(mathomatic->gfp, "\n");
 	}
 }
 #endif
@@ -345,15 +339,15 @@ int		n2;
  * Does not return the actual variable name, use list_var() for that.
  */
 char *
-var_name(v)
-long	v;	/* Mathomatic variable */
+var_name(MathoMatic* mathomatic, long v)
+//long	v;	/* Mathomatic variable */
 {
 	char	*cp = NULL;
 	long	l;
 
 	l = (labs(v) & VAR_MASK) - VAR_OFFSET;
 	if (l >= 0 && l < MAX_VAR_NAMES) {
-		cp = var_names[l];
+		cp = mathomatic->var_names[l];
 	}
 	return cp;
 }
@@ -371,18 +365,18 @@ long	v;	/* Mathomatic variable */
  * -5 for mathomatic-only variable format.
  */
 int
-list_var(v, lang_code)
-long	v;		/* variable to convert */
-int	lang_code;	/* language code */
+list_var(MathoMatic* mathomatic, long v, int lang_code)
+//long	v;		/* variable to convert */
+//int	lang_code;	/* language code */
 {
 	int		j;
 	int		from_memory = false;
 	char		*cp = NULL;
 
-	var_str[0] = '\0';
+	mathomatic->var_str[0] = '\0';
 	switch (labs(v) & VAR_MASK) {
 	case V_NULL:
-		return(strlen(var_str));
+		return(strlen(mathomatic->var_str));
 	case SIGN:
 		cp = "sign";
 		break;
@@ -461,19 +455,19 @@ int	lang_code;	/* language code */
 		cp = "all";
 		break;
 	default:
-		cp = var_name(v);
+		cp = var_name(mathomatic, v);
 		from_memory = true;
 		break;
 	}
 	if (cp) {
 		j = (labs(v) >> VAR_SHIFT) & SUBSCRIPT_MASK;
 		if (j) {	/* for "sign" variables */
-			snprintf(var_str, sizeof(var_str), "%s%d", cp, j - 1);
+			snprintf(mathomatic->var_str, sizeof(mathomatic->var_str), "%s%d", cp, j - 1);
 		} else {
-			my_strlcpy(var_str, cp, sizeof(var_str));
+			my_strlcpy(mathomatic->var_str, cp, sizeof(mathomatic->var_str));
 		}
 	} else {
-		my_strlcpy(var_str, "bad_variable", sizeof(var_str));
+		my_strlcpy(mathomatic->var_str, "bad_variable", sizeof(mathomatic->var_str));
 	}
 /* Make valid C type variable if exporting or generating code: */
 	if (from_memory) {
@@ -483,15 +477,15 @@ int	lang_code;	/* language code */
 		case -5:
 			break;
 		default:
-			for (j = 0; var_str[j] && var_str[j] != '('; j++) {
-				if (strchr("_[]", var_str[j]) == NULL && !isalnum(var_str[j])) {
-					var_str[j] = '_';
+			for (j = 0; mathomatic->var_str[j] && mathomatic->var_str[j] != '('; j++) {
+				if (strchr("_[]", mathomatic->var_str[j]) == NULL && !isalnum(mathomatic->var_str[j])) {
+					mathomatic->var_str[j] = '_';
 				}
 			}
 			break;
 		}
 	}
-	return(strlen(var_str));
+	return(strlen(mathomatic->var_str));
 }
 
 /*
@@ -501,13 +495,13 @@ int	lang_code;	/* language code */
  * Return number of characters output (excluding escape sequences).
  */
 int
-list_proc(p1, n, export_flag)
-token_type	*p1;		/* expression pointer */
-int		n;		/* length of expression */
-int		export_flag;	/* flag for exportable format (usually false) */
+list_proc(MathoMatic* mathomatic, token_type *p1, int n, int export_flag)
+//token_type	*p1;		/* expression pointer */
+//int		n;		/* length of expression */
+//int		export_flag;	/* flag for exportable format (usually false) */
 				/* 1 for Maxima, 2 for other, 3 for gnuplot, 4 for hexadecimal */
 {
-	return list_string_sub(p1, n, true, NULL, export_flag);
+	return list_string_sub(mathomatic, p1, n, true, NULL, export_flag);
 }
 
 /*
@@ -517,30 +511,30 @@ int		export_flag;	/* flag for exportable format (usually false) */
  * Returns text string, or NULL if error.
  */
 char *
-list_equation(n, export_flag)
-int	n;		/* equation space number */
-int	export_flag;	/* flag for exportable format (usually false) */
+list_equation(MathoMatic* mathomatic, int n, int export_flag)
+//int	n;		/* equation space number */
+//int	export_flag;	/* flag for exportable format (usually false) */
 {
 	int	len;
 	char	*cp;
 
-	if (empty_equation_space(n))
+	if (empty_equation_space(mathomatic, n))
 		return NULL;
-	len = list_string(lhs[n], n_lhs[n], NULL, export_flag);
-	if (n_rhs[n]) {
+	len = list_string(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], NULL, export_flag);
+	if (mathomatic->n_rhs[n]) {
 		len += strlen(EQUATE_STRING);
-		len += list_string(rhs[n], n_rhs[n], NULL, export_flag);
+		len += list_string(mathomatic, mathomatic->rhs[n], mathomatic->n_rhs[n], NULL, export_flag);
 	}
 	len += 2;	/* for possible semicolon and terminating null character */
 	cp = (char *) malloc(len);
 	if (cp == NULL) {
-		error(_("Out of memory (can't malloc(3))."));
+		error(mathomatic, _("Out of memory (can't malloc(3))."));
 		return NULL;
 	}
-	list_string(lhs[n], n_lhs[n], cp, export_flag);
-	if (n_rhs[n]) {
+	list_string(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], cp, export_flag);
+	if (mathomatic->n_rhs[n]) {
 		strcat(cp, EQUATE_STRING);
-		list_string(rhs[n], n_rhs[n], &cp[strlen(cp)], export_flag);
+		list_string(mathomatic, mathomatic->rhs[n], mathomatic->n_rhs[n], &cp[strlen(cp)], export_flag);
 	}
 	if (export_flag == 1) {
 		strcat(cp, ";");
@@ -555,10 +549,9 @@ int	export_flag;	/* flag for exportable format (usually false) */
  * Return string, or NULL if error.
  */
 char *
-list_expression(p1, n, export_flag)
-token_type	*p1;		/* expression pointer */
-int		n;		/* length of expression */
-int		export_flag;
+list_expression(MathoMatic* mathomatic, token_type *p1, int n, int export_flag)
+//token_type	*p1;		/* expression pointer */
+//int		n;		/* length of expression */
 {
 	int	len;
 	char	*cp;
@@ -566,14 +559,14 @@ int		export_flag;
 	if (n <= 0) {
 		return NULL;
 	}
-	len = list_string(p1, n, NULL, export_flag);
+	len = list_string(mathomatic, p1, n, NULL, export_flag);
 	len++;	/* for terminating null character */
 	cp = (char *) malloc(len);
 	if (cp == NULL) {
-		error(_("Out of memory (can't malloc(3))."));
+		error(mathomatic, _("Out of memory (can't malloc(3))."));
 		return NULL;
 	}
-	list_string(p1, n, cp, export_flag);
+	list_string(mathomatic, p1, n, cp, export_flag);
 	return cp;
 }
 
@@ -586,25 +579,25 @@ int		export_flag;
  * Return length (number of characters).
  */
 int
-list_string(p1, n, string, export_flag)
-token_type	*p1;		/* expression pointer */
-int		n;		/* length of expression */
-char		*string;	/* buffer to save output to or NULL pointer */
-int		export_flag;
+list_string(MathoMatic* mathomatic, token_type *p1, int n, char *string, int export_flag)
+//token_type	*p1;		/* expression pointer */
+//int		n;		/* length of expression */
+//char		*string;	/* buffer to save output to or NULL pointer */
+//int		export_flag;
 {
-	return list_string_sub(p1, n, false, string, export_flag);
+	return list_string_sub(mathomatic, p1, n, false, string, export_flag);
 }
 
-#define	APPEND(str)	{ if (string) { strcpy(&string[len], str); } if (outflag) { fprintf(gfp, "%s", str); } len += strlen(str); }
-#define	APPEND2(str)	{ if (string) { if ((sbuffer_size - current_len) > 0) my_strlcpy(&string[current_len], str, sbuffer_size - current_len); } else { fprintf(gfp, "%s", str); } current_len += strlen(str); }
+#define	APPEND(str)	{ if (string) { strcpy(&string[len], str); } if (outflag) { fprintf(mathomatic->gfp, "%s", str); } len += strlen(str); }
+#define	APPEND2(str)	{ if (string) { if ((sbuffer_size - current_len) > 0) my_strlcpy(&string[current_len], str, sbuffer_size - current_len); } else { fprintf(mathomatic->gfp, "%s", str); } current_len += strlen(str); }
 
 int
-list_string_sub(p1, n, outflag, string, export_flag)
-token_type	*p1;		/* expression pointer */
-int		n;		/* length of expression */
-int		outflag;	/* if true, output to gfp */
-char		*string;	/* buffer to save output to or NULL pointer */
-int		export_flag;	/* flag for exportable format (usually false) */
+list_string_sub(MathoMatic* mathomatic, token_type *p1, int n, int outflag, char *string, int export_flag)
+//token_type	*p1;		/* expression pointer */
+//int		n;		/* length of expression */
+//int		outflag;	/* if true, output to gfp */
+//char		*string;	/* buffer to save output to or NULL pointer */
+//int		export_flag;	/* flag for exportable format (usually false) */
 				/* 1 for Maxima, 2 for other, 3 for gnuplot, 4 for hexadecimal */
 {
 	int	i, j, k, i1;
@@ -618,17 +611,17 @@ int		export_flag;	/* flag for exportable format (usually false) */
 
 	cflag = (outflag && (export_flag == 0 || export_flag == 4));
 	if (cflag)
-		set_color(0);
+		set_color(mathomatic, 0);
 	if (string)
 		string[0] = '\0';
-	if (high_prec)
+	if (mathomatic->high_prec)
 		export_precision = 20;
 	else
 		export_precision = DBL_DIG;
-	cur_level = min1 = min_level(p1, n);
+	cur_level = min1 = min_level(mathomatic, p1, n);
 	for (i = 0; i < n; i++) {
 		power_flag = false;
-		if (export_flag == 0 && !high_prec) {
+		if (export_flag == 0 && !mathomatic->high_prec) {
 			for (j = i - 1; j <= (i + 1); j++) {
 				if ((j - 1) >= 0 && (j + 1) < n
 				    && p1[j].kind == OPERATOR && (p1[j].token.operatr == POWER || p1[j].token.operatr == FACTORIAL)
@@ -651,11 +644,11 @@ int		export_flag;	/* flag for exportable format (usually false) */
 				cur_level--;
 				APPEND(")");
 				if (cflag)
-					set_color(cur_level-min1);
+					set_color(mathomatic, cur_level-min1);
 			} else {
 				cur_level++;
 				if (cflag)
-					set_color(cur_level-min1);
+					set_color(mathomatic, cur_level-min1);
 				APPEND("(");
 			}
 		}
@@ -669,20 +662,20 @@ int		export_flag;	/* flag for exportable format (usually false) */
 			} else if (export_flag == 3) {
 				snprintf(buf, sizeof(buf), "%#.*g", DBL_DIG, p1[i].token.constant);
 				trim_zeros(buf);
-			} else if (export_flag || high_prec) {
+			} else if (export_flag || mathomatic->high_prec) {
 				snprintf(buf, sizeof(buf), "%.*g", export_precision, p1[i].token.constant);
-			} else if (finance_option >= 0) {
+			} else if (mathomatic->finance_option >= 0) {
 #if	THOUSANDS_SEPARATOR	/* Fails miserably in MinGW and possibly others, displaying nothing but the format string. */
-				snprintf(buf, sizeof(buf), "%'.*f", finance_option, p1[i].token.constant);
+				snprintf(buf, sizeof(buf), "%'.*f", mathomatic->finance_option, p1[i].token.constant);
 #else
-				snprintf(buf, sizeof(buf), "%.*f", finance_option, p1[i].token.constant);
+				snprintf(buf, sizeof(buf), "%.*f", mathomatic->finance_option, p1[i].token.constant);
 #endif
 			} else {
 				if (p1[i].token.constant < 0.0 && (i + 1) < n && p1[i+1].level == p1[i].level
 				    && (p1[i+1].token.operatr >= POWER)) {
-					snprintf(buf, sizeof(buf), "(%.*g)", precision, p1[i].token.constant);
+					snprintf(buf, sizeof(buf), "(%.*g)", mathomatic->precision, p1[i].token.constant);
 				} else {
-					snprintf(buf, sizeof(buf), "%.*g", precision, p1[i].token.constant);
+					snprintf(buf, sizeof(buf), "%.*g", mathomatic->precision, p1[i].token.constant);
 				}
 				APPEND(buf);
 				break;
@@ -695,8 +688,8 @@ int		export_flag;	/* flag for exportable format (usually false) */
 			}
 			break;
 		case VARIABLE:
-			list_var(p1[i].token.variable, 0 - export_flag);
-			APPEND(var_str);
+			list_var(mathomatic, p1[i].token.variable, 0 - export_flag);
+			APPEND(mathomatic->var_str);
 			break;
 		case OPERATOR:
 			cp = _("(unknown operator)");
@@ -720,7 +713,7 @@ int		export_flag;	/* flag for exportable format (usually false) */
 				cp = MODULUS_STRING;
 				break;
 			case POWER:
-				if (power_starstar || export_flag == 3) {
+				if (mathomatic->power_starstar || export_flag == 3) {
 					cp = "**";
 				} else {
 					cp = "^";
@@ -739,10 +732,10 @@ int		export_flag;	/* flag for exportable format (usually false) */
 		APPEND(")");
 		j--;
 		if (cflag)
-			set_color(j);
+			set_color(mathomatic, j);
 	}
 	if (cflag)
-		default_color(false);
+		default_color(mathomatic, false);
 	return len;
 }
 
@@ -787,29 +780,28 @@ int		n;		/* length of expression */
  * Return length of output (number of characters).
  */
 int
-list_code_equation(en, language, int_flag)
-int			en;		/* equation space number */
-enum language_list	language;
-int			int_flag;	/* integer arithmetic flag */
+list_code_equation(MathoMatic* mathomatic, int en, enum language_list language, int int_flag)
+//int			en;		/* equation space number */
+//int			int_flag;	/* integer arithmetic flag */
 {
 	int	len = 0;
 
-	if (empty_equation_space(en))
+	if (empty_equation_space(mathomatic, en))
 		return 0;
-	len += list_code(lhs[en], &n_lhs[en], true, NULL, language, int_flag);
-	if (n_rhs[en]) {
-		len += fprintf(gfp, EQUATE_STRING);
-		len += list_code(rhs[en], &n_rhs[en], true, NULL, language, int_flag);
+	len += list_code(mathomatic, mathomatic->lhs[en], &mathomatic->n_lhs[en], true, NULL, language, int_flag);
+	if (mathomatic->n_rhs[en]) {
+		len += fprintf(mathomatic->gfp, EQUATE_STRING);
+		len += list_code(mathomatic, mathomatic->rhs[en], &mathomatic->n_rhs[en], true, NULL, language, int_flag);
 	}
 	switch (language) {
 	case C:
 	case JAVA:
-		len += fprintf(gfp, ";");
+		len += fprintf(mathomatic->gfp, ";");
 		break;
 	default:
 		break;
 	}
-	fprintf(gfp, "\n");
+	fprintf(mathomatic->gfp, "\n");
 	return len;
 }
 
@@ -820,31 +812,30 @@ int			int_flag;	/* integer arithmetic flag */
  * Return string, or NULL if error.
  */
 char *
-string_code_equation(en, language, int_flag)
-int			en;		/* equation space number */
-enum language_list	language;
-int			int_flag;	/* integer arithmetic flag */
+string_code_equation(MathoMatic* mathomatic, int en, enum language_list language, int int_flag)
+//int			en;		/* equation space number */
+//int			int_flag;	/* integer arithmetic flag */
 {
 	int	len;
 	char	*cp;
 
-	if (empty_equation_space(en))
+	if (empty_equation_space(mathomatic, en))
 		return NULL;
-	len = list_code(lhs[en], &n_lhs[en], false, NULL, language, int_flag);
-	if (n_rhs[en]) {
+	len = list_code(mathomatic, mathomatic->lhs[en], &mathomatic->n_lhs[en], false, NULL, language, int_flag);
+	if (mathomatic->n_rhs[en]) {
 		len += strlen(EQUATE_STRING);
-		len += list_code(rhs[en], &n_rhs[en], false, NULL, language, int_flag);
+		len += list_code(mathomatic, mathomatic->rhs[en], &mathomatic->n_rhs[en], false, NULL, language, int_flag);
 	}
 	len += 2;	/* for possible semicolon and terminating null character */
 	cp = (char *) malloc(len);
 	if (cp == NULL) {
-		error(_("Out of memory (can't malloc(3))."));
+		error(mathomatic, _("Out of memory (can't malloc(3))."));
 		return NULL;
 	}
-	list_code(lhs[en], &n_lhs[en], false, cp, language, int_flag);
-	if (n_rhs[en]) {
+	list_code(mathomatic, mathomatic->lhs[en], &mathomatic->n_lhs[en], false, cp, language, int_flag);
+	if (mathomatic->n_rhs[en]) {
 		strcat(cp, EQUATE_STRING);
-		list_code(rhs[en], &n_rhs[en], false, &cp[strlen(cp)], language, int_flag);
+		list_code(mathomatic, mathomatic->rhs[en], &mathomatic->n_rhs[en], false, &cp[strlen(cp)], language, int_flag);
 	}
 	switch (language) {
 	case C:
@@ -864,13 +855,13 @@ int			int_flag;	/* integer arithmetic flag */
  * Return length of output (number of characters).
  */
 int
-list_code(equation, np, outflag, string, language, int_flag)
-token_type		*equation;	/* equation side pointer */
-int			*np;		/* pointer to length of equation side */
-int			outflag;	/* if true, output to gfp */
-char			*string;	/* buffer to save output to or NULL pointer */
-enum language_list	language;	/* see enumeration language_list in am.h */
-int			int_flag;	/* integer arithmetic flag, should work with any language */
+list_code(MathoMatic* mathomatic, token_type *equation, int *np, int outflag, char *string, enum language_list language, int int_flag)
+//token_type		*equation;	/* equation side pointer */
+//int			*np;		/* pointer to length of equation side */
+//int			outflag;	/* if true, output to gfp */
+//char			*string;	/* buffer to save output to or NULL pointer */
+//enum language_list	language;	/* see enumeration language_list in am.h */
+//int			int_flag;	/* integer arithmetic flag, should work with any language */
 {
 	int	i, j, k, i1, i2;
 	int	min1;
@@ -881,7 +872,7 @@ int			int_flag;	/* integer arithmetic flag, should work with any language */
 
 	if (string)
 		string[0] = '\0';
-	min1 = min_level(equation, *np);
+	min1 = min_level(mathomatic, equation, *np);
 	if (*np > 1)
 		min1--;
 	cur_level = min1;
@@ -952,8 +943,8 @@ int			int_flag;	/* integer arithmetic flag, should work with any language */
 		  	if (int_flag && (language == C || language == JAVA) && equation[i].token.variable == IMAGINARY) {
 				APPEND("1i");
 			} else {
-				list_var(equation[i].token.variable, language);
-				APPEND(var_str);
+				list_var(mathomatic, equation[i].token.variable, language);
+				APPEND(mathomatic->var_str);
 			}
 			break;
 		case OPERATOR:
@@ -1002,8 +993,8 @@ int			int_flag;	/* integer arithmetic flag, should work with any language */
 }
 
 /* global variables for the flist functions below */
-static int	cur_line;	/* current line */
-static int	cur_pos;	/* current position in the current line on the screen */
+//static int	cur_line;	/* current line */
+//static int	cur_pos;	/* current position in the current line on the screen */
 
 /*
  * Return a multi-line C string containing the specified equation space in 2D multi-line fraction format.
@@ -1021,8 +1012,8 @@ static int	cur_pos;	/* current position in the current line on the screen */
  * current_columns is set in malloc_vscreen().
  */
 char *
-flist_equation_string(n)
-int	n;	/* equation space number */
+flist_equation_string(MathoMatic* mathomatic, int n)
+//int	n;	/* equation space number */
 {
 	int	i;
 	int	len, cur_len, buf_len;
@@ -1032,19 +1023,19 @@ int	n;	/* equation space number */
 	int	screen_line;
 	char	*cp;
 
-	if (empty_equation_space(n))
+	if (empty_equation_space(mathomatic, n))
 		return NULL;
-	if (!malloc_vscreen())
+	if (!malloc_vscreen(mathomatic))
 		return NULL;
 	for (i = 0; i < TEXT_ROWS; i++) {
-		vscreen[i][0] = '\0';
+		mathomatic->vscreen[i][0] = '\0';
 	}
-	cur_line = 0;
-	cur_pos = 0;
-	len = flist_sub(lhs[n], n_lhs[n], false, NULL, current_columns, 0, &max_line, &min_line);
-	if (n_rhs[n]) {
+	mathomatic->cur_line = 0;
+	mathomatic->cur_pos = 0;
+	len = flist_sub(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], false, NULL, mathomatic->current_columns, 0, &max_line, &min_line);
+	if (mathomatic->n_rhs[n]) {
 		len += strlen(EQUATE_STRING);
-		len += flist_sub(rhs[n], n_rhs[n], false, NULL, current_columns, 0, &high, &low);
+		len += flist_sub(mathomatic, mathomatic->rhs[n], mathomatic->n_rhs[n], false, NULL, mathomatic->current_columns, 0, &high, &low);
 		if (high > max_line)
 			max_line = high;
 		if (low < min_line)
@@ -1052,34 +1043,34 @@ int	n;	/* equation space number */
 	}
 	if ((max_line - min_line) >= TEXT_ROWS)
 		return NULL;
-	for (cur_line = max_line, screen_line = 0; cur_line >= min_line; cur_line--, screen_line++) {
-		pos = cur_pos = 0;
-		pos += flist_sub(lhs[n], n_lhs[n], true, vscreen[screen_line], current_columns, pos, &high, &low);
-		if (n_rhs[n]) {
-			if (cur_line == 0) {
-				cur_pos += strlen(EQUATE_STRING);
-				cur_len = strlen(vscreen[screen_line]);
-				if ((current_columns - cur_len) > 0)
-					my_strlcpy(&vscreen[screen_line][cur_len], EQUATE_STRING, current_columns - cur_len);
+	for (mathomatic->cur_line = max_line, screen_line = 0; mathomatic->cur_line >= min_line; mathomatic->cur_line--, screen_line++) {
+		pos = mathomatic->cur_pos = 0;
+		pos += flist_sub(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], true, mathomatic->vscreen[screen_line], mathomatic->current_columns, pos, &high, &low);
+		if (mathomatic->n_rhs[n]) {
+			if (mathomatic->cur_line == 0) {
+				mathomatic->cur_pos += strlen(EQUATE_STRING);
+				cur_len = strlen(mathomatic->vscreen[screen_line]);
+				if ((mathomatic->current_columns - cur_len) > 0)
+					my_strlcpy(&mathomatic->vscreen[screen_line][cur_len], EQUATE_STRING, mathomatic->current_columns - cur_len);
 			}
 			pos += strlen(EQUATE_STRING);
-			pos += flist_sub(rhs[n], n_rhs[n], true, vscreen[screen_line], current_columns, pos, &high, &low);
+			pos += flist_sub(mathomatic, mathomatic->rhs[n], mathomatic->n_rhs[n], true, mathomatic->vscreen[screen_line], mathomatic->current_columns, pos, &high, &low);
 		}
 	}
 	if (screen_line <= 0)
 		return NULL;
 	for (i = 0, buf_len = 1; i < screen_line; i++) {
-		buf_len += strlen(vscreen[i]);
+		buf_len += strlen(mathomatic->vscreen[i]);
 		buf_len++;	/* For newlines */
 	}
 	cp = (char *) malloc(buf_len);
 	if (cp == NULL) {
-		error(_("Out of memory (can't malloc(3))."));
+		error(mathomatic, _("Out of memory (can't malloc(3))."));
 		return NULL;
 	}
 	cp[0] = '\0';
 	for (i = 0; i < screen_line; i++) {
-		strcat(cp, vscreen[i]);
+		strcat(cp, mathomatic->vscreen[i]);
 		strcat(cp, "\n");
 	}
 	return(cp);
@@ -1096,8 +1087,8 @@ int	n;	/* equation space number */
  * or zero on failure.
  */
 int
-flist_equation(n)
-int	n;	/* equation space number */
+flist_equation(MathoMatic* mathomatic, int n)
+//int	n;	/* equation space number */
 {
 	int	sind;
 	char	buf[50];
@@ -1108,26 +1099,26 @@ int	n;	/* equation space number */
 	int	max2_line = 0, min2_line = 0;
 	int	use_screen_columns;	/* use infinite width if false */
 
-	if (empty_equation_space(n))
+	if (empty_equation_space(mathomatic, n))
 		return 0;
 #if	1	/* always respect "set columns" */
 	use_screen_columns = true;
 #else
-	use_screen_columns = (gfp == stdout);
+	use_screen_columns = (mathomatic->gfp == stdout);
 #endif
 	len = snprintf(buf, sizeof(buf), "#%d: ", n + 1);
-	cur_line = 0;
-	cur_pos = 0;
-	sind = n_rhs[n];
-	len += flist_sub(lhs[n], n_lhs[n], false, NULL, screen_columns, 0, &max_line, &min_line);
-	if (n_rhs[n]) {
+	mathomatic->cur_line = 0;
+	mathomatic->cur_pos = 0;
+	sind = mathomatic->n_rhs[n];
+	len += flist_sub(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], false, NULL, mathomatic->screen_columns, 0, &max_line, &min_line);
+	if (mathomatic->n_rhs[n]) {
 		len += strlen(EQUATE_STRING);
 make_smaller:
-		len2 = flist_sub(rhs[n], sind, false, NULL, screen_columns, 0, &high, &low);
-		if (screen_columns && use_screen_columns && (len + len2) >= screen_columns && sind > 0) {
+		len2 = flist_sub(mathomatic, mathomatic->rhs[n], sind, false, NULL, mathomatic->screen_columns, 0, &high, &low);
+		if (mathomatic->screen_columns && use_screen_columns && (len + len2) >= mathomatic->screen_columns && sind > 0) {
 			for (sind--; sind > 0; sind--) {
-				if (rhs[n][sind].level == 1 && rhs[n][sind].kind == OPERATOR) {
-					switch (rhs[n][sind].token.operatr) {
+				if (mathomatic->rhs[n][sind].level == 1 && mathomatic->rhs[n][sind].kind == OPERATOR) {
+					switch (mathomatic->rhs[n][sind].token.operatr) {
 					case PLUS:
 					case MINUS:
 					case MODULUS:
@@ -1141,49 +1132,49 @@ make_smaller:
 			max_line = high;
 		if (low < min_line)
 			min_line = low;
-		len3 = flist_sub(&rhs[n][sind], n_rhs[n] - sind, false, NULL, screen_columns, 0, &max2_line, &min2_line);
+		len3 = flist_sub(mathomatic, &mathomatic->rhs[n][sind], mathomatic->n_rhs[n] - sind, false, NULL, mathomatic->screen_columns, 0, &max2_line, &min2_line);
 	} else {
 		len2 = 0;
 		len3 = 0;
 	}
 	width = max(len + len2, len3);
-	if (screen_columns && use_screen_columns && width >= screen_columns) {
+	if (mathomatic->screen_columns && use_screen_columns && width >= mathomatic->screen_columns) {
 		/* output too wide to fit screen, output in single-line format */
-		width = list1_sub(n, false);
+		width = list1_sub(mathomatic, n, false);
 #if	CYGWIN
-		fprintf(gfp, "\r\n");	/* Be consistent with list1_sub() output. */
+		fprintf(mathomatic->gfp, "\r\n");	/* Be consistent with list1_sub() output. */
 #else
-		fprintf(gfp, "\n");
+		fprintf(mathomatic->gfp, "\n");
 #endif
 		return width;
 	}
-	fprintf(gfp, "\n");
-	for (cur_line = max_line; cur_line >= min_line; cur_line--) {
-		pos = cur_pos = 0;
-		if (cur_line == 0) {
-			cur_pos += fprintf(gfp, "%s", buf);
+	fprintf(mathomatic->gfp, "\n");
+	for (mathomatic->cur_line = max_line; mathomatic->cur_line >= min_line; mathomatic->cur_line--) {
+		pos = mathomatic->cur_pos = 0;
+		if (mathomatic->cur_line == 0) {
+			mathomatic->cur_pos += fprintf(mathomatic->gfp, "%s", buf);
 		}
 		pos += strlen(buf);
-		pos += flist_sub(lhs[n], n_lhs[n], true, NULL, screen_columns, pos, &high, &low);
-		if (n_rhs[n]) {
-			if (cur_line == 0) {
-				cur_pos += fprintf(gfp, "%s", EQUATE_STRING);
+		pos += flist_sub(mathomatic, mathomatic->lhs[n], mathomatic->n_lhs[n], true, NULL, mathomatic->screen_columns, pos, &high, &low);
+		if (mathomatic->n_rhs[n]) {
+			if (mathomatic->cur_line == 0) {
+				mathomatic->cur_pos += fprintf(mathomatic->gfp, "%s", EQUATE_STRING);
 			}
 			pos += strlen(EQUATE_STRING);
-			pos += flist_sub(rhs[n], sind, true, NULL, screen_columns, pos, &high, &low);
+			pos += flist_sub(mathomatic, mathomatic->rhs[n], sind, true, NULL, mathomatic->screen_columns, pos, &high, &low);
 		}
-		fprintf(gfp, "\n");
+		fprintf(mathomatic->gfp, "\n");
 	}
-	if (sind < n_rhs[n]) {
+	if (sind < mathomatic->n_rhs[n]) {
 /* output second half of split equation that was too wide to display on the screen without splitting */
-		fprintf(gfp, "\n");
-		for (cur_line = max2_line; cur_line >= min2_line; cur_line--) {
-			cur_pos = 0;
-			flist_sub(&rhs[n][sind], n_rhs[n] - sind, true, NULL, screen_columns, 0, &high, &low);
-			fprintf(gfp, "\n");
+		fprintf(mathomatic->gfp, "\n");
+		for (mathomatic->cur_line = max2_line; mathomatic->cur_line >= min2_line; mathomatic->cur_line--) {
+			mathomatic->cur_pos = 0;
+			flist_sub(mathomatic, &mathomatic->rhs[n][sind], mathomatic->n_rhs[n] - sind, true, NULL, mathomatic->screen_columns, 0, &high, &low);
+			fprintf(mathomatic->gfp, "\n");
 		}
 	}
-	fprintf(gfp, "\n");
+	fprintf(mathomatic->gfp, "\n");
 	return width;
 }
 
@@ -1199,35 +1190,27 @@ make_smaller:
  * Return the width of the expression (that is, the required number of screen columns).
  */
 static int
-flist_sub(p1, n, out_flag, string, sbuffer_size, pos, highp, lowp)
-token_type	*p1;		/* expression pointer */
-int		n;		/* length of expression */
-int		out_flag;	/* if true, output to gfp or string */
-char		*string;	/* if not NULL, put output to here instead of gfp */
-int		sbuffer_size;	/* string buffer size */
-int		pos;
-int		*highp, *lowp;
+flist_sub(MathoMatic* mathomatic, token_type *p1, int n, int out_flag, char *string, int sbuffer_size, int pos, int *highp, int *lowp)
+//token_type	*p1;		/* expression pointer */
+//int		n;		/* length of expression */
+//int		out_flag;	/* if true, output to gfp or string */
+//char		*string;	/* if not NULL, put output to here instead of gfp */
+//int		sbuffer_size;	/* string buffer size */
 {
 	int	rv;
 
-	rv = flist_recurse(p1, n, out_flag, string, sbuffer_size, 0, pos, 1, highp, lowp);
+	rv = flist_recurse(mathomatic, p1, n, out_flag, string, sbuffer_size, 0, pos, 1, highp, lowp);
 	if (out_flag && (string == NULL)) {
-		default_color(false);
+		default_color(mathomatic, false);
 	}
 	return rv;
 }
 
 static int
-flist_recurse(p1, n, out_flag, string, sbuffer_size, line, pos, cur_level, highp, lowp)
-token_type	*p1;
-int		n;
-int		out_flag;	/* if true, output to gfp or string */
-char		*string;	/* if not NULL, put output to here instead of gfp */
-int		sbuffer_size;	/* string buffer size */
-int		line;
-int		pos;
-int		cur_level;
-int		*highp, *lowp;
+flist_recurse(MathoMatic* mathomatic, token_type *p1, int n, int out_flag, char *string, int sbuffer_size, int line, int pos, int cur_level, int *highp, int *lowp)
+//int		out_flag;	/* if true, output to gfp or string */
+//char		*string;	/* if not NULL, put output to here instead of gfp */
+//int		sbuffer_size;	/* string buffer size */
 {
 	int	i, j, k, i1;
 	int	l1, l2;
@@ -1252,11 +1235,11 @@ int		*highp, *lowp;
 	if (n <= 0) {
 		return 0;
 	}
-	oflag = (out_flag && line == cur_line);
+	oflag = (out_flag && line == mathomatic->cur_line);
 	cflag = (oflag && string == NULL);
-	html_out = ((html_flag == 2) || (html_flag && gfp == stdout));
+	html_out = ((mathomatic->html_flag == 2) || (mathomatic->html_flag && mathomatic->gfp == stdout));
 	if (oflag) {
-		for (; cur_pos < pos; cur_pos++) {
+		for (; mathomatic->cur_pos < pos; mathomatic->cur_pos++) {
 			APPEND2(" ");
 		}
 	}
@@ -1291,7 +1274,7 @@ check_again:
 		if (i == stop_at) {
 #if	DEBUG
 			if (div_loc < 0) {
-				error_bug("Bug in flist_recurse().");
+				error_bug(mathomatic, "Bug in flist_recurse().");
 			}
 #endif
 			j = cur_level - p1[div_loc].level;
@@ -1316,7 +1299,7 @@ check_again:
 		}
 		if (k < 1) {
 			if (cflag)
-				set_color(cur_level-1);
+				set_color(mathomatic, cur_level-1);
 		}
 		for (i1 = 1; i1 <= k; i1++) {
 			if (j > 0) {
@@ -1325,27 +1308,27 @@ check_again:
 				if (oflag) {
 					APPEND2(")");
 					if (cflag)
-						set_color(cur_level-1);
+						set_color(mathomatic, cur_level-1);
 				}
 			} else {
 				cur_level++;
 				len++;
 				if (oflag) {
 					if (cflag)
-						set_color(cur_level-1);
+						set_color(mathomatic, cur_level-1);
 					APPEND2("(");
 				}
 			}
 		}
 		if (i == stop_at) {
 			level = p1[div_loc].level;
-			len1 = flist_recurse(&p1[stop_at], div_loc - stop_at, false, string, sbuffer_size, line + 1, pos + len, level, &high, &low);
+			len1 = flist_recurse(mathomatic, &p1[stop_at], div_loc - stop_at, false, string, sbuffer_size, line + 1, pos + len, level, &high, &low);
 			l1 = (2 * (line + 1)) - low;
 			for (j = div_loc + 2; j < n; j += 2) {
 				if (p1[j].level <= level)
 					break;
 			}
-			len2 = flist_recurse(&p1[div_loc+1], j - (div_loc + 1), false, string, sbuffer_size, line - 1, pos + len, level, &high, &low);
+			len2 = flist_recurse(mathomatic, &p1[div_loc+1], j - (div_loc + 1), false, string, sbuffer_size, line - 1, pos + len, level, &high, &low);
 			l2 = (2 * (line - 1)) - high;
 			ii = j;
 			len_div = max(len1, len2);
@@ -1353,7 +1336,7 @@ check_again:
 			if (len1 < len_div) {
 				j = (len_div - len1) / 2;
 			}
-			flist_recurse(&p1[stop_at], div_loc - stop_at, out_flag, string, sbuffer_size, l1, pos + len + j, level, &high, &low);
+			flist_recurse(mathomatic, &p1[stop_at], div_loc - stop_at, out_flag, string, sbuffer_size, l1, pos + len + j, level, &high, &low);
 			if (high > *highp)
 				*highp = high;
 			if (low < *lowp)
@@ -1361,7 +1344,7 @@ check_again:
 			if (oflag) {
 				/* display fraction bar */
 				if (cflag)
-					set_color(level-1);
+					set_color(mathomatic, level-1);
 				for (j = 0; j < len_div; j++) {
 					if (html_out) {
 						APPEND2("&ndash;");
@@ -1370,13 +1353,13 @@ check_again:
 					}
 				}
 				if (cflag)
-					set_color(cur_level-1);
+					set_color(mathomatic, cur_level-1);
 			}
 			j = 0;
 			if (len2 < len_div) {
 				j = (len_div - len2) / 2;
 			}
-			flist_recurse(&p1[div_loc+1], ii - (div_loc + 1), out_flag, string, sbuffer_size, l2, pos + len + j, level, &high, &low);
+			flist_recurse(mathomatic, &p1[div_loc+1], ii - (div_loc + 1), out_flag, string, sbuffer_size, l2, pos + len + j, level, &high, &low);
 			if (high > *highp)
 				*highp = high;
 			if (low < *lowp)
@@ -1401,26 +1384,26 @@ check_again:
 			    && (i + 1) < n && p1[i].level == p1[i+1].level && p1[i+1].token.operatr == TIMES) {
 				i++;
 				len += snprintf(buf, sizeof(buf), "-");
-			} else if (finance_option >= 0) {
+			} else if (mathomatic->finance_option >= 0) {
 				if (p1[i].token.constant < 0.0) {
 #if	THOUSANDS_SEPARATOR
-					len += snprintf(buf, sizeof(buf), "(%'.*f)", finance_option, p1[i].token.constant);
+					len += snprintf(buf, sizeof(buf), "(%'.*f)", mathomatic->finance_option, p1[i].token.constant);
 #else
-					len += snprintf(buf, sizeof(buf), "(%.*f)", finance_option, p1[i].token.constant);
+					len += snprintf(buf, sizeof(buf), "(%.*f)", mathomatic->finance_option, p1[i].token.constant);
 #endif
 				} else {
 #if	THOUSANDS_SEPARATOR
-					len += snprintf(buf, sizeof(buf), "%'.*f", finance_option, p1[i].token.constant);
+					len += snprintf(buf, sizeof(buf), "%'.*f", mathomatic->finance_option, p1[i].token.constant);
 #else
-					len += snprintf(buf, sizeof(buf), "%.*f", finance_option, p1[i].token.constant);
+					len += snprintf(buf, sizeof(buf), "%.*f", mathomatic->finance_option, p1[i].token.constant);
 #endif
 				}
 			} else {
 				if (p1[i].token.constant < 0.0 && (i + 1) < n && p1[i+1].level == p1[i].level
 				    && (p1[i+1].token.operatr >= POWER)) {
-					len += snprintf(buf, sizeof(buf), "(%.*g)", precision, p1[i].token.constant);
+					len += snprintf(buf, sizeof(buf), "(%.*g)", mathomatic->precision, p1[i].token.constant);
 				} else {
-					len += snprintf(buf, sizeof(buf), "%.*g", precision, p1[i].token.constant);
+					len += snprintf(buf, sizeof(buf), "%.*g", mathomatic->precision, p1[i].token.constant);
 				}
 			}
 			if (oflag)
@@ -1440,9 +1423,9 @@ check_again:
 				if (oflag)
 					APPEND2("&icirc;");
 			} else {
-				len += list_var(p1[i].token.variable, 0);
+				len += list_var(mathomatic, p1[i].token.variable, 0);
 				if (oflag)
-					APPEND2(var_str);
+					APPEND2(mathomatic->var_str);
 			}
 			break;
 		case OPERATOR:
@@ -1485,13 +1468,13 @@ check_again:
 				if (html_out
 				    && p1[i+1].level == p1[i].level
 				    && p1[i+1].kind == CONSTANT) {
-					len += (snprintf(buf, sizeof(buf), "<sup>%.*g</sup>", precision, p1[i+1].token.constant) - 11);
+					len += (snprintf(buf, sizeof(buf), "<sup>%.*g</sup>", mathomatic->precision, p1[i+1].token.constant) - 11);
 					cp = buf;
 					i++;
 					break;
 				}
 #endif
-				if (power_starstar) {
+				if (mathomatic->power_starstar) {
 					cp = "**";
 					len += 2;
 				} else {
@@ -1521,10 +1504,10 @@ check_again:
 		if (oflag) {
 			APPEND2(")");
 			if (j > 0 && cflag)
-				set_color(cur_level-1);
+				set_color(mathomatic, cur_level-1);
 		}
 	}
 	if (oflag)
-		cur_pos += len;
+		mathomatic->cur_pos += len;
 	return len;
 }

@@ -67,7 +67,8 @@ static int polydiv_recurse(MathoMatic* mathomatic, token_type *equation, int *np
 static int pdiv_recurse(MathoMatic* mathomatic, token_type *equation, int *np, int loc, int level, int code);
 static int poly_div_sub(MathoMatic* mathomatic, token_type *d1, int len1, token_type *d2, int len2, long *vp);
 static int find_highest_count(token_type *p1, int n1, token_type *p2, int n2, long *vp1);
-
+#ifndef VCMP_DEFINED
+#define VCMP_DEFINED /*there is a copy elsewhere */
 /*
  * Compare function for qsort(3).
  */
@@ -84,7 +85,7 @@ sort_type	*p1, *p2;
 	}
 	return(p2->count - p1->count);
 }
-
+#endif /*VCMP_DEFINED*/
 /*
  * Return true if passed expression is strictly a single polynomial term in variable v.
  * The general form of a polynomial term is c*(v^d)

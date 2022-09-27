@@ -166,7 +166,7 @@ char *parse_var2(MathoMatic* mathomatic, long *vp, char *cp);
 int display_usage(MathoMatic* mathomatic, char *pstr, int i);
 int display_command(MathoMatic* mathomatic, int i);
 int display_repeat_command(MathoMatic* mathomatic);
-int read_examples(MathoMatic* mathomatic, char **cpp);
+int read_examples(MathoMatic* mathomatic, const char **cpp);
 void underline_title(MathoMatic* mathomatic, int count);
 int help_cmd(MathoMatic* mathomatic, char *cp);
 /* integrate.c */

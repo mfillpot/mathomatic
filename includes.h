@@ -24,8 +24,10 @@ George Gesslein II, P.O. Box 224, Lansing, NY  14882-0224  USA.
  
  */
 
+#ifndef true
 #define	true	1
 #define	false	0
+#endif
 
 #if	0
 #define	_REENTRANT	1	/* Can be defined before including math.h for Mac OS X.  Mac OS X allows a few re-entrant functions with this.  iOS requires this commented out. */

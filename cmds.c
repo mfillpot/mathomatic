@@ -193,6 +193,7 @@ plot_cmd(MathoMatic* mathomatic, char *cp)
 		printf(_("Shell command-line = %s\n"), cl);
 	}
 	return true;
+#undef APPEND
 }
 #endif
 
@@ -3431,7 +3432,8 @@ code_cmd(MathoMatic* mathomatic, char *cp)
 	} while (*cp);
 	return displayed;
 }
-
+#ifndef VCMP_DEFINED
+#define VCMP_DEFINED /*there is a copy elsewhere */
 /*
  * Compare function for qsort(3).
  */
@@ -3448,7 +3450,7 @@ sort_type	*p1, *p2;
 	}
 	return(p2->count - p1->count);
 }
-
+#endif /*VCMP_DEFINED*/
 /*
  * The variables command.
  */

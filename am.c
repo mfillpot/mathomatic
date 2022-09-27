@@ -155,8 +155,7 @@ error_bug(MathoMatic* mathomatic, const char *str)
 void
 check_err(MathoMatic* mathomatic)
 {
-	switch (errno) {
-	case EDOM:
+	if(errno == EDOM) {
 		errno = 0;
 		if (mathomatic->domain_check) {
 			mathomatic->domain_check = false;
@@ -164,12 +163,11 @@ check_err(MathoMatic* mathomatic)
 			error(mathomatic, _("Domain error in constant."));
 			longjmp(mathomatic->jmp_save, 2);
 		}
-		break;
-	case ERANGE:
+	}
+	if(errno == ERANGE) {
 		errno = 0;
 		error(mathomatic, _("Floating point constant out of range."));
 		longjmp(mathomatic->jmp_save, 2);
-		break;
 	}
 }
 

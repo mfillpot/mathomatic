@@ -917,7 +917,7 @@ display_repeat_command(MathoMatic* mathomatic)
 }
 
 int
-read_examples(MathoMatic* mathomatic, char **cpp)
+read_examples(MathoMatic* mathomatic, const char **cpp)
 {
 	int	i;
 	char	*cp;

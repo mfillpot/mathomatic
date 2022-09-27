@@ -113,9 +113,7 @@ usage(FILE *fp)
 }
 
 int
-main(argc, argv)
-int	argc;
-char	**argv;
+main(int argc, char *argv[])
 {
 #if	NO_GETOPT_H	/* if no getopt.h is available */
 	extern char	*optarg;	/* set by getopt(3) */
@@ -426,8 +424,7 @@ main_io_loop(void)
  * Return zero on success, or a non-zero unsettable signal number on error.
  */
 int
-set_signals(time_out_seconds)
-unsigned int	time_out_seconds;
+set_signals(unsigned int time_out_seconds)
 {
 	int	rv = 0;
 
@@ -466,8 +463,7 @@ unsigned int	time_out_seconds;
  * Floating point exceptions are currently ignored.
  */
 void
-fphandler(sig)
-int	sig;
+fphandler(int sig)
 {
 #if	DEBUG
 	warning(mathomatic, "Floating point exception.");
@@ -480,8 +476,7 @@ int	sig;
  * If it can't, repeated calls terminate this program.
  */
 void
-inthandler(sig)
-int	sig;
+inthandler(int sig)
 {
 	matho_inc_abort_flag(mathomatic);
 	switch (matho_get_abort_flag(mathomatic)) {
@@ -505,8 +500,7 @@ int	sig;
  * Alarm signal handler.
  */
 void
-alarmhandler(sig)
-int	sig;
+alarmhandler(int sig)
 {
 	printf(_("\nTimeout, quitting...\n"));
 	exit_program(mathomatic, 1);
